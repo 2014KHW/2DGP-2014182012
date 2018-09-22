@@ -90,22 +90,22 @@ def handle_events():
 
 open_canvas()
 
-IDX = 0
+IDX = 0 #waypoint의 인덱스. 2씩 증가한다. (x좌표를 짝수번째에 저장, y좌표를 홀수 번째에 저장하기때문)
 running = True
 Wp = []
 boy = [Boy() for i in range(20)]
-#boy = Boy()
+
 grass = Grass()
 
 while running:
     handle_events()
     clear_canvas()
     grass.draw()
+
     for i in boy:
         i.draw()
         if IDX != 0 : i.run()
-    #boy.draw()
-    #boy.run()
+
     update_canvas()
     delay(0.01)
 
