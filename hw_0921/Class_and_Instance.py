@@ -4,12 +4,13 @@ import random
 class Boy:
     def __init__(self):
         self.image = load_image('../Pics/run_animation.png')
-        self.x, self.y = 0, 90
-        self.frame = 0
+        self.x, self.y = random.randint(30, 500), random.randint(90, 500)
+        self.frame = random.randint(0, 7)
+        self.speed = random.randint(1, 3)
     def draw(self):
         self.image.clip_draw(self.frame * 100, 0, 100, 100, self.x, self.y)
     def run(self):
-        self.x+=2
+        self.x+=self.speed
         self.frame= (self.frame+1) % 8
 
 class Grass:
@@ -41,6 +42,7 @@ while running:
     for i in boy:
         i.draw()
         i.run()
+
     handle_events()
     update_canvas()
     delay(0.03)
