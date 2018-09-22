@@ -90,8 +90,8 @@ def GO_CIRCLE(grass, character, frame, r=160, angle=0):
 
 open_canvas()
 
-grass = load_image('grass.png')
-character = load_image('run_animation.png')
+grass = load_image('../Pics/grass.png')
+character = load_image('../Pics/run_animation.png')
 
 x=0
 y=90

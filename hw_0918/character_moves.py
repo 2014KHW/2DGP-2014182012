@@ -52,8 +52,8 @@ def follow_cursor():
 
 open_canvas()
 
-grass = load_image('grass.png')
-character = load_image('run_animation.png')
+grass = load_image('../Pics/grass.png')
+character = load_image('../Pics/run_animation.png')
 
 x, y = 800 // 2, 90
 CharactX, CharactY = x, y
