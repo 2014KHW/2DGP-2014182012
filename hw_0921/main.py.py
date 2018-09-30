@@ -16,13 +16,11 @@ class Boy:
         global Wp, IDX
         #최대index값이 dstnum보다 작거나, 최대index값이 0이면 리턴
         if IDX <= self.dstnum or IDX == 0 :
-            print('I\'m Out', self.dstnum)
             return
         #목적지와 좌표가 같아진 경우 다음 좌표로 설정(dstnum값 증가)
         if Wp[self.dstnum] == self.x and Wp[self.dstnum+1] == self.y:
             self.dstnum += 2
             return
-        print(Wp[self.dstnum], self.x)
         #먼저 x또는 y축으로 평행하게 가는 경우를 예외처리
         #y값이 같을 경우 x값만 이동
         if Wp[self.dstnum+1] == self.y :
