@@ -1,20 +1,6 @@
-def enter():
-    pass
+import menu_state
+import play_state
+import score_state
+import game_framework
 
-def draw():
-    pass
-
-def handle_events():
-    pass
-
-def update():
-    pass
-
-def exit():
-    pass
-
-def pause():
-    pass
-
-def resume():
-    pass
+game_framework.run(menu_state)
