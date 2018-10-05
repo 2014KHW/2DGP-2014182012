@@ -1,50 +1,50 @@
 == 1주차
 
-*기본적인 state 틀
-*효과음
+*기본적인 state 틀			O
+*효과음			
 ----------------------
-일반공격
+일반공격				O
 
 스킬별 sound
 	-번개
 	-공격 튕기기
 	-빨리 내려오는 효과
 
-피격
+피격					O
 
 적 사망
-	-level1
-	-level2
-	-level3
+	-level1				O
+	-level2				O
+	-level3				O
 ----------------------
 
 
 *배경음
 ----------------------
 MENU_STATE
-PLAY_STATE
+PLAY_STATE				O
 SCORE_STATE
 ----------------------
 
 
 *player 기본 애니메이션
 ----------------------
-player 기립
-player 이동
-player 점프준비
-player 점프
-player 공격1
-player 공격2
-player 스킬발동
+player 기립				O
+player 이동				O
+player 점프준비				O
+player 점프				O
+player 공격1				O
+player 공격2				O
+player 스킬발동				O
 ----------------------
 *enemy 기본 애니메이션
 	level1
 -----------------------
-enemy 기립
-enemy 이동
-enemy 공격
-enemy 피격
-enemy 사망
+enemy 기립				O
+enemy 이동				O
+enemy 공격				O
+enemy 피격				O
+enemy 사망				O
 -----------------------
 	level2
 -----------------------
@@ -70,6 +70,9 @@ enemy 사망
 빨리 내려오는 효과
 -----------------------
 
+(+추가)땅 png제작			O
+
+
 
 
 
@@ -90,7 +93,8 @@ enemy 사망
 *player 점프 공격
 	-공격1
 	-공격2
-	-공격을 위한 (준비자세 없고, 높낮이 일정)점프 개발
+	-공격을 위한 점프 개발
+	(준비자세 없고, 높낮이 일정)
 
 *화면 흔들림 효과
 
