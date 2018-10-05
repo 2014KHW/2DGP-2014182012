@@ -6,9 +6,9 @@
 일반공격				O
 
 스킬별 sound
-	-번개
-	-공격 튕기기
-	-빨리 내려오는 효과
+	-번개				O
+	-공격 튕기기			O
+	-빨리 내려오는 효과		O
 
 피격					O
 
@@ -21,9 +21,9 @@
 
 *배경음
 ----------------------
-MENU_STATE
+MENU_STATE				O
 PLAY_STATE				O
-SCORE_STATE
+SCORE_STATE				O
 ----------------------
 
 
