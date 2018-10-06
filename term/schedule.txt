@@ -49,11 +49,11 @@ enemy 사망				O
 	level2
 -----------------------
 enemy 기립				O
-enemy 이동
-enemy 공격
-enemy 피격
-enemy 점프
-enemy 사망
+enemy 이동				O
+enemy 공격				O
+enemy 피격				O
+enemy 점프				O
+enemy 사망				O
 -----------------------
 	level3
 -----------------------
