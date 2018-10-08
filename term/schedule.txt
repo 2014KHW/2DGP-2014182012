@@ -57,11 +57,11 @@ enemy 사망				O
 -----------------------
 	level3
 -----------------------
-enemy 기립
-enemy 이동
-enemy 피격
-enemy 방어
-enemy 사망
+enemy 기립				O
+enemy 이동				O
+enemy 피격				O
+enemy 방어				O
+enemy 사망				O
 -----------------------
 *스킬 효과 애니메이션
 -----------------------
@@ -88,7 +88,6 @@ enemy 사망
 *적 공격 구현
 	-level1
 	-level2
-	-level3
 
 *player 점프 공격
 	-공격1
