@@ -11,16 +11,34 @@ class Boy:
         self.frame = random.randint(0, 7)
         self.speed = random.randint(1, 3)
         self.dstnum = 0 #목적지의 index값을 나타냄 (waypoint 좌표 중, x가 Wp인덱스의 짝수, y가 Wp인덱스의 홀수)
+        self.state = random.randint(2, 3)
         if Boy.image is None:
             Boy.image = load_image('../Pics/animation_sheet.png')
     def draw(self):
-        Boy.image.clip_draw(self.frame * 100, 0, 100, 100, self.x, self.y)
+            Boy.image.clip_draw(self.frame * 100, self.state*100, 100, 100, self.x, self.y)
+
     def run(self):
         global Wp, IDX
         #최대index값이 dstnum보다 작거나, 최대index값이 0이면 리턴
         self.frame = (self.frame+1)%7
+
         if IDX <= self.dstnum or IDX == 0 :
+            if self.state is 0 :
+                self.state = 2
+            elif self.state is 1:
+                self.state = 3
             return
+
+        if (Wp[self.dstnum] < self.x):
+            self.state = 0
+        elif (Wp[self.dstnum] > self.x):
+            self.state = 1
+        elif (Wp[self.dstnum] == self.x):
+            if self.state is 0 :
+                self.state = 2
+            elif self.state is 1 :
+                self.state = 3
+
         #목적지와 좌표가 같아진 경우 다음 좌표로 설정(dstnum값 증가)
         if Wp[self.dstnum] == self.x and Wp[self.dstnum+1] == self.y:
             self.dstnum += 2
@@ -114,8 +132,7 @@ def update():
     global running, boy
     if running:
         for i in boy:
-            if IDX != 0:
-                i.run()
+            i.run()
 
         delay(0.03)
 
