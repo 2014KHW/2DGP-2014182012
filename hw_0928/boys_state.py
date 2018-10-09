@@ -5,14 +5,16 @@ import game_framework
 
 
 class Boy:
+    image = None
     def __init__(self):
-        self.image = load_image('../Pics/run_animation.png')
         self.x, self.y = random.randint(30, 500), random.randint(90, 500)
         self.frame = random.randint(0, 7)
         self.speed = random.randint(1, 3)
         self.dstnum = 0 #목적지의 index값을 나타냄 (waypoint 좌표 중, x가 Wp인덱스의 짝수, y가 Wp인덱스의 홀수)
+        if Boy.image is None:
+            Boy.image = load_image('../Pics/animation_sheet.png')
     def draw(self):
-        self.image.clip_draw(self.frame * 100, 0, 100, 100, self.x, self.y)
+        Boy.image.clip_draw(self.frame * 100, 0, 100, 100, self.x, self.y)
     def run(self):
         global Wp, IDX
         #최대index값이 dstnum보다 작거나, 최대index값이 0이면 리턴
@@ -94,7 +96,7 @@ def enter():
     IDX = 0 #waypoint의 인덱스. 2씩 증가한다. (x좌표를 짝수번째에 저장, y좌표를 홀수 번째에 저장하기때문)
     running = True
     Wp = []
-    boy = [Boy() for i in range(20)]
+    boy = [Boy() for i in range(1000)]
 
     grass = Grass()
 
