@@ -1,6 +1,7 @@
 from pico2d import *
 import game_framework
 import score_state
+import random
 
 class hero:
     image = None
@@ -13,20 +14,46 @@ class hero:
         hero.image.clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, 50, 50)
         self.frame = (self.frame + 1) % 7
 
+class enemy:
+    image = []
+    def __init__(self):
+        self.x, self.y = random.randint(0+50, 800-50), 250
+        self.frame = 0
+        self.lev = 1
+        if len(enemy.image) is 0:
+            enemy.image += [load_image('../Pics/enemy_level1.png')]
+        elif len(enemy.image) is 1:
+            enemy.image += [load_image('../Pics/enemy_level2.png')]
+        elif len(enemy.image) is 2:
+            enemy.image += [load_image('../Pics/enemy_level3.png')]
+    def draw(self):
+        enemy.image[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, 50, 50)
+        self.frame = (self.frame + 1) % 7
+
+
 
 def enter():
-    global ground, H
+    global ground, H, E
     ground = load_image('../Pics/ground_map.png')
+
     H = hero()
 
+    E = [enemy()]
+
 def exit():
-    global ground, H
-    del ground, H
+    global ground, H, E
+    del ground, H, E
 
 def draw():
-    global ground, H
+    global ground, H, E
     ground.clip_draw(300, 0, 500, 200, 400, 100, 800, 300)
+
     H.draw()
+
+    if len(E) is not 0:
+        for ene in E:
+            ene.draw()
+
     update_canvas()
 
 def handle_events():
