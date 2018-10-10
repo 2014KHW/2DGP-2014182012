@@ -16,10 +16,15 @@ class hero:
 
 class enemy:
     image = []
+    #상수 정의 부분
+    state_appear = 10
+    state_stand = 20
     def __init__(self):
-        self.x, self.y = random.randint(0+50, 800-50), 250
+        self.x, self.y = random.randint(0+50, 800-50), 400
+        self.draw_scale_x, self.draw_scale_y = 50, 200
         self.frame = 0
         self.lev = 1
+        self.state = enemy.state_appear
         if len(enemy.image) is 0:
             enemy.image += [load_image('../Pics/enemy_level1.png')]
         elif len(enemy.image) is 1:
@@ -27,9 +32,22 @@ class enemy:
         elif len(enemy.image) is 2:
             enemy.image += [load_image('../Pics/enemy_level3.png')]
     def draw(self):
-        enemy.image[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, 50, 50)
+        if self.state is enemy.state_appear:
+            enemy.appear(self)
+            return
+
+        enemy.image[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
         self.frame = (self.frame + 1) % 7
 
+    def appear(self):
+        enemy.image[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
+        self.y -= 20
+        self.draw_scale_y -= 20
+        if self.draw_scale_y <= self.draw_scale_x:
+            self.draw_scale_y = self.draw_scale_x
+        if self.y < 250:
+            self.y = 250
+            self.state = self.state_stand
 
 
 def enter():
