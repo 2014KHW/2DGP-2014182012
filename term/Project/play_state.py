@@ -36,9 +36,9 @@ def enter():
     global ground, H, E
     ground = load_image('../Pics/ground_map.png')
 
-    H = hero()
-
     E = [enemy()]
+
+    H = hero()
 
 def exit():
     global ground, H, E
