@@ -5,8 +5,8 @@ import random
 import time
 
 #상수 선언 부분
-stage_start = 20
-stage_pass = 10
+stage_start = 5
+stage_pass = 1
 
 class hero:
     image = None
@@ -54,9 +54,32 @@ class enemy:
             self.y = 250
             self.state = self.state_stand
 
+class phrase:
+    image = None
+    #상수 정의
+    original_pos = 400
+    state_stop = 100
+    state_move = 10
+    def __init__(self, state):
+        self.x, self.y = 500, 500
+        self.create_time = time.time()
+        self.state = phrase.state_move
+        if state is stage_start:
+            phrase.image = load_image('../Pics/stage_start.png')
+        if state is stage_pass:
+            phrase.image = load_image('../Pics/stage_pass.png')
+
+    def draw(self, state):
+        if state is stage_start:
+            phrase.image.clip_draw(0, 0, 426, 58, self.x, self.y)
+        if state is stage_pass:
+            phrase.image.clip_draw(0, 0, 409, 58, self.x, self.y)
+        self.x -= 5
+        if self.x < phrase.original_pos:
+            self.x = phrase.original_pos
 
 def enter():
-    global ground, H, E
+    global ground, H, E, phase
     global E_appear_speed, stage_interval, stage_start_time, stage_state
 
     ground = load_image('../Pics/ground_map.png')
@@ -70,12 +93,14 @@ def enter():
 
     H = hero()
 
+    phase = [phrase(stage_state)]
+
 def exit():
     global ground, H, E
     del ground, H, E
 
 def draw():
-    global ground, H, E
+    global ground, H, E, phase
     global stage_state
     ground.clip_draw(300, 0, 500, 200, 400, 100, 800, 300)
 
@@ -84,6 +109,13 @@ def draw():
     if len(E) is not 0:
         for ene in E:
             ene.draw()
+
+    if len(phase) is not 0:
+        for ph in phase:
+            ph.draw(stage_state)
+        if phase[-1].x is phrase.original_pos:
+            phase[-1].image = None
+            phase.pop()
 
     update_canvas()
 
@@ -96,15 +128,25 @@ def handle_events():
 def update():
     global E
     global E_appear_speed, stage_start_time, stage_elapsed_time
-    global stage_state
+    global stage_state, phase
 
     stage_elapsed_time = time.time()
     if stage_state is stage_start:
         if stage_elapsed_time - stage_start_time >= E_appear_speed:
             E_appear_speed += 1.5
             E += [enemy()]
+        if stage_elapsed_time - stage_start_time >= stage_start:
+            stage_start_time = time.time()
+            stage_elapsed_time = time.time()
+            stage_state = stage_pass
+            phase += [phrase(stage_pass)]
     if stage_state is stage_pass:
-        pass
+        if stage_elapsed_time - stage_start_time >= stage_pass:
+            stage_start_time = time.time()
+            stage_elapsed_time = time.time()
+            stage_state = stage_start
+            phase += [phrase(stage_start)]
+            E_appear_speed = 1.5
     delay(0.03)
 
 def pause():
