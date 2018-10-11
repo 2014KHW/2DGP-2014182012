@@ -80,12 +80,14 @@ class phrase:
 
 def enter():
     global ground, H, E, phase
-    global E_appear_speed, stage_interval, stage_start_time, stage_state
+    global stage_interval, stage_start_time, stage_state
+    global E_appear_speed, E_appear_time_ratio
 
     ground = load_image('../Pics/ground_map.png')
 
     stage_interval = 10 #스테이지 시간간격
     E_appear_speed = 1.5 #몬스터 출현 속도
+    E_appear_time_ratio = 1.5
     stage_start_time = time.time() #스테이지 시작 시간
     stage_state = stage_start
 
@@ -114,7 +116,6 @@ def draw():
         for ph in phase:
             ph.draw(stage_state)
         if phase[-1].x is phrase.original_pos:
-            phase[-1].image = None
             phase.pop()
 
     update_canvas()
@@ -127,13 +128,13 @@ def handle_events():
 
 def update():
     global E
-    global E_appear_speed, stage_start_time, stage_elapsed_time
+    global E_appear_speed, E_appear_time_ratio, stage_start_time, stage_elapsed_time
     global stage_state, phase
 
     stage_elapsed_time = time.time()
     if stage_state is stage_start:
         if stage_elapsed_time - stage_start_time >= E_appear_speed:
-            E_appear_speed += 1.5
+            E_appear_speed += E_appear_time_ratio
             E += [enemy()]
         if stage_elapsed_time - stage_start_time >= stage_start:
             stage_start_time = time.time()
@@ -146,7 +147,8 @@ def update():
             stage_elapsed_time = time.time()
             stage_state = stage_start
             phase += [phrase(stage_start)]
-            E_appear_speed = 1.5
+            E_appear_time_ratio -= 0.1
+            E_appear_speed = E_appear_time_ratio
     delay(0.03)
 
 def pause():
