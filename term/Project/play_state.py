@@ -2,6 +2,11 @@ from pico2d import *
 import game_framework
 import score_state
 import random
+import time
+
+#상수 선언 부분
+stage_start = 100
+stage_pass = 20
 
 class hero:
     image = None
@@ -52,7 +57,13 @@ class enemy:
 
 def enter():
     global ground, H, E
+    global E_appear_speed, stage_interval, stage_start_time
+
     ground = load_image('../Pics/ground_map.png')
+
+    stage_interval = 10 #스테이지 시간간격
+    E_appear_speed = 1.5 #몬스터 출현 속도
+    stage_start_time = time.time() #스테이지 시작 시간
 
     E = [enemy()]
 
@@ -81,6 +92,15 @@ def handle_events():
             game_framework.quit()
 
 def update():
+    global E
+    global E_appear_speed, stage_start_time, stage_elapsed_time
+    global stage_state
+
+    stage_elapsed_time = time.time()
+    if stage_elapsed_time - stage_start_time >= E_appear_speed:
+        E_appear_speed += 1.5
+        E += [enemy()]
+
     delay(0.03)
 
 def pause():
