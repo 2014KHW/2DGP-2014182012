@@ -5,8 +5,8 @@ import random
 import time
 
 #상수 선언 부분
-stage_start = 100
-stage_pass = 20
+stage_start = 20
+stage_pass = 10
 
 class hero:
     image = None
@@ -57,13 +57,14 @@ class enemy:
 
 def enter():
     global ground, H, E
-    global E_appear_speed, stage_interval, stage_start_time
+    global E_appear_speed, stage_interval, stage_start_time, stage_state
 
     ground = load_image('../Pics/ground_map.png')
 
     stage_interval = 10 #스테이지 시간간격
     E_appear_speed = 1.5 #몬스터 출현 속도
     stage_start_time = time.time() #스테이지 시작 시간
+    stage_state = stage_start
 
     E = [enemy()]
 
@@ -75,6 +76,7 @@ def exit():
 
 def draw():
     global ground, H, E
+    global stage_state
     ground.clip_draw(300, 0, 500, 200, 400, 100, 800, 300)
 
     H.draw()
@@ -97,10 +99,12 @@ def update():
     global stage_state
 
     stage_elapsed_time = time.time()
-    if stage_elapsed_time - stage_start_time >= E_appear_speed:
-        E_appear_speed += 1.5
-        E += [enemy()]
-
+    if stage_state is stage_start:
+        if stage_elapsed_time - stage_start_time >= E_appear_speed:
+            E_appear_speed += 1.5
+            E += [enemy()]
+    if stage_state is stage_pass:
+        pass
     delay(0.03)
 
 def pause():
