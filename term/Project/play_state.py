@@ -8,8 +8,6 @@ import time
 stage_start = 5
 stage_pass = 1
 
-attack_time = 1
-
 class hero:
     image = None
     def __init__(self):
@@ -35,6 +33,7 @@ class enemy:
         self.state = enemy.state_appear
         self.state_changed_time = 0
         self.state_elapsed_time = 0
+        self.attack_time = random.uniform(0.1, 2)
         if len(enemy.image) is 0:
             enemy.image += [load_image('../Pics/enemy_level1.png')]
         elif len(enemy.image) is 1:
@@ -158,7 +157,7 @@ def update():
                 if ene.state is not enemy.state_stand:
                     continue
                 ene.state_elapsed_time = time.time()
-                if ene.state_elapsed_time - ene.state_changed_time >= attack_time:
+                if ene.state_elapsed_time - ene.state_changed_time >= ene.attack_time:
                     ene.state = enemy.state_attack
                     ene.state_changed_time = time.time()
                     ene.frame = 0
