@@ -89,8 +89,8 @@ enemy 사망				O
 	-스테이지 당 속도 증가		O
 
 *적 공격 구현
-	-level1
-	-level2
+	-level1				O
+	-level2				O
 
 *player 점프 공격
 	-공격1
