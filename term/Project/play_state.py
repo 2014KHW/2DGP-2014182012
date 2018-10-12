@@ -8,6 +8,8 @@ import time
 stage_start = 5
 stage_pass = 1
 
+attack_time = 1
+
 class hero:
     image = None
     def __init__(self):
@@ -23,13 +25,16 @@ class enemy:
     image = []
     #상수 정의 부분
     state_appear = 10
-    state_stand = 20
+    state_stand = 0
+    state_attack = 50
     def __init__(self):
         self.x, self.y = random.randint(0+50, 800-50), 400
         self.draw_scale_x, self.draw_scale_y = 50, 200
         self.frame = 0
         self.lev = 1
         self.state = enemy.state_appear
+        self.state_changed_time = 0
+        self.state_elapsed_time = 0
         if len(enemy.image) is 0:
             enemy.image += [load_image('../Pics/enemy_level1.png')]
         elif len(enemy.image) is 1:
@@ -41,8 +46,14 @@ class enemy:
             enemy.appear(self)
             return
 
-        enemy.image[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
+        enemy.image[self.lev - 1].clip_draw(self.frame * 25, self.state, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
         self.frame = (self.frame + 1) % 7
+        if self.state is enemy.state_attack:
+            print('attack!')
+        if self.frame is 0:
+            if self.state is enemy.state_attack:
+                self.state = enemy.state_stand
+                self.state_changed_time = time.time()
 
     def appear(self):
         enemy.image[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
@@ -52,7 +63,8 @@ class enemy:
             self.draw_scale_y = self.draw_scale_x
         if self.y < 250:
             self.y = 250
-            self.state = self.state_stand
+            self.state = enemy.state_stand
+            self.state_changed_time = time.time()
 
 class phrase:
     image = None
@@ -87,7 +99,7 @@ def enter():
 
     stage_interval = 10 #스테이지 시간간격
     E_appear_speed = 1.5 #몬스터 출현 속도
-    E_appear_time_ratio = 1.5
+    E_appear_time_ratio = 1.5#몬스터 출현 속도 증가량
     stage_start_time = time.time() #스테이지 시작 시간
     stage_state = stage_start
 
@@ -141,6 +153,16 @@ def update():
             stage_elapsed_time = time.time()
             stage_state = stage_pass
             phase += [phrase(stage_pass)]
+        if len(E) is not 0: #적 공격 모션으로 전환해주는 부분
+            for ene in E:
+                if ene.state is not enemy.state_stand:
+                    continue
+                ene.state_elapsed_time = time.time()
+                if ene.state_elapsed_time - ene.state_changed_time >= attack_time:
+                    ene.state = enemy.state_attack
+                    ene.state_changed_time = time.time()
+                    ene.frame = 0
+
     if stage_state is stage_pass:
         if stage_elapsed_time - stage_start_time >= stage_pass:
             stage_start_time = time.time()
