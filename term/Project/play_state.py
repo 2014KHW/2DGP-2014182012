@@ -5,7 +5,7 @@ import random
 import time
 
 #상수 선언 부분
-stage_start = 5
+stage_start = 25
 stage_pass = 1
 
 class hero:
@@ -21,10 +21,13 @@ class hero:
 
 class enemy:
     image = []
-    #상수 정의 부분
+    #상태 상수 정의 부분
     state_appear = 10
     state_stand = 0
     state_attack = 50
+    state_attack_ready = 5050
+    #시간 상수 정의 부분
+    attack_ready_time = 1
     def __init__(self):
         self.x, self.y = random.randint(0+50, 800-50), 400
         self.draw_scale_x, self.draw_scale_y = 50, 200
@@ -45,8 +48,9 @@ class enemy:
             enemy.appear(self)
             return
 
-        enemy.image[self.lev - 1].clip_draw(self.frame * 25, self.state, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
-        self.frame = (self.frame + 1) % 7
+        enemy.image[self.lev - 1].clip_draw(self.frame * 25, self.state%5000, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
+        if self.state is not self.state_attack_ready:
+            self.frame = (self.frame + 1) % 7
         if self.state is enemy.state_attack:
             print('attack!')
         if self.frame is 0:
@@ -154,13 +158,16 @@ def update():
             phase += [phrase(stage_pass)]
         if len(E) is not 0: #적 공격 모션으로 전환해주는 부분
             for ene in E:
-                if ene.state is not enemy.state_stand:
-                    continue
                 ene.state_elapsed_time = time.time()
-                if ene.state_elapsed_time - ene.state_changed_time >= ene.attack_time:
-                    ene.state = enemy.state_attack
-                    ene.state_changed_time = time.time()
-                    ene.frame = 0
+                if ene.state is enemy.state_stand:
+                    if ene.state_elapsed_time - ene.state_changed_time >= ene.attack_time:
+                        ene.state = enemy.state_attack_ready
+                        ene.state_changed_time = time.time()
+                        ene.frame = 0
+                elif ene.state is enemy.state_attack_ready:
+                    if ene.state_elapsed_time - ene.state_changed_time >= ene.attack_ready_time:
+                        ene.state = enemy.state_attack
+                        ene.state_changed_time = time.time()
 
     if stage_state is stage_pass:
         if stage_elapsed_time - stage_start_time >= stage_pass:
