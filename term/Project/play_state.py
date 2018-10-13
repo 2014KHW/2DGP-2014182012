@@ -124,8 +124,6 @@ def draw():
 
     ground.clip_draw(300, 0, 500, 200, 400, 100, 800, 300)
 
-    H.draw()
-
     if len(E) is not 0:
         for ene in E:
             ene.draw()
@@ -135,6 +133,8 @@ def draw():
             ph.draw(stage_state)
         if phase[-1].x is phrase.original_pos:
             phase.pop()
+
+    H.draw()
 
     update_canvas()
 
