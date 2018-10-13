@@ -119,6 +119,9 @@ def exit():
 def draw():
     global ground, H, E, phase
     global stage_state
+
+    clear_canvas()
+
     ground.clip_draw(300, 0, 500, 200, 400, 100, 800, 300)
 
     H.draw()
