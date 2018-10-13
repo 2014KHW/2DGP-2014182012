@@ -13,7 +13,9 @@ class hero:
     #상수 정의
     h_stand = 0
     h_jump = 75
+    h_attack = [100, 125]
     h_maxheight = 400
+    h_minheight = 250
     def __init__(self):
         self.x, self.y = 400, 250
         self.frame = 0
@@ -21,6 +23,9 @@ class hero:
         #점프 관련 변수
         self.jump = False
         self.ascend = False
+        #공격 관련 변수
+        self.attack = False
+        self.attack_type = random.randint(0, 1)
         if hero.image is None:
             hero.image = load_image('../Pics/hero.png')
     def draw(self):
@@ -32,9 +37,18 @@ class hero:
                 self.frame = (self.frame + 1) % 7
             else:
                 self.frame = 6
+        if self.state is hero.h_attack[self.attack_type]:
+            self.frame = (self.frame + 1) % 7
+            if self.frame is 0:
+                if self.jump is True:
+                    self.state = hero.h_jump
+                    if self.ascend is True:
+                        self.frame = 0
+                    else:
+                        self.frame = 6
+                else:
+                    self.state = hero.h_stand
     def act(self):
-        if self.state is hero.h_stand:
-            return
         if self.state is hero.h_jump:
             if self.ascend is True:
                 self.y += 10
@@ -169,7 +183,12 @@ def handle_events():
                 return
             H.jump = True
             H.state = hero.h_jump
-
+            H.frame = 0
+        if e.key is SDLK_j:
+            if H.state is hero.h_stand:
+                return
+            H.state = hero.h_attack[H.attack_type]
+            H.frame = 0
 
 def update():
     global E
@@ -209,14 +228,14 @@ def update():
             E_appear_speed = E_appear_time_ratio
 
     if H.jump is True:
-        if H.y < 250:
+        if H.y < hero.h_minheight:
             H.jump = False
-            H.y = 250
+            H.y = hero.h_minheight
             H.state = hero.h_stand
             H.frame = 0
             H.ascend = True
-        if H.y > 400:
-            H.y = 400
+        if H.y > hero.h_maxheight:
+            H.y = hero.h_maxheight
             H.ascend = False
 
     delay(0.03)
