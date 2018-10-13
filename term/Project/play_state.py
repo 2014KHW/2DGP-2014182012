@@ -10,14 +10,36 @@ stage_pass = 1
 
 class hero:
     image = None
+    #상수 정의
+    h_stand = 0
+    h_jump = 75
+    h_maxheight = 400
     def __init__(self):
         self.x, self.y = 400, 250
         self.frame = 0
+        self.state = hero.h_stand
+        #점프 관련 변수
+        self.jump = False
+        self.ascend = False
         if hero.image is None:
             hero.image = load_image('../Pics/hero.png')
     def draw(self):
-        hero.image.clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, 50, 50)
-        self.frame = (self.frame + 1) % 7
+        hero.image.clip_draw(self.frame * 25, self.state, 25, 25, self.x, self.y, 50, 50)
+        if self.state is hero.h_stand:
+            self.frame = (self.frame + 1) % 7
+        if self.state is hero.h_jump:
+            if self.ascend is True:
+                self.frame = (self.frame + 1) % 7
+            else:
+                self.frame = 6
+    def act(self):
+        if self.state is hero.h_stand:
+            return
+        if self.state is hero.h_jump:
+            if self.ascend is True:
+                self.y += 10
+            if self.ascend is False:
+                self.y -= 5
 
 class enemy:
     image = []
@@ -39,9 +61,7 @@ class enemy:
         self.attack_time = random.uniform(0.1, 2)
         if len(enemy.image) is 0:
             enemy.image += [load_image('../Pics/enemy_level1.png')]
-        elif len(enemy.image) is 1:
             enemy.image += [load_image('../Pics/enemy_level2.png')]
-        elif len(enemy.image) is 2:
             enemy.image += [load_image('../Pics/enemy_level3.png')]
     def draw(self):
         if self.state is enemy.state_appear:
@@ -51,8 +71,6 @@ class enemy:
         enemy.image[self.lev - 1].clip_draw(self.frame * 25, self.state%5000, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
         if self.state is not self.state_attack_ready:
             self.frame = (self.frame + 1) % 7
-        if self.state is enemy.state_attack:
-            print('attack!')
         if self.frame is 0:
             if self.state is enemy.state_attack:
                 self.state = enemy.state_stand
@@ -134,15 +152,24 @@ def draw():
         if phase[-1].x is phrase.original_pos:
             phase.pop()
 
+    H.act()
     H.draw()
 
     update_canvas()
 
 def handle_events():
+    global H
     eve = get_events()
     for e in eve:
         if e.type is SDL_QUIT:
+            print('quit')
             game_framework.quit()
+        if e.key is SDLK_w:
+            if H.jump is True :
+                return
+            H.jump = True
+            H.state = hero.h_jump
+
 
 def update():
     global E
@@ -180,6 +207,18 @@ def update():
             phase += [phrase(stage_start)]
             E_appear_time_ratio -= 0.1
             E_appear_speed = E_appear_time_ratio
+
+    if H.jump is True:
+        if H.y < 250:
+            H.jump = False
+            H.y = 250
+            H.state = hero.h_stand
+            H.frame = 0
+            H.ascend = True
+        if H.y > 400:
+            H.y = 400
+            H.ascend = False
+
     delay(0.03)
 
 def pause():
