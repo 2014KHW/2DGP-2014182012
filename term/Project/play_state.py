@@ -187,6 +187,7 @@ def handle_events():
         if e.key is SDLK_j:
             if H.state is hero.h_stand:
                 return
+            H.attack_type = random.randint(0, 1)
             H.state = hero.h_attack[H.attack_type]
             H.frame = 0
 
