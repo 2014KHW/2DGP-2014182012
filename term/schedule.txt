@@ -98,8 +98,6 @@ enemy 사망				O
 	-공격을 위한 점프 개발		O
 	(준비자세 없고, 높낮이 일정)
 
-*화면 흔들림 효과
-
 *모든 공격에 대한 충돌체크
 	-player공격
 	-level1
@@ -119,6 +117,9 @@ enemy 사망				O
 *QUIT_BUTTON
 
 || PLAY_STATE ||
+
+*화면 흔들림 효과
+
 *player 이동 구현
 
 *enemy 이동 구현
