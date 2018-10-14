@@ -3,6 +3,7 @@ import game_framework
 import score_state
 import random
 import time
+import math
 
 #상수 선언 부분
 stage_start = 25
@@ -73,6 +74,7 @@ class enemy:
         self.state_changed_time = 0
         self.state_elapsed_time = 0
         self.attack_time = random.uniform(0.1, 2)
+        self.attack_object = []
         if len(enemy.image) is 0:
             enemy.image += [load_image('../Pics/enemy_level1.png')]
             enemy.image += [load_image('../Pics/enemy_level2.png')]
@@ -89,6 +91,7 @@ class enemy:
             if self.state is enemy.state_attack:
                 self.state = enemy.state_stand
                 self.state_changed_time = time.time()
+                self.attack_object += [arrow(self.x, self.y, self.lev)]
 
     def appear(self):
         enemy.image[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
@@ -100,6 +103,37 @@ class enemy:
             self.y = 250
             self.state = enemy.state_stand
             self.state_changed_time = time.time()
+
+class arrow:
+    image = []
+    def __init__(self, og_x, og_y, lev):
+        self.x, self.y = og_x, og_y
+        self.level = lev
+        self.speed = 5
+        if H.x < self.x:
+            self.opposite = True
+        else:
+            self.opposite = False
+
+        self.del_sign = False
+        self.dif_x = H.x - self.x
+        self.dif_y = H.y - self.y
+        self.dist = math.sqrt(self.dif_x**2 + self.dif_y**2)
+
+        if len(arrow.image) is 0:
+            arrow.image += [load_image('../Pics/enemy1_attack.png')]
+            arrow.image += [load_image('../Pics/enemy2_attack.png')]
+    def draw(self):
+        if self.opposite is True:
+            arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, 0, 'v', self.x, self.y, 50, 50)
+        else:
+            arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, 0, '', self.x, self.y, 50, 50)
+
+    def update(self):
+        self.x += self.dif_x * self.speed/self.dist
+        self.y += self.dif_y * self.speed/self.dist
+        if self.x > 800 - 25 or self.x < 0 + 25 : self.del_sign = True
+        if self.y > 600 - 25 or self.y < 250 : self.del_sign = True
 
 class phrase:
     image = None
@@ -159,6 +193,9 @@ def draw():
     if len(E) is not 0:
         for ene in E:
             ene.draw()
+            if len(ene.attack_object) is not 0:
+                for obj in ene.attack_object:
+                    obj.draw()
 
     if len(phase) is not 0:
         for ph in phase:
@@ -218,6 +255,12 @@ def update():
                     if ene.state_elapsed_time - ene.state_changed_time >= ene.attack_ready_time:
                         ene.state = enemy.state_attack
                         ene.state_changed_time = time.time()
+                if len(ene.attack_object) is not 0:
+                    for obj in ene.attack_object:
+                        obj.update()
+                    for num in range(len(ene.attack_object)-1):
+                        if ene.attack_object[num].del_sign is True:
+                            ene.attack_object.pop(num)
 
     if stage_state is stage_pass:
         if stage_elapsed_time - stage_start_time >= stage_pass:
