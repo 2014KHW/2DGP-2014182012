@@ -50,7 +50,7 @@ class hero:
         self.attack_type = random.randint(0, 1)
         self.attack_frame = 0
         #히트박스
-        #self.body_box = rectangle(self.x, self.y-5, 7, 5)
+        self.body_box = rectangle(self.x, self.y-10, 14, 10)
         self.common_attack_box1 = rectangle(self.x + 17, self.y - 11, 17, 33)
         self.common_attack_box2 = rectangle(self.x + 4, self.y - 19, 35, 19)
         if hero.h_image is None:
@@ -182,6 +182,7 @@ class arrow:
         self.dif_y = H.y - self.y
         self.dist = math.sqrt(self.dif_x**2 + self.dif_y**2)
         self.degree = math.atan2(self.dif_y, self.dif_x)
+        self.hit_box = rectangle(self.x, self.y, 19, 4)
         if len(arrow.image) is 0:
             arrow.image += [load_image('../Pics/enemy1_attack.png')]
             arrow.image += [load_image('../Pics/enemy2_attack.png')]
@@ -191,6 +192,7 @@ class arrow:
     def update(self):
         self.x += self.dif_x * self.speed/self.dist
         self.y += self.dif_y * self.speed/self.dist
+        self.hit_box = rectangle(self.x, self.y, 19, 4)
         if self.x > 800 - 25 or self.x < 0 + 25 : self.del_sign = True
         if self.y > 600 - 25 or self.y < 250 : self.del_sign = True
 
@@ -299,6 +301,8 @@ def update():
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
                     obj.update()# 적 공격 오브젝트 이동 부분
+                    if obj.hit_box.check_collide(H.body_box):
+                        print('hit!')
                 for num in range(len(ene.attack_object) - 1):
                     if ene.attack_object[num].del_sign is True:
                         ene.attack_object.pop(num)
