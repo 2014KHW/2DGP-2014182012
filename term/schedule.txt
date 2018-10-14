@@ -99,12 +99,14 @@ enemy 사망				O
 	(준비자세 없고, 높낮이 일정)
 
 *모든 공격에 대한 충돌체크
-	-player공격
-	-level1
-	-level2
-	-level3
+	-player공격			O
+	-level1				O
+	-level2				O
+	-level3				O
 
 (+추가) 스테이지 문구 png파일 추가	O
+(+추가) 공격 및 피격 효과 애니메이션	O
+(+추가) 적 공격 오브젝트 png		O
 
 
 
