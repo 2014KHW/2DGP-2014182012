@@ -125,7 +125,7 @@ class arrow:
             arrow.image += [load_image('../Pics/enemy2_attack.png')]
     def draw(self):
         if self.opposite is True:
-            arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, 0, 'v', self.x, self.y, 50, 50)
+            arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, 0, 'h', self.x, self.y, 50, 50)
         else:
             arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, 0, '', self.x, self.y, 50, 50)
 
