@@ -119,15 +119,13 @@ class arrow:
         self.dif_x = H.x - self.x
         self.dif_y = H.y - self.y
         self.dist = math.sqrt(self.dif_x**2 + self.dif_y**2)
-
+        self.degree = math.atan2(self.dif_y, self.dif_x)
         if len(arrow.image) is 0:
             arrow.image += [load_image('../Pics/enemy1_attack.png')]
             arrow.image += [load_image('../Pics/enemy2_attack.png')]
     def draw(self):
-        if self.opposite is True:
-            arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, 0, 'h', self.x, self.y, 50, 50)
-        else:
-            arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, 0, '', self.x, self.y, 50, 50)
+        arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, self.degree, '', self.x, self.y, 50, 50)
+
 
     def update(self):
         self.x += self.dif_x * self.speed/self.dist
