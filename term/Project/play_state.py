@@ -10,7 +10,8 @@ stage_start = 25
 stage_pass = 1
 
 class hero:
-    image = None
+    h_image = None
+    attack_image = None
     #상수 정의
     h_stand = 0
     h_jump = 75
@@ -25,12 +26,15 @@ class hero:
         self.jump = False
         self.ascend = False
         #공격 관련 변수
-        self.attack = False
+        self.attack_effect = False
         self.attack_type = random.randint(0, 1)
-        if hero.image is None:
-            hero.image = load_image('../Pics/hero.png')
+        self.attack_frame = 0
+        if hero.h_image is None:
+            hero.h_image = load_image('../Pics/hero.png')
+            hero.attack_image = load_image('../Pics/attack_effect.png')
+
     def draw(self):
-        hero.image.clip_draw(self.frame * 25, self.state, 25, 25, self.x, self.y, 50, 50)
+        hero.h_image.clip_draw(self.frame * 25, self.state, 25, 25, self.x, self.y, 50, 50)
         if self.state is hero.h_stand:
             self.frame = (self.frame + 1) % 7
         if self.state is hero.h_jump:
@@ -39,7 +43,12 @@ class hero:
             else:
                 self.frame = 6
         if self.state is hero.h_attack[self.attack_type]:
+            hero.attack_image.clip_draw(self.frame * 50, self.attack_type * 50, 50, 50, self.x + 25, self.y - 12, 75, 75)
             self.frame = (self.frame + 1) % 7
+            if self.attack_effect is True:
+                self.attack_frame = (self.frame + 1) % 4
+                if self.attack_frame is 0:
+                    self.attack_effect = False
             if self.frame is 0:
                 if self.jump is True:
                     self.state = hero.h_jump
@@ -126,7 +135,6 @@ class arrow:
     def draw(self):
         arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, self.degree, '', self.x, self.y, 50, 50)
 
-
     def update(self):
         self.x += self.dif_x * self.speed/self.dist
         self.y += self.dif_y * self.speed/self.dist
@@ -161,8 +169,10 @@ def enter():
     global ground, H, E, phase
     global stage_interval, stage_start_time, stage_state
     global E_appear_speed, E_appear_time_ratio
+    global hit
 
     ground = load_image('../Pics/ground_map.png')
+    hit = load_image('../Pics/hit_effect.png')
 
     stage_interval = 10 #스테이지 시간간격
     E_appear_speed = 1.5 #몬스터 출현 속도
