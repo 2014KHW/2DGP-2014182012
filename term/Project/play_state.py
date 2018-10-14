@@ -233,6 +233,15 @@ def update():
     global E_appear_speed, E_appear_time_ratio, stage_start_time, stage_elapsed_time
     global stage_state, phase
 
+    if len(E) is not 0:  # 적 공격 오브젝트 이동 부분
+        for ene in E:
+            if len(ene.attack_object) is not 0:
+                for obj in ene.attack_object:
+                    obj.update()
+                for num in range(len(ene.attack_object) - 1):
+                    if ene.attack_object[num].del_sign is True:
+                        ene.attack_object.pop(num)
+
     stage_elapsed_time = time.time()
     if stage_state is stage_start:
         if stage_elapsed_time - stage_start_time >= E_appear_speed:
@@ -255,12 +264,6 @@ def update():
                     if ene.state_elapsed_time - ene.state_changed_time >= ene.attack_ready_time:
                         ene.state = enemy.state_attack
                         ene.state_changed_time = time.time()
-                if len(ene.attack_object) is not 0:
-                    for obj in ene.attack_object:
-                        obj.update()
-                    for num in range(len(ene.attack_object)-1):
-                        if ene.attack_object[num].del_sign is True:
-                            ene.attack_object.pop(num)
 
     if stage_state is stage_pass:
         if stage_elapsed_time - stage_start_time >= stage_pass:
