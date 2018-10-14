@@ -16,20 +16,15 @@ class rectangle:
 
     def check_collide(self, rect):
         if self.left >= rect.left and self.left <= rect.right:
-            print('l1')
             if self.top >= rect.bottom and self.top <= rect.top: return True
             elif self.bottom >= rect.bottom and self.bottom <= rect.top: return True
         elif self.right >= rect.left and self.right <= rect.right:
-            print('r1')
             if self.top >= rect.bottom and self.top <= rect.top: return True
             elif self.bottom >= rect.bottom and self.bottom <= rect.top: return True
         elif rect.left >= self.left and rect.left <= self.right:
-            print('l2')
             if rect.top >= self.bottom and rect.top <= self.top: return True
             elif rect.bottom >= self.bottom and rect.bottom <= self.top: return True
-            print(rect.bottom, rect.top, self.bottom, self.top)
         elif rect.right >= self.left and rect.right <= self.right:
-            print('r2')
             if rect.top >= self.bottom and rect.top <= self.top: return True
             elif rect.bottom >= self.bottom and rect.bottom <= self.top: return True
         else: return False
@@ -100,6 +95,7 @@ class hero:
 
 class enemy:
     image = []
+    hit_effect = None
     #상태 상수 정의 부분
     state_appear = 10
     state_stand = 0
@@ -113,10 +109,12 @@ class enemy:
         self.x, self.y = random.randint(0+50, 800-50), 400
         self.draw_scale_x, self.draw_scale_y = 50, 200
         self.frame = 0
+        self.hit_frame = 0
         self.lev = 1
         #상태 관련 변수
         self.state = enemy.state_appear
         self.do_not_change_frame = False
+        self.do_not_change_hit_frame = False
         self.state_changed_time = 0
         self.state_elapsed_time = 0
         #공격 관련 변수
@@ -130,6 +128,8 @@ class enemy:
             enemy.image += [load_image('../Pics/enemy_level1.png')]
             enemy.image += [load_image('../Pics/enemy_level2.png')]
             enemy.image += [load_image('../Pics/enemy_level3.png')]
+        if enemy.hit_effect is None:
+            enemy.hit_effect = load_image('../Pics/hit_effect.png')
     def draw(self):
         if self.state is enemy.state_appear:
             enemy.appear(self)
@@ -143,6 +143,14 @@ class enemy:
                 self.state = enemy.state_stand
                 self.state_changed_time = time.time()
                 self.attack_object += [arrow(self.x, self.y, self.lev)]
+        if self.state is enemy.state_hit:
+            enemy.hit_effect.clip_draw(self.hit_frame * 50, 0, 50, 50, self.x, self.y, 75, 75)
+            if self.do_not_change_hit_frame is not True:
+                self.hit_frame = (self.hit_frame + 1) % 4
+            if self.hit_frame is 3:
+                self.do_not_change_hit_frame = True
+
+
 
     def appear(self):
         enemy.image[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
@@ -300,27 +308,33 @@ def update():
                 if H.common_attack_box1.check_collide(ene.head_box):
                     ene.state_changed_time = time.time()
                     ene.state = enemy.state_hit
-                    ene.frame = 0
+                    ene.frame, ene.hit_frame = 0, 0
+                    ene.do_not_change_hit_frame = False
                 elif H.common_attack_box1.check_collide(ene.body_box):
                     ene.state_changed_time = time.time()
                     ene.state = enemy.state_hit
-                    ene.frame = 0
+                    ene.frame, ene.hit_frame = 0, 0
+                    ene.do_not_change_hit_frame = False
                 elif H.common_attack_box1.check_collide(ene.legs_box):
                     ene.state_changed_time = time.time()
                     ene.state = enemy.state_hit
-                    ene.frame = 0
+                    ene.frame, ene.hit_frame = 0, 0
+                    ene.do_not_change_hit_frame = False
                 elif H.common_attack_box2.check_collide(ene.head_box):
                     ene.state_changed_time = time.time()
                     ene.state = enemy.state_hit
-                    ene.frame = 0
+                    ene.frame, ene.hit_frame = 0, 0
+                    ene.do_not_change_hit_frame = False
                 elif H.common_attack_box2.check_collide(ene.body_box):
                     ene.state_changed_time = time.time()
                     ene.state = enemy.state_hit
-                    ene.frame = 0
+                    ene.frame, ene.hit_frame = 0, 0
+                    ene.do_not_change_hit_frame = False
                 elif H.common_attack_box2.check_collide(ene.legs_box):
                     ene.state_changed_time = time.time()
                     ene.state = enemy.state_hit
-                    ene.frame = 0
+                    ene.frame, ene.hit_frame = 0, 0
+                    ene.do_not_change_hit_frame = False
 
     stage_elapsed_time = time.time()
     if stage_state is stage_start:
@@ -350,7 +364,7 @@ def update():
                     if ene.state_elapsed_time - ene.state_changed_time >= ene.hit_recovery_time:
                         ene.state = enemy.state_stand
                         ene.state_changed_time = time.time()
-                        ene.do_not_change_frame = False
+                        ene.do_not_change_hit_frame = False
 
     if stage_state is stage_pass:
         if stage_elapsed_time - stage_start_time >= stage_pass:
