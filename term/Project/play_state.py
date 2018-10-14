@@ -9,6 +9,31 @@ import math
 stage_start = 25
 stage_pass = 1
 
+class rectangle:
+    def __init__(self, x, y, size_x, size_y):
+        self.x, self.y = x, y
+        self.left, self.right, self.top, self.bottom = x-size_x, x+size_x, y+size_y, y-size_y
+
+    def check_collide(self, rect):
+        if self.left >= rect.left and self.left <= rect.right:
+            print('l1')
+            if self.top >= rect.bottom and self.top <= rect.top: return True
+            elif self.bottom >= rect.bottom and self.bottom <= rect.top: return True
+        elif self.right >= rect.left and self.right <= rect.right:
+            print('r1')
+            if self.top >= rect.bottom and self.top <= rect.top: return True
+            elif self.bottom >= rect.bottom and self.bottom <= rect.top: return True
+        elif rect.left >= self.left and rect.left <= self.right:
+            print('l2')
+            if rect.top >= self.bottom and rect.top <= self.top: return True
+            elif rect.bottom >= self.bottom and rect.bottom <= self.top: return True
+            print(rect.bottom, rect.top, self.bottom, self.top)
+        elif rect.right >= self.left and rect.right <= self.right:
+            print('r2')
+            if rect.top >= self.bottom and rect.top <= self.top: return True
+            elif rect.bottom >= self.bottom and rect.bottom <= self.top: return True
+        else: return False
+
 class hero:
     h_image = None
     attack_image = None
@@ -29,8 +54,13 @@ class hero:
         self.attack_effect = False
         self.attack_type = random.randint(0, 1)
         self.attack_frame = 0
+        #히트박스
+        #self.body_box = rectangle(self.x, self.y-5, 7, 5)
+        self.common_attack_box1 = rectangle(self.x + 17, self.y - 11, 17, 33)
+        self.common_attack_box2 = rectangle(self.x + 4, self.y - 19, 35, 19)
         if hero.h_image is None:
             hero.h_image = load_image('../Pics/hero.png')
+        if hero.attack_image is None:
             hero.attack_image = load_image('../Pics/attack_effect.png')
 
     def draw(self):
@@ -64,6 +94,9 @@ class hero:
                 self.y += 10
             if self.ascend is False:
                 self.y -= 5
+        self.body_box = rectangle(self.x, self.y - 5, 7, 5)
+        self.common_attack_box1 = rectangle(self.x, self.y, 50, 50)
+        self.common_attack_box2 = rectangle(self.x, self.y, 50, 50)
 
 class enemy:
     image = []
@@ -72,6 +105,7 @@ class enemy:
     state_stand = 0
     state_attack = 50
     state_attack_ready = 5050
+    state_hit = 75
     #시간 상수 정의 부분
     attack_ready_time = 1
     def __init__(self):
@@ -79,11 +113,17 @@ class enemy:
         self.draw_scale_x, self.draw_scale_y = 50, 200
         self.frame = 0
         self.lev = 1
+        #상태 관련 변수
         self.state = enemy.state_appear
         self.state_changed_time = 0
         self.state_elapsed_time = 0
+        #공격 관련 변수
         self.attack_time = random.uniform(0.1, 2)
         self.attack_object = []
+        #히트박스
+        self.head_box = rectangle(self.x, self.y + 4, 16, 16)
+        self.body_box = rectangle(self.x, self.y - 10, 10, 4)
+        self.legs_box = rectangle(self.x, self.y - 20, 2, 4)
         if len(enemy.image) is 0:
             enemy.image += [load_image('../Pics/enemy_level1.png')]
             enemy.image += [load_image('../Pics/enemy_level2.png')]
@@ -106,6 +146,9 @@ class enemy:
         enemy.image[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
         self.y -= 20
         self.draw_scale_y -= 20
+        self.head_box = rectangle(self.x, self.y + 4, 16, 16)
+        self.body_box = rectangle(self.x, self.y - 10, 10, 4)
+        self.legs_box = rectangle(self.x, self.y - 20, 2, 4)
         if self.draw_scale_y <= self.draw_scale_x:
             self.draw_scale_y = self.draw_scale_x
         if self.y < 250:
@@ -241,14 +284,33 @@ def update():
     global E_appear_speed, E_appear_time_ratio, stage_start_time, stage_elapsed_time
     global stage_state, phase
 
-    if len(E) is not 0:  # 적 공격 오브젝트 이동 부분
+    if len(E) is not 0:
         for ene in E:
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
-                    obj.update()
+                    obj.update()# 적 공격 오브젝트 이동 부분
                 for num in range(len(ene.attack_object) - 1):
                     if ene.attack_object[num].del_sign is True:
                         ene.attack_object.pop(num)
+            if H.state is hero.h_attack[H.attack_type]: #플레이어 공격 충돌 체크
+                if H.common_attack_box1.check_collide(ene.head_box):
+                    ene.state = enemy.state_hit
+                    print('hit')
+                elif H.common_attack_box1.check_collide(ene.body_box):
+                    ene.state = enemy.state_hit
+                    print('hit')
+                elif H.common_attack_box1.check_collide(ene.legs_box):
+                    ene.state = enemy.state_hit
+                    print('hit')
+                elif H.common_attack_box2.check_collide(ene.head_box):
+                    ene.state = enemy.state_hit
+                    print('hit')
+                elif H.common_attack_box2.check_collide(ene.body_box):
+                    ene.state = enemy.state_hit
+                    print('hit')
+                elif H.common_attack_box2.check_collide(ene.legs_box):
+                    ene.state = enemy.state_hit
+                    print('hit')
 
     stage_elapsed_time = time.time()
     if stage_state is stage_start:
