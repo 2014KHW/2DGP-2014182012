@@ -21,12 +21,6 @@ class rectangle:
         elif self.right >= rect.left and self.right <= rect.right:
             if self.top >= rect.bottom and self.top <= rect.top: return True
             elif self.bottom >= rect.bottom and self.bottom <= rect.top: return True
-        elif rect.left >= self.left and rect.left <= self.right:
-            if rect.top >= self.bottom and rect.top <= self.top: return True
-            elif rect.bottom >= self.bottom and rect.bottom <= self.top: return True
-        elif rect.right >= self.left and rect.right <= self.right:
-            if rect.top >= self.bottom and rect.top <= self.top: return True
-            elif rect.bottom >= self.bottom and rect.bottom <= self.top: return True
         else: return False
 
 class hero:
@@ -86,15 +80,36 @@ class hero:
                         self.frame = 6
                 else:
                     self.state = hero.h_stand
-    def act(self):
+    def update(self):
+        global E
         if self.state is hero.h_jump:
             if self.ascend is True:
                 self.y += 10
             if self.ascend is False:
                 self.y -= 5
+        if self.go_R is True:
+            self.x += 5
+        if self.go_L is True:
+            self.x -= 5
         self.body_box = rectangle(self.x, self.y - 5, 7, 5)
-        self.common_attack_box1 = rectangle(self.x, self.y, 50, 50)
-        self.common_attack_box2 = rectangle(self.x, self.y, 50, 50)
+        self.common_attack_box1 = rectangle(self.x+25, self.y, 50, 50)
+        self.common_attack_box2 = rectangle(self.x, self.y+25, 50, 50)
+        if self.state is hero.h_attack[self.attack_type]:
+            if len(E) is not 0:
+                for ene in E:
+                    if len(ene.attack_object) is not 0:
+                        for obj in ene.attack_object:
+                            print(obj.x, obj.y)
+                            if self.common_attack_box1.check_collide(obj.body_box): obj.del_sign = True
+                            if self.common_attack_box2.check_collide(obj.body_box): obj.del_sign = True
+                            if obj.hit_box.check_collide(H.body_box):
+                                pass
+                                # print('hit!')
+                        for num in range(len(ene.attack_object) - 1):
+                            if ene.attack_object[num].del_sign is True:
+                                ene.attack_object.pop(num)
+
+
 
 class enemy:
     image = []
@@ -186,6 +201,7 @@ class arrow:
         self.dist = math.sqrt(self.dif_x**2 + self.dif_y**2)
         self.degree = math.atan2(self.dif_y, self.dif_x)
         self.hit_box = rectangle(self.x, self.y, 19, 4)
+        self.body_box = rectangle(self.x, self.y, 20, 20)
         if len(arrow.image) is 0:
             arrow.image += [load_image('../Pics/enemy1_attack.png')]
             arrow.image += [load_image('../Pics/enemy2_attack.png')]
@@ -196,6 +212,7 @@ class arrow:
         self.x += self.dif_x * self.speed/self.dist
         self.y += self.dif_y * self.speed/self.dist
         self.hit_box = rectangle(self.x, self.y, 19, 4)
+        self.body_box = rectangle(self.x, self.y, 50, 50)
         if self.x > 800 - 25 or self.x < 0 + 25 : self.del_sign = True
         if self.y > 600 - 25 or self.y < 250 : self.del_sign = True
 
@@ -261,7 +278,8 @@ def draw():
             ene.draw()
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
-                    obj.draw()
+                    if obj.del_sign is False:
+                        obj.draw()
 
     if len(phase) is not 0:
         for ph in phase:
@@ -269,7 +287,6 @@ def draw():
         if phase[-1].x is phrase.original_pos:
             phase.pop()
 
-    H.act()
     H.draw()
 
     update_canvas()
@@ -312,9 +329,6 @@ def update():
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
                     obj.update()# 적 공격 오브젝트 이동 부분
-                    if obj.hit_box.check_collide(H.body_box):
-                        pass
-                        #print('hit!')
                 for num in range(len(ene.attack_object) - 1):
                     if ene.attack_object[num].del_sign is True:
                         ene.attack_object.pop(num)
@@ -356,7 +370,8 @@ def update():
     if stage_state is stage_start:
         if stage_elapsed_time - stage_start_time >= E_appear_speed:
             E_appear_speed += E_appear_time_ratio
-            E += [enemy()]
+            if len(E) is 0:
+                E += [enemy()]
         if stage_elapsed_time - stage_start_time >= stage_start:
             stage_start_time = time.time()
             stage_elapsed_time = time.time()
@@ -401,10 +416,8 @@ def update():
         if H.y > hero.h_maxheight:
             H.y = hero.h_maxheight
             H.ascend = False
-    if H.go_L is True:
-        H.x -= 5
-    if H.go_R is True:
-        H.x += 5
+
+    H.update()
 
     delay(0.03)
 
