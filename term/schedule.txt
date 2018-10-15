@@ -122,7 +122,7 @@ enemy 사망				O
 
 *화면 흔들림 효과
 
-*player 이동 구현
+*player 이동 구현			O
 
 *enemy 이동 구현
 	-level1
