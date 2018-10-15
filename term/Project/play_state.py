@@ -46,6 +46,7 @@ class hero:
         #이동 관련 변수
         self.go_L = False
         self.go_R = False
+        self.look = False
         #히트박스
         self.body_box = rectangle(self.x, self.y-10, 14, 10)
         self.common_attack_box1 = rectangle(self.x + 17, self.y - 11, 17, 33)
@@ -56,7 +57,10 @@ class hero:
             hero.attack_image = load_image('../Pics/attack_effect.png')
 
     def draw(self):
-        hero.h_image.clip_draw(self.frame * 25, self.state, 25, 25, self.x, self.y, 50, 50)
+        if self.look is False:
+            hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+        else:
+            hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
         if self.state is hero.h_stand:
             self.frame = (self.frame + 1) % 7
         if self.state is hero.h_jump:
@@ -65,7 +69,10 @@ class hero:
             else:
                 self.frame = 6
         if self.state is hero.h_attack[self.attack_type]:
-            hero.attack_image.clip_draw(self.frame * 50, self.attack_type * 50, 50, 50, self.x + 25, self.y - 12, 75, 75)
+            if self.look is False:
+                hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, '', self.x + 25, self.y - 12, 75, 75)
+            else:
+                hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, 'h', self.x - 25, self.y - 12, 75, 75)
             self.frame = (self.frame + 1) % 7
             if self.attack_effect is True:
                 self.attack_frame = (self.frame + 1) % 4
@@ -89,11 +96,18 @@ class hero:
                 self.y -= 5
         if self.go_R is True:
             self.x += 5
+            self.look = False
         if self.go_L is True:
             self.x -= 5
-        self.body_box = rectangle(self.x, self.y - 5, 7, 5)
-        self.common_attack_box1 = rectangle(self.x+25, self.y, 50, 50)
-        self.common_attack_box2 = rectangle(self.x, self.y+25, 50, 50)
+            self.look = True
+        if self.look is False:
+            self.body_box = rectangle(self.x, self.y - 5, 7, 5)
+            self.common_attack_box1 = rectangle(self.x + 25, self.y, 25, 20)
+            self.common_attack_box2 = rectangle(self.x + 10, self.y - 25, 10, 10)
+        else:
+            self.body_box = rectangle(self.x, self.y - 5, 7, 5)
+            self.common_attack_box1 = rectangle(self.x - 25, self.y, 25, 20)
+            self.common_attack_box2 = rectangle(self.x - 10, self.y - 25, 10, 10)
         if self.state is hero.h_attack[self.attack_type]:
             if len(E) is not 0:
                 for ene in E:
@@ -370,8 +384,7 @@ def update():
     if stage_state is stage_start:
         if stage_elapsed_time - stage_start_time >= E_appear_speed:
             E_appear_speed += E_appear_time_ratio
-            if len(E) is 0:
-                E += [enemy()]
+            E += [enemy()]
         if stage_elapsed_time - stage_start_time >= stage_start:
             stage_start_time = time.time()
             stage_elapsed_time = time.time()
