@@ -49,6 +49,9 @@ class hero:
         self.attack_effect = False
         self.attack_type = random.randint(0, 1)
         self.attack_frame = 0
+        #이동 관련 변수
+        self.go_L = False
+        self.go_R = False
         #히트박스
         self.body_box = rectangle(self.x, self.y-10, 14, 10)
         self.common_attack_box1 = rectangle(self.x + 17, self.y - 11, 17, 33)
@@ -290,6 +293,14 @@ def handle_events():
             H.attack_type = random.randint(0, 1)
             H.state = hero.h_attack[H.attack_type]
             H.frame = 0
+        if (e.type, e.key) == (SDL_KEYDOWN, SDLK_a):
+            H.go_L = True
+        if (e.type, e.key) == (SDL_KEYDOWN, SDLK_d) :
+            H.go_R = True
+        if (e.type, e.key) == (SDL_KEYUP, SDLK_a):
+            H.go_L = False
+        if (e.type, e.key) == (SDL_KEYUP, SDLK_d) :
+            H.go_R = False
 
 def update():
     global E
@@ -302,7 +313,8 @@ def update():
                 for obj in ene.attack_object:
                     obj.update()# 적 공격 오브젝트 이동 부분
                     if obj.hit_box.check_collide(H.body_box):
-                        print('hit!')
+                        pass
+                        #print('hit!')
                 for num in range(len(ene.attack_object) - 1):
                     if ene.attack_object[num].del_sign is True:
                         ene.attack_object.pop(num)
@@ -389,6 +401,10 @@ def update():
         if H.y > hero.h_maxheight:
             H.y = hero.h_maxheight
             H.ascend = False
+    if H.go_L is True:
+        H.x -= 5
+    if H.go_R is True:
+        H.x += 5
 
     delay(0.03)
 
