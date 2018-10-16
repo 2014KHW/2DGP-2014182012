@@ -243,17 +243,6 @@ class enemy:
             enemy.state_attack: self.update_attack
         }
 
-        if self.go_R is True:
-            self.x = min(800, self.x + 5)
-            if self.x is 800:
-                self.go_R = False
-                self.go_L = True
-        if self.go_L is True:
-            self.x = max(0, self.x - 5)
-            if self.x is 0:
-                self.go_L = False
-                self.go_R = True
-
         self.state_elapsed_time = time.time()
         if self.state is not enemy.state_attack and self.state is not enemy.state_appear:
             states[self.state]()
@@ -266,6 +255,16 @@ class enemy:
             self.state_changed_time = time.time()
             self.do_not_change_hit_frame = False
     def update_move(self):
+        if self.go_R is True:
+            self.x = min(800, self.x + 5)
+            if self.x is 800:
+                self.go_R = False
+                self.go_L = True
+        if self.go_L is True:
+            self.x = max(0, self.x - 5)
+            if self.x is 0:
+                self.go_L = False
+                self.go_R = True
         if self.state_elapsed_time - self.state_changed_time >= self.move_time:
             self.state = enemy.state_stand
             self.go_R = False
