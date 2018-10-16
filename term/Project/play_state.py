@@ -28,6 +28,7 @@ class hero:
     attack_image = None
     #상수 정의
     h_stand = 0
+    h_move = 25
     h_jump = 75
     h_attack = [100, 125]
     h_maxheight = 400
@@ -61,15 +62,15 @@ class hero:
             hero.h_stand: self.draw_stand,
             hero.h_attack[0]: self.draw_attack,
             hero.h_attack[1]: self.draw_attack,
-            hero.h_jump: self.draw_jump
+            hero.h_jump: self.draw_jump,
+            hero.h_move: self.draw_stand
         }
         if self.look is False:
             hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
         else:
             hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
-
+        print(self.state)
         states[self.state]()
-
     def draw_stand(self):
         self.frame = (self.frame + 1) % 7
     def draw_attack(self):
@@ -107,9 +108,22 @@ class hero:
         if self.go_R is True:
             self.x += 5
             self.look = False
+            if self.state is hero.h_stand:
+                self.state = hero.h_move
         if self.go_L is True:
             self.x -= 5
             self.look = True
+            if self.state is hero.h_stand:
+                self.state = hero.h_move
+        if self.y < hero.h_minheight:
+            self.jump = False
+            self.y = hero.h_minheight
+            self.state = hero.h_stand
+            self.frame = 0
+            self.ascend = True
+        if self.y > hero.h_maxheight:
+            self.y = hero.h_maxheight
+            self.ascend = False
 
         self.init_hit_boxes()
         self.check_hit_attack_with_object()
@@ -342,12 +356,26 @@ def handle_events():
             H.frame = 0
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_a):
             H.go_L = True
+            if H.state is hero.h_stand:
+                H.state = hero.h_move
+                H.frame = 0
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_d) :
             H.go_R = True
+            if H.state is hero.h_stand:
+                H.state = hero.h_move
+                H.frame = 0
         if (e.type, e.key) == (SDL_KEYUP, SDLK_a):
             H.go_L = False
+            if (H.go_L, H.go_R) == (False, False):
+                if H.state is hero.h_move:
+                    H.state = hero.h_stand
+                    H.frame = 0
         if (e.type, e.key) == (SDL_KEYUP, SDLK_d) :
             H.go_R = False
+            if (H.go_L, H.go_R) == (False, False):
+                if H.state is hero.h_move:
+                    H.state = hero.h_stand
+                    H.frame = 0
 
 def update():
     global E
@@ -435,16 +463,6 @@ def update():
             E_appear_time_ratio -= 0.1
             E_appear_speed = E_appear_time_ratio
 
-    if H.jump is True:
-        if H.y < hero.h_minheight:
-            H.jump = False
-            H.y = hero.h_minheight
-            H.state = hero.h_stand
-            H.frame = 0
-            H.ascend = True
-        if H.y > hero.h_maxheight:
-            H.y = hero.h_maxheight
-            H.ascend = False
 
     H.update()
 
