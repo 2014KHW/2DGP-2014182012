@@ -188,13 +188,7 @@ class enemy:
                 self.state = enemy.state_stand
                 self.state_changed_time = time.time()
                 self.attack_object += [arrow(self.x, self.y, self.lev)]
-        if self.state is enemy.state_hit:
-            enemy.hit_effect.clip_draw(self.hit_frame * 50, 0, 50, 50, self.x, self.y, 75, 75)
-            if self.do_not_change_hit_frame is not True:
-                self.hit_frame = (self.hit_frame + 1) % 4
-            if self.hit_frame is 3:
-                self.do_not_change_hit_frame = True
-
+        self.draw_hit_effect()
 
 
     def appear(self):
@@ -210,6 +204,15 @@ class enemy:
             self.y = 250
             self.state = enemy.state_stand
             self.state_changed_time = time.time()
+
+    def draw_hit_effect(self):
+        if self.state is enemy.state_hit:
+            enemy.hit_effect.clip_draw(self.hit_frame * 50, 0, 50, 50, self.x, self.y, 75, 75)
+            if self.do_not_change_hit_frame is not True:
+                self.hit_frame = (self.hit_frame + 1) % 4
+            if self.hit_frame is 3:
+                self.do_not_change_hit_frame = True
+
 
 class arrow:
     image = []
