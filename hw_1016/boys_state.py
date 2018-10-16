@@ -124,6 +124,7 @@ def enter():
         b.x = e['x']
         b.y = e['y']
         b.speed = e['speed']
+        boy += [b]
     print(data)
 
     grass = Grass()
