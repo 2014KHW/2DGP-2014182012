@@ -186,6 +186,7 @@ class enemy:
         self.stand_time = random.uniform(1, 2)
         self.go_R = False
         self.go_L = False
+        self.speed = random.randint(1, 6)
         #히트박스
         self.head_box = rectangle(self.x, self.y + 4, 16, 16)
         self.body_box = rectangle(self.x, self.y - 10, 10, 4)
@@ -256,12 +257,12 @@ class enemy:
             self.do_not_change_hit_frame = False
     def update_move(self):
         if self.go_R is True:
-            self.x = min(800, self.x + 5)
+            self.x = min(800, self.x + self.speed)
             if self.x is 800:
                 self.go_R = False
                 self.go_L = True
         if self.go_L is True:
-            self.x = max(0, self.x - 5)
+            self.x = max(0, self.x - self.speed)
             if self.x is 0:
                 self.go_L = False
                 self.go_R = True
