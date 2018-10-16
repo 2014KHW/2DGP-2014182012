@@ -44,6 +44,7 @@ class hero:
         self.attack_effect = False
         self.attack_type = random.randint(0, 1)
         self.attack_frame = 0
+        self.attack_num = 0
         #이동 관련 변수
         self.go_L = False
         self.go_R = False
@@ -148,8 +149,21 @@ class hero:
                 for ene in E:
                     if len(ene.attack_object) is not 0:
                         for obj in ene.attack_object:
-                            if self.common_attack_box1.check_collide(obj.body_box): obj.del_sign = True
-                            if self.common_attack_box2.check_collide(obj.body_box): obj.del_sign = True
+                            if obj.attack_num is self.attack_num: continue
+                            elif obj.attack_num is (self.attack_num + 1) % 10: continue
+                            elif obj.attack_num is (self.attack_num + 2) % 10: continue
+                            if self.common_attack_box1.check_collide(obj.body_box):
+                                if obj.level is 1:
+                                    obj.del_sign = True
+                                else:
+                                    obj.level -= 1
+                                obj.attack_num = (self.attack_num+1)%10
+                            elif self.common_attack_box2.check_collide(obj.body_box):
+                                if obj.level is 1:
+                                    obj.del_sign = True
+                                else:
+                                    obj.level -= 1
+                                obj.attack_num = (self.attack_num+1)%10
                             if obj.hit_box.check_collide(H.body_box):
                                 pass
                                 # print('hit!')
@@ -311,6 +325,7 @@ class arrow:
         self.x, self.y = og_x, og_y
         self.level = lev
         self.speed = 5
+        self.attack_num = -1
         if H.x < self.x:
             self.opposite = True
         else:
@@ -323,6 +338,7 @@ class arrow:
         self.degree = math.atan2(self.dif_y, self.dif_x)
         self.hit_box = rectangle(self.x, self.y, 19, 4)
         self.body_box = rectangle(self.x, self.y, 20, 20)
+
         if len(arrow.image) is 0:
             arrow.image += [load_image('../Pics/enemy1_attack.png')]
             arrow.image += [load_image('../Pics/enemy2_attack.png')]
@@ -431,6 +447,8 @@ def handle_events():
             H.attack_type = random.randint(0, 1)
             H.state = hero.h_attack[H.attack_type]
             H.frame = 0
+            H.attack_num = (H.attack_num + 1)%10
+            print(H.attack_num)
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_a):
             H.go_L = True
             if H.state is hero.h_stand:
