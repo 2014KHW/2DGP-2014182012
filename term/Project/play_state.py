@@ -57,36 +57,46 @@ class hero:
             hero.attack_image = load_image('../Pics/attack_effect.png')
 
     def draw(self):
+        states = {
+            hero.h_stand: self.draw_stand,
+            hero.h_attack[0]: self.draw_attack,
+            hero.h_attack[1]: self.draw_attack,
+            hero.h_jump: self.draw_jump
+        }
         if self.look is False:
             hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
         else:
             hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
-        if self.state is hero.h_stand:
-            self.frame = (self.frame + 1) % 7
-        if self.state is hero.h_jump:
-            if self.ascend is True:
-                self.frame = (self.frame + 1) % 7
-            else:
-                self.frame = 6
-        if self.state is hero.h_attack[self.attack_type]:
-            if self.look is False:
-                hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, '', self.x + 25, self.y - 12, 75, 75)
-            else:
-                hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, 'h', self.x - 25, self.y - 12, 75, 75)
-            self.frame = (self.frame + 1) % 7
-            if self.attack_effect is True:
-                self.attack_frame = (self.frame + 1) % 4
-                if self.attack_frame is 0:
-                    self.attack_effect = False
-            if self.frame is 0:
-                if self.jump is True:
-                    self.state = hero.h_jump
-                    if self.ascend is True:
-                        self.frame = 0
-                    else:
-                        self.frame = 6
+
+        states[self.state]()
+
+    def draw_stand(self):
+        self.frame = (self.frame + 1) % 7
+    def draw_attack(self):
+        self.frame = (self.frame + 1) % 7
+        if self.look is False:
+            hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, '', self.x + 25, self.y - 12, 75, 75)
+        else:
+            hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, 'h', self.x - 25, self.y - 12, 75, 75)
+
+        if self.attack_effect is True:
+            self.attack_frame = (self.frame + 1) % 4
+            if self.attack_frame is 0:
+                self.attack_effect = False
+        if self.frame is 0:
+            if self.jump is True:
+                self.state = hero.h_jump
+                if self.ascend is True:
+                    self.frame = 0
                 else:
-                    self.state = hero.h_stand
+                    self.frame = 6
+            else:
+                self.state = hero.h_stand
+    def draw_jump(self):
+        if self.ascend is True:
+            self.frame = (self.frame + 1) % 7
+        else:
+            self.frame = 6
     def update(self):
         global E
         if self.state is hero.h_jump:
@@ -100,6 +110,10 @@ class hero:
         if self.go_L is True:
             self.x -= 5
             self.look = True
+
+        self.init_hit_boxes()
+        self.check_hit_attack_with_object()
+    def init_hit_boxes(self):
         if self.look is False:
             self.body_box = rectangle(self.x, self.y - 5, 7, 5)
             self.common_attack_box1 = rectangle(self.x + 25, self.y, 25, 20)
@@ -108,12 +122,13 @@ class hero:
             self.body_box = rectangle(self.x, self.y - 5, 7, 5)
             self.common_attack_box1 = rectangle(self.x - 25, self.y, 25, 20)
             self.common_attack_box2 = rectangle(self.x - 10, self.y - 25, 10, 10)
+    def check_hit_attack_with_object(self):
+        global  E
         if self.state is hero.h_attack[self.attack_type]:
             if len(E) is not 0:
                 for ene in E:
                     if len(ene.attack_object) is not 0:
                         for obj in ene.attack_object:
-                            print(obj.x, obj.y)
                             if self.common_attack_box1.check_collide(obj.body_box): obj.del_sign = True
                             if self.common_attack_box2.check_collide(obj.body_box): obj.del_sign = True
                             if obj.hit_box.check_collide(H.body_box):
@@ -122,8 +137,6 @@ class hero:
                         for num in range(len(ene.attack_object) - 1):
                             if ene.attack_object[num].del_sign is True:
                                 ene.attack_object.pop(num)
-
-
 
 class enemy:
     image = []
