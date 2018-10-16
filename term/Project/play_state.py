@@ -6,7 +6,7 @@ import time
 import math
 
 #상수 선언 부분
-stage_start = 25
+stage_start = 50
 stage_pass = 1
 
 class rectangle:
@@ -158,6 +158,7 @@ class enemy:
     #상태 상수 정의 부분
     state_appear = 10
     state_stand = 0
+    state_move = 25
     state_attack = 50
     state_attack_ready = 5050
     state_hit = 75
@@ -169,16 +170,22 @@ class enemy:
         self.draw_scale_x, self.draw_scale_y = 50, 200
         self.frame = 0
         self.hit_frame = 0
-        self.lev = 1
+        self.lev = random.randint(1, 2)
         #상태 관련 변수
         self.state = enemy.state_appear
         self.do_not_change_frame = False
         self.do_not_change_hit_frame = False
+        self.state_begin_stand_time = 0
         self.state_changed_time = 0
         self.state_elapsed_time = 0
         #공격 관련 변수
         self.attack_time = random.uniform(0.1, 2)
         self.attack_object = []
+        #이동 관련 변수
+        self.move_time = random.uniform(0.1, 0.5)
+        self.stand_time = random.uniform(1, 2)
+        self.go_R = False
+        self.go_L = False
         #히트박스
         self.head_box = rectangle(self.x, self.y + 4, 16, 16)
         self.body_box = rectangle(self.x, self.y - 10, 10, 4)
@@ -197,27 +204,27 @@ class enemy:
         enemy.image[self.lev - 1].clip_draw(self.frame * 25, self.state%5000, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
         if self.do_not_change_frame is not True:
             self.frame = (self.frame + 1) % 7
-        if self.frame is 0:
-            if self.state is enemy.state_attack:
-                self.state = enemy.state_stand
-                self.state_changed_time = time.time()
-                self.attack_object += [arrow(self.x, self.y, self.lev)]
+            self.update_attack()
         self.draw_hit_effect()
 
-
+    def update_hitbox(self):
+        self.head_box = rectangle(self.x, self.y + 4, 16, 16)
+        self.body_box = rectangle(self.x, self.y - 10, 10, 4)
+        self.legs_box = rectangle(self.x, self.y - 20, 2, 4)
     def appear(self):
         enemy.image[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
         self.y -= 20
         self.draw_scale_y -= 20
-        self.head_box = rectangle(self.x, self.y + 4, 16, 16)
-        self.body_box = rectangle(self.x, self.y - 10, 10, 4)
-        self.legs_box = rectangle(self.x, self.y - 20, 2, 4)
+
+        self.update_hitbox()
+
         if self.draw_scale_y <= self.draw_scale_x:
             self.draw_scale_y = self.draw_scale_x
         if self.y < 250:
             self.y = 250
             self.state = enemy.state_stand
             self.state_changed_time = time.time()
+            self.state_begin_stand_time = time.time()
 
     def draw_hit_effect(self):
         if self.state is enemy.state_hit:
@@ -227,6 +234,71 @@ class enemy:
             if self.hit_frame is 3:
                 self.do_not_change_hit_frame = True
 
+    def update(self):
+        states = {
+            enemy.state_hit: self.update_hit,
+            enemy.state_move: self.update_move,
+            enemy.state_stand: self.update_stand,
+            enemy.state_attack_ready: self.update_attack_ready,
+            enemy.state_attack: self.update_attack
+        }
+
+        if self.go_R is True:
+            self.x = min(800, self.x + 5)
+            if self.x is 800:
+                self.go_R = False
+                self.go_L = True
+        if self.go_L is True:
+            self.x = max(0, self.x - 5)
+            if self.x is 0:
+                self.go_L = False
+                self.go_R = True
+
+        self.state_elapsed_time = time.time()
+        if self.state is not enemy.state_attack and self.state is not enemy.state_appear:
+            states[self.state]()
+
+        self.update_hitbox()
+
+    def update_hit(self):
+        if self.state_elapsed_time - self.state_changed_time >= self.hit_recovery_time:
+            self.state = enemy.state_stand
+            self.state_changed_time = time.time()
+            self.do_not_change_hit_frame = False
+    def update_move(self):
+        if self.state_elapsed_time - self.state_changed_time >= self.move_time:
+            self.state = enemy.state_stand
+            self.go_R = False
+            self.go_L = False
+            self.frame = 0
+            self.state_changed_time = time.time()
+            self.state_begin_stand_time = time.time()
+    def update_stand(self):
+        if self.state_elapsed_time - self.state_changed_time >= self.attack_time:
+            self.state = enemy.state_attack_ready
+            self.state_changed_time = time.time()
+            self.frame = 0
+            self.do_not_change_frame = True
+        if self.state_elapsed_time - self.state_begin_stand_time >= self.stand_time:
+            self.state = enemy.state_move
+            self.frame = 0
+            if random.randint(0, 1):
+                self.go_L = True
+            else:
+                self.go_R = True
+            self.state_changed_time = time.time()
+    def update_attack_ready(self):
+        if self.state_elapsed_time - self.state_changed_time >= self.attack_ready_time:
+            self.state = enemy.state_attack
+            self.state_changed_time = time.time()
+            self.do_not_change_frame = False
+    def update_attack(self):
+        if self.state is not enemy.state_attack:
+            return
+        if self.frame is 0:
+            self.state = enemy.state_stand
+            self.state_changed_time = time.time()
+            self.attack_object += [arrow(self.x, self.y, self.lev)]
 
 class arrow:
     image = []
@@ -295,7 +367,7 @@ def enter():
 
     stage_interval = 10 #스테이지 시간간격
     E_appear_speed = 1.5 #몬스터 출현 속도
-    E_appear_time_ratio = 1.5#몬스터 출현 속도 증가량
+    E_appear_time_ratio = 10#몬스터 출현 속도 증가량
     stage_start_time = time.time() #스테이지 시작 시간
     stage_state = stage_start
 
@@ -436,23 +508,7 @@ def update():
             phase += [phrase(stage_pass)]
         if len(E) is not 0: #적 공격 모션으로 전환해주는 부분
             for ene in E:
-                ene.state_elapsed_time = time.time()
-                if ene.state is enemy.state_stand:
-                    if ene.state_elapsed_time - ene.state_changed_time >= ene.attack_time:
-                        ene.state = enemy.state_attack_ready
-                        ene.state_changed_time = time.time()
-                        ene.frame = 0
-                        ene.do_not_change_frame = True
-                elif ene.state is enemy.state_attack_ready:
-                    if ene.state_elapsed_time - ene.state_changed_time >= ene.attack_ready_time:
-                        ene.state = enemy.state_attack
-                        ene.state_changed_time = time.time()
-                        ene.do_not_change_frame = False
-                elif ene.state is enemy.state_hit:
-                    if ene.state_elapsed_time - ene.state_changed_time >= ene.hit_recovery_time:
-                        ene.state = enemy.state_stand
-                        ene.state_changed_time = time.time()
-                        ene.do_not_change_hit_frame = False
+                ene.update()
 
     if stage_state is stage_pass:
         if stage_elapsed_time - stage_start_time >= stage_pass:
