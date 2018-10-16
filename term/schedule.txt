@@ -125,9 +125,9 @@ enemy 사망				O
 *player 이동 구현			O
 
 *enemy 이동 구현
-	-level1
-	-level2
-	-level3
+	-level1				O
+	-level2				O
+	-level3				O
 
 *인터페이스
 	-HP bar
