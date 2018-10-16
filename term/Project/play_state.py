@@ -69,7 +69,7 @@ class hero:
             hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
         else:
             hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
-        print(self.state)
+
         states[self.state]()
     def draw_stand(self):
         self.frame = (self.frame + 1) % 7
@@ -81,10 +81,15 @@ class hero:
             hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, 'h', self.x - 25, self.y - 12, 75, 75)
 
         if self.attack_effect is True:
-            self.attack_frame = (self.frame + 1) % 4
+            self.attack_frame = (self.attack_frame + 1) % 4
             if self.attack_frame is 0:
                 self.attack_effect = False
-        if self.frame is 0:
+        if self.jump is True:
+            if self.ascend is True:
+                self.y += 2
+            else:
+                self.y -= 2
+        if self.frame is 0 or self.y is 250:
             if self.jump is True:
                 self.state = hero.h_jump
                 if self.ascend is True:
@@ -421,7 +426,7 @@ def handle_events():
             H.state = hero.h_jump
             H.frame = 0
         if e.key is SDLK_j:
-            if H.state is hero.h_stand:
+            if H.state is hero.h_stand or H.state is hero.h_move:
                 return
             H.attack_type = random.randint(0, 1)
             H.state = hero.h_attack[H.attack_type]
