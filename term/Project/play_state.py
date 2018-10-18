@@ -378,11 +378,12 @@ class phrase:
             self.x = phrase.original_pos
 
 def enter():
-    global ground, H, E, phase
+    global sky, ground, H, E, phase
     global stage_interval, stage_start_time, stage_state
     global E_appear_speed, E_appear_time_ratio
     global hit
 
+    sky = load_image('../Pics/sky_background.png')
     ground = load_image('../Pics/ground_map.png')
     hit = load_image('../Pics/hit_effect.png')
 
@@ -403,12 +404,13 @@ def exit():
     del ground, H, E
 
 def draw():
-    global ground, H, E, phase
+    global sky, ground, H, E, phase
     global stage_state
 
     clear_canvas()
 
-    ground.clip_draw(300, 0, 500, 200, 400, 100, 800, 300)
+    sky.clip_draw(200, 100, 400, 450, 400, 300, 800, 600)
+    ground.clip_draw(200, 0, 600, 200, 400, 100, 800, 300)
 
     if len(E) is not 0:
         for ene in E:
