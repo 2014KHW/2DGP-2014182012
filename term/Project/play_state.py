@@ -7,8 +7,8 @@ import time
 import math
 
 #상수 선언 부분
-stage_start = 10
-stage_pass = 1
+stage_start = 1
+stage_pass = 10
 class rectangle:
     def __init__(self, x, y, size_x, size_y):
         self.x, self.y = x, y
@@ -381,7 +381,9 @@ class enemy:
             self.state_changed_time = time.time()
             self.state_begin_stand_time = time.time()
     def update_stand(self):
-        if self.state_elapsed_time - self.state_changed_time >= self.attack_time:
+        global stage_state
+        if self.state_elapsed_time - self.state_changed_time >= self.attack_time\
+                and stage_state is stage_start:
             self.state = enemy.state_attack_ready
             self.state_changed_time = time.time()
             self.frame = 0
@@ -407,7 +409,6 @@ class enemy:
     def update_attack(self):
         global stage_state
         if stage_state is stage_pass:
-            self.state = enemy.state_stand
             self.do_not_change_frame = False
             return
         if self.state is not enemy.state_attack:
