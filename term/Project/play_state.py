@@ -14,14 +14,22 @@ class rectangle:
         self.x, self.y = x, y
         self.left, self.right, self.top, self.bottom = x-size_x, x+size_x, y+size_y, y-size_y
 
-    def check_collide(self, rect):
-        if self.left >= rect.left and self.left <= rect.right:
-            if self.top >= rect.bottom and self.top <= rect.top: return True
-            elif self.bottom >= rect.bottom and self.bottom <= rect.top: return True
-        elif self.right >= rect.left and self.right <= rect.right:
-            if self.top >= rect.bottom and self.top <= rect.top: return True
-            elif self.bottom >= rect.bottom and self.bottom <= rect.top: return True
-        else: return False
+    def check_collide(self, rect, print_on=True):
+
+        if self.left > rect.right:
+            if print_on is True: print('none')
+            return False
+        if self.right < rect.left:
+            if print_on is True: print('none')
+            return False
+        if self.top < rect.bottom:
+            if print_on is True: print('none')
+            return False
+        if self.bottom > rect.top:
+            if print_on is True: print('none')
+            return False
+        if print_on is True: print('hit!')
+        return True
 
 class hero:
     h_image = None
@@ -77,7 +85,11 @@ class hero:
 
         states[self.state]()
 
-        hero.hp_image.clip_draw(0, 0, 125, 50, self.x, self.y + 50, 50, 10)
+        hero.hp_image.clip_draw(int(125 * (1-self.hp/100)), 0, 125 - int(125 * (1-self.hp/100)), 50, self.x - int(125 * (1-self.hp/100))/2, self.y + 50, 50 - int(125 * (1-self.hp/100))*0.4, 10)
+        draw_rectangle(*self.get_bb('body'))
+        #draw_rectangle(*self.get_bb('attack1'))
+        #draw_rectangle(*self.get_bb('attack2'))
+
 
     def draw_stand(self):
         self.frame = (self.frame + 1) % 7
@@ -142,13 +154,26 @@ class hero:
         self.check_hit_attack_with_object()
     def init_hit_boxes(self):
         if self.look is False:
-            self.body_box = rectangle(self.x, self.y - 5, 7, 5)
+            self.body_box = rectangle(self.x, self.y - 10, 14, 10)
             self.common_attack_box1 = rectangle(self.x + 25, self.y, 25, 20)
             self.common_attack_box2 = rectangle(self.x + 10, self.y - 25, 10, 10)
         else:
-            self.body_box = rectangle(self.x, self.y - 5, 7, 5)
+            self.body_box = rectangle(self.x, self.y - 10, 14, 10)
             self.common_attack_box1 = rectangle(self.x - 25, self.y, 25, 20)
             self.common_attack_box2 = rectangle(self.x - 10, self.y - 25, 10, 10)
+    def get_bb(self, str):
+        if str is 'body':
+            return self.x - 14, self.y - 20, self.x + 14, self.y
+        elif str is 'attack1':
+            if self.look is False:
+                return self.x, self.y - 20, self.x + 50, self.y + 20
+            else:
+                return self.x - 50, self.y - 20, self.x, self.y + 20
+        elif str is 'attack2':
+            if self.look is False:
+                return self.x, self.y - 35, self.x + 20, self.y - 15
+            else:
+                return self.x - 20, self.y - 35, self.x, self.y + 15
     def check_hit_attack_with_object(self):
         global  E
         if self.state is hero.h_attack[self.attack_type]:
@@ -171,12 +196,16 @@ class hero:
                                 else:
                                     obj.level -= 1
                                 obj.attack_num = (self.attack_num+1)%10
-                            if obj.hit_box.check_collide(H.body_box):
-                                pass
-                                # print('hit!')
                         for num in range(len(ene.attack_object) - 1):
                             if ene.attack_object[num].del_sign is True:
                                 ene.attack_object.pop(num)
+
+        if len(E) is not 0:
+            for ene in E:
+                if len(ene.attack_object) is not 0:
+                    for obj in ene.attack_object:
+                        if obj.hit_box.check_collide(H.body_box, True):
+                            self.hp -= obj.damage
 
 class enemy:
     image = []
@@ -197,6 +226,7 @@ class enemy:
         self.frame = 0
         self.hit_frame = 0
         self.lev = random.randint(1, 2)
+        self.damage = 5*self.lev
         #상태 관련 변수
         self.state = enemy.state_appear
         self.do_not_change_frame = False
@@ -332,6 +362,7 @@ class arrow:
         self.x, self.y = og_x, og_y
         self.level = lev
         self.speed = 5
+        self.damage = self.level * 5
         self.attack_num = -1
         if H.x < self.x:
             self.opposite = True
@@ -343,19 +374,19 @@ class arrow:
         self.dif_y = H.y - self.y
         self.dist = math.sqrt(self.dif_x**2 + self.dif_y**2)
         self.degree = math.atan2(self.dif_y, self.dif_x)
-        self.hit_box = rectangle(self.x, self.y, 19, 4)
-        self.body_box = rectangle(self.x, self.y, 20, 20)
+        self.hit_box = rectangle(self.x, self.y, 19, 10)
 
         if len(arrow.image) is 0:
             arrow.image += [load_image('../Pics/enemy1_attack.png')]
             arrow.image += [load_image('../Pics/enemy2_attack.png')]
     def draw(self):
         arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, self.degree, '', self.x, self.y, 50, 50)
+        draw_rectangle(self.x - 19, self.y - 10, self.x + 19, self.y + 10)
 
     def update(self):
         self.x += self.dif_x * self.speed/self.dist
         self.y += self.dif_y * self.speed/self.dist
-        self.hit_box = rectangle(self.x, self.y, 19, 4)
+        self.hit_box = rectangle(self.x, self.y, 19, 10)
         self.body_box = rectangle(self.x, self.y, 50, 50)
         if self.x > 800 - 25 or self.x < 0 + 25 : self.del_sign = True
         if self.y > 600 - 25 or self.y < 250 : self.del_sign = True
