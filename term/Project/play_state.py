@@ -152,6 +152,7 @@ class hero:
 
         self.init_hit_boxes()
         self.check_hit_attack_with_object()
+        self.check_hit_attack_with_enemy()
     def init_hit_boxes(self):
         if self.look is False:
             self.body_box = rectangle(self.x, self.y - 10, 14, 10)
@@ -206,7 +207,50 @@ class hero:
                     for obj in ene.attack_object:
                         if obj.hit_box.check_collide(H.body_box, True):
                             self.hp -= obj.damage
-
+    def check_hit_attack_with_enemy(self):
+        global E
+        if self.state is not self.h_attack[self.attack_type]:
+            return
+        if len(E) is not 0:
+            for ene in E:
+                if ene.state is enemy.state_appear:
+                    continue
+                if self.common_attack_box1.check_collide(ene.head_box):
+                    ene.state_changed_time = time.time()
+                    ene.state = enemy.state_hit
+                    ene.frame, ene.hit_frame = 0, 0
+                    ene.do_not_change_hit_frame = False
+                    ene.do_not_change_frame = False
+                elif self.common_attack_box1.check_collide(ene.body_box):
+                    ene.state_changed_time = time.time()
+                    ene.state = enemy.state_hit
+                    ene.frame, ene.hit_frame = 0, 0
+                    ene.do_not_change_hit_frame = False
+                    ene.do_not_change_frame = False
+                elif self.common_attack_box1.check_collide(ene.legs_box):
+                    ene.state_changed_time = time.time()
+                    ene.state = enemy.state_hit
+                    ene.frame, ene.hit_frame = 0, 0
+                    ene.do_not_change_hit_frame = False
+                    ene.do_not_change_frame = False
+                elif self.common_attack_box2.check_collide(ene.head_box):
+                    ene.state_changed_time = time.time()
+                    ene.state = enemy.state_hit
+                    ene.frame, ene.hit_frame = 0, 0
+                    ene.do_not_change_hit_frame = False
+                    ene.do_not_change_frame = False
+                elif self.common_attack_box2.check_collide(ene.body_box):
+                    ene.state_changed_time = time.time()
+                    ene.state = enemy.state_hit
+                    ene.frame, ene.hit_frame = 0, 0
+                    ene.do_not_change_hit_frame = False
+                    ene.do_not_change_frame = False
+                elif self.common_attack_box2.check_collide(ene.legs_box):
+                    ene.state_changed_time = time.time()
+                    ene.state = enemy.state_hit
+                    ene.frame, ene.hit_frame = 0, 0
+                    ene.do_not_change_hit_frame = False
+                    ene.do_not_change_frame = False
 class enemy:
     image = []
     hit_effect = None
@@ -303,6 +347,10 @@ class enemy:
         self.state_elapsed_time = time.time()
         if self.state is not enemy.state_attack and self.state is not enemy.state_appear:
             states[self.state]()
+
+        for num in range(len(self.attack_object) - 1):
+            if self.attack_object[num].del_sign is True:
+                self.attack_object.pop(num)
 
         self.update_hitbox()
 
@@ -457,7 +505,6 @@ def draw():
     slot.clip_draw(0, 0, 125, 125, 50, 600 - 50, 50, 50)
     stage_term.clip_draw(0, 0, 125, 9, 400, 600 - 20, 400, 10)
     stamp.clip_draw(0, 0, 19, 16, 400 - 200 * (1 - (stage_elapsed_time - stage_start_time)*2/stage_start), 600 - 20, 19, 16)
-    print((stage_elapsed_time - stage_start_time)/stage_start)
 
 
     if len(E) is not 0:
@@ -532,48 +579,6 @@ def update():
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
                     obj.update()# 적 공격 오브젝트 이동 부분
-                for num in range(len(ene.attack_object) - 1):
-                    if ene.attack_object[num].del_sign is True:
-                        ene.attack_object.pop(num)
-            if H.state is hero.h_attack[H.attack_type]: #플레이어 공격 충돌 체크
-                if ene.state is enemy.state_appear:
-                    continue
-                if H.common_attack_box1.check_collide(ene.head_box):
-                    ene.state_changed_time = time.time()
-                    ene.state = enemy.state_hit
-                    ene.frame, ene.hit_frame = 0, 0
-                    ene.do_not_change_hit_frame = False
-                    ene.do_not_change_frame = False
-                elif H.common_attack_box1.check_collide(ene.body_box):
-                    ene.state_changed_time = time.time()
-                    ene.state = enemy.state_hit
-                    ene.frame, ene.hit_frame = 0, 0
-                    ene.do_not_change_hit_frame = False
-                    ene.do_not_change_frame = False
-                elif H.common_attack_box1.check_collide(ene.legs_box):
-                    ene.state_changed_time = time.time()
-                    ene.state = enemy.state_hit
-                    ene.frame, ene.hit_frame = 0, 0
-                    ene.do_not_change_hit_frame = False
-                    ene.do_not_change_frame = False
-                elif H.common_attack_box2.check_collide(ene.head_box):
-                    ene.state_changed_time = time.time()
-                    ene.state = enemy.state_hit
-                    ene.frame, ene.hit_frame = 0, 0
-                    ene.do_not_change_hit_frame = False
-                    ene.do_not_change_frame = False
-                elif H.common_attack_box2.check_collide(ene.body_box):
-                    ene.state_changed_time = time.time()
-                    ene.state = enemy.state_hit
-                    ene.frame, ene.hit_frame = 0, 0
-                    ene.do_not_change_hit_frame = False
-                    ene.do_not_change_frame = False
-                elif H.common_attack_box2.check_collide(ene.legs_box):
-                    ene.state_changed_time = time.time()
-                    ene.state = enemy.state_hit
-                    ene.frame, ene.hit_frame = 0, 0
-                    ene.do_not_change_hit_frame = False
-                    ene.do_not_change_frame = False
 
     stage_elapsed_time = time.time()
     if stage_state is stage_start:
