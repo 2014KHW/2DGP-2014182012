@@ -114,9 +114,9 @@ enemy 사망				O
 
 == 3주차
 || MENU_STATE ||
-*PLAY_BUTTON
-*SCORE_BUTTON
-*QUIT_BUTTON
+*PLAY_BUTTON				O
+*SCORE_BUTTON				O
+*QUIT_BUTTON				O
 
 || PLAY_STATE ||
 
@@ -130,13 +130,15 @@ enemy 사망				O
 	-level3				O
 
 *인터페이스
-	-HP bar
-	-elapsed time
-	-skill slots
+	-HP bar				O
+	-elapsed time			O
+	-skill slots			O
 
 (+추가) 뒷배경 수집			O
 (+추가) MENU관련 선택 애니메이션	O
 (+추가) MENU관련 텍스트 이미지		O
+
+
 
 
 
@@ -175,13 +177,13 @@ enemy 사망				O
 	-체력회복
 	-공격강화
 		--일반공격 강화
-		--
+		--공격 크기 강화
 	-적 약화
 
 *(아이템)스킬 강화 시 화면 반전
 
-*미점프 시 충돌무시
-*미점프 시 공격불가
+*미점프 시 충돌무시			O
+*미점프 시 공격불가			O
 *미점프 시 일정 시간 후 자동 점프
 
 *대략적인 점프 개발 한 것 리터치
