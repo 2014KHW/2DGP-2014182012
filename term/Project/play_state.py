@@ -8,7 +8,7 @@ import math
 
 #상수 선언 부분
 stage_start = 1
-stage_pass = 10
+stage_pass = 15
 class rectangle:
     def __init__(self, x, y, size_x, size_y):
         self.x, self.y = x, y
@@ -527,7 +527,10 @@ def draw():
     ground.clip_draw(200, 0, 600, 200, 400, 100, 800, 300)
     slot.clip_draw(0, 0, 125, 125, 50, 600 - 50, 50, 50)
     stage_term.clip_draw(0, 0, 125, 9, 400, 600 - 20, 400, 10)
-    stamp.clip_draw(0, 0, 19, 16, 400 - 200 * (1 - (stage_elapsed_time - stage_start_time)*2/stage_start), 600 - 20, 19, 16)
+    if stage_state is stage_start:
+        stamp.clip_draw(0, 0, 19, 16, 400 - 200 * (1 - (stage_elapsed_time - stage_start_time) * 2 / stage_start), 600 - 20, 19, 16)
+    else:
+        stamp.clip_draw(0, 0, 19, 16, 400 - 200 * (1 - (stage_elapsed_time - stage_start_time) * 2 / stage_pass), 600 - 20, 19, 16)
 
 
     if len(E) is not 0:
@@ -596,6 +599,7 @@ def update():
     global E
     global E_appear_speed, E_appear_time_ratio, stage_start_time, stage_elapsed_time
     global stage_state, phase
+    global stage_term, stamp
 
     if len(E) is not 0:
         for ene in E:
@@ -614,6 +618,8 @@ def update():
             stage_elapsed_time = time.time()
             stage_state = stage_pass
             phase += [phrase(stage_pass)]
+            stage_term = load_image('../Pics/vacant_bar2.png')
+            stamp = load_image('../Pics/enemy_stamp.png')
 
     if stage_state is stage_pass:
         if stage_elapsed_time - stage_start_time >= stage_pass:
@@ -623,6 +629,10 @@ def update():
             phase += [phrase(stage_start)]
             E_appear_time_ratio -= 0.1
             E_appear_speed = E_appear_time_ratio
+            stage_term = load_image('../Pics/vacant_bar.png')
+            stamp = load_image('../Pics/hero_stamp.png')
+
+
 
     H.update()
 
