@@ -3,7 +3,8 @@ import game_framework
 import play_state
 
 def enter():
-    global sky, ground, button_list, select_cursor, frame, cur_selection
+    global sky, ground, button_list, select_cursor, frame, cur_selection, x
+    x = 0
     sky = load_image('../Pics/sky_background.png')
     ground = load_image('../Pics/ground_map.png')
     button_list = load_image('../Pics/button_list.png')
@@ -16,9 +17,13 @@ def exit():
     del sky, ground, button_list, select_cursor
 
 def draw():
-    global sky, ground, button_list, select_cursor, frame, cur_selection
-    sky.clip_draw(200, 100, 400, 450, 400, 300, 800, 600)
-    ground.clip_draw(200, 0, 600, 200, 400, 100, 800, 300)
+    global sky, ground, button_list, select_cursor, frame, cur_selection, x
+    if x < 572:
+        sky.clip_draw(x, 0, 450, 200, 400, 300, 800, 600)
+    elif x >= 572 and x < 1022:
+        sky.clip_draw(x, 0, 1022-x, 200, (1022-x)*400/450, 300, (1022-x)*2, 600)
+        sky.clip_draw(0 , 0, x-572, 200, (1022-x)*800/450 + (x-572)*400/450, 300, (x-572)*2, 600)
+
     button_list.clip_draw(0, 0, 100, 25, 400, 300 - 50, 200, 50)
     button_list.clip_draw(0, 25, 100, 25, 400, 300, 200, 50)
     button_list.clip_draw(0, 50, 100, 25, 400, 300 + 50, 200, 50)
@@ -43,8 +48,11 @@ def handle_events():
                     game_framework.quit()
 
 def update():
-    global frame
+    global frame, x
     frame = (frame + 1) % 5
+    x += 2
+    if x >= 1022:
+        x -= 1022
     update_canvas()
     delay(0.05)
 
