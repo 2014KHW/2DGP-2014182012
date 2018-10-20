@@ -7,7 +7,7 @@ import time
 import math
 
 #상수 선언 부분
-stage_start = 50
+stage_start = 10
 stage_pass = 1
 class rectangle:
     def __init__(self, x, y, size_x, size_y):
@@ -85,7 +85,7 @@ class hero:
 
         states[self.state]()
 
-        hero.hp_image.clip_draw(int(125 * (1-self.hp/100)), 0, 125 - int(125 * (1-self.hp/100)), 50, self.x - int(125 * (1-self.hp/100))/2, self.y + 50, 50 - int(125 * (1-self.hp/100))*0.4, 10)
+        hero.hp_image.clip_draw(int(125 * (1-self.hp/100)), 0, 125 - int(125 * (1-self.hp/100)), 9, self.x - int(125 * (1-self.hp/100))/2, self.y + 50, 50 - int(125 * (1-self.hp/100))*0.4, 10)
         draw_rectangle(*self.get_bb('body'))
         #draw_rectangle(*self.get_bb('attack1'))
         #draw_rectangle(*self.get_bb('attack2'))
@@ -416,16 +416,18 @@ class phrase:
             self.x = phrase.original_pos
 
 def enter():
-    global sky, ground, H, E, phase
-    global stage_interval, stage_start_time, stage_state
+    global sky, ground, slot, stage_term, stamp, H, E, phase
+    global stage_start_time, stage_state
     global E_appear_speed, E_appear_time_ratio
     global hit
 
     sky = load_image('../Pics/sky_background.png')
     ground = load_image('../Pics/ground_map.png')
     hit = load_image('../Pics/hit_effect.png')
+    slot = load_image('../Pics/skill_slot.png')
+    stage_term = load_image('../Pics/vacant_bar.png')
+    stamp = load_image('../Pics/hero_stamp.png')
 
-    stage_interval = 10 #스테이지 시간간격
     E_appear_speed = 1.5 #몬스터 출현 속도
     E_appear_time_ratio = 10#몬스터 출현 속도 증가량
     stage_start_time = time.time() #스테이지 시작 시간
@@ -438,17 +440,23 @@ def enter():
     phase = [phrase(stage_state)]
 
 def exit():
-    global ground, H, E
-    del ground, H, E
+    global ground, H, E, hit, slot, stage_term, stamp
+    del ground, H, E, hit, slot, stage_term, stamp
 
 def draw():
-    global sky, ground, H, E, phase
+    global sky, ground, slot, stage_term, stamp, H, E, phase
+    global stage_start_time, stage_elapsed_time
     global stage_state
 
     clear_canvas()
 
     sky.clip_draw(200, 100, 400, 450, 400, 300, 800, 600)
     ground.clip_draw(200, 0, 600, 200, 400, 100, 800, 300)
+    slot.clip_draw(0, 0, 125, 125, 50, 600 - 50, 50, 50)
+    stage_term.clip_draw(0, 0, 125, 9, 400, 600 - 20, 400, 10)
+    stamp.clip_draw(0, 0, 19, 16, 400 - 200 * (1 - (stage_elapsed_time - stage_start_time)*2/stage_start), 600 - 20, 19, 16)
+    print((stage_elapsed_time - stage_start_time)/stage_start)
+
 
     if len(E) is not 0:
         for ene in E:
