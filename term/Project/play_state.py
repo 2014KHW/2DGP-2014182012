@@ -208,42 +208,50 @@ class hero:
             for ene in E:
                 if ene.state is enemy.state_appear:
                     continue
+                if ene.hit_num is self.attack_num:
+                    continue
                 if self.common_attack_box1.check_collide(ene.head_box):
                     ene.state_changed_time = time.time()
                     ene.state = enemy.state_hit
                     ene.frame, ene.hit_frame = 0, 0
                     ene.do_not_change_hit_frame = False
                     ene.do_not_change_frame = False
+                    ene.hit_num = (self.attack_num+1) % 10
                 elif self.common_attack_box1.check_collide(ene.body_box):
                     ene.state_changed_time = time.time()
                     ene.state = enemy.state_hit
                     ene.frame, ene.hit_frame = 0, 0
                     ene.do_not_change_hit_frame = False
                     ene.do_not_change_frame = False
+                    ene.hit_num = (self.attack_num + 1) % 10
                 elif self.common_attack_box1.check_collide(ene.legs_box):
                     ene.state_changed_time = time.time()
                     ene.state = enemy.state_hit
                     ene.frame, ene.hit_frame = 0, 0
                     ene.do_not_change_hit_frame = False
                     ene.do_not_change_frame = False
+                    ene.hit_num = (self.attack_num + 1) % 10
                 elif self.common_attack_box2.check_collide(ene.head_box):
                     ene.state_changed_time = time.time()
                     ene.state = enemy.state_hit
                     ene.frame, ene.hit_frame = 0, 0
                     ene.do_not_change_hit_frame = False
                     ene.do_not_change_frame = False
+                    ene.hit_num = (self.attack_num + 1) % 10
                 elif self.common_attack_box2.check_collide(ene.body_box):
                     ene.state_changed_time = time.time()
                     ene.state = enemy.state_hit
                     ene.frame, ene.hit_frame = 0, 0
                     ene.do_not_change_hit_frame = False
                     ene.do_not_change_frame = False
+                    ene.hit_num = (self.attack_num + 1) % 10
                 elif self.common_attack_box2.check_collide(ene.legs_box):
                     ene.state_changed_time = time.time()
                     ene.state = enemy.state_hit
                     ene.frame, ene.hit_frame = 0, 0
                     ene.do_not_change_hit_frame = False
                     ene.do_not_change_frame = False
+                    ene.hit_num = (self.attack_num + 1) % 10
 class enemy:
     image = []
     hit_effect = None
@@ -284,6 +292,7 @@ class enemy:
         self.head_box = rectangle(self.x, self.y + 4, 16, 16)
         self.body_box = rectangle(self.x, self.y - 10, 10, 4)
         self.legs_box = rectangle(self.x, self.y - 20, 2, 4)
+        self.hit_num = -1
         if len(enemy.image) is 0:
             enemy.image += [load_image('../Pics/enemy_level1.png')]
             enemy.image += [load_image('../Pics/enemy_level2.png')]
