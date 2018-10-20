@@ -1,5 +1,6 @@
 from pico2d import *
 import game_framework
+import menu_state
 import score_state
 import random
 import time
@@ -8,7 +9,6 @@ import math
 #상수 선언 부분
 stage_start = 50
 stage_pass = 1
-
 class rectangle:
     def __init__(self, x, y, size_x, size_y):
         self.x, self.y = x, y
@@ -26,6 +26,7 @@ class rectangle:
 class hero:
     h_image = None
     attack_image = None
+    hp_image = None
     #상수 정의
     h_stand = 0
     h_move = 25
@@ -37,6 +38,7 @@ class hero:
         self.x, self.y = 400, 250
         self.frame = 0
         self.state = hero.h_stand
+        self.hp = 100
         #점프 관련 변수
         self.jump = False
         self.ascend = False
@@ -57,6 +59,8 @@ class hero:
             hero.h_image = load_image('../Pics/hero.png')
         if hero.attack_image is None:
             hero.attack_image = load_image('../Pics/attack_effect.png')
+        if hero.hp_image is None:
+            hero.hp_image = load_image('../Pics/hp_bar.png')
 
     def draw(self):
         states = {
@@ -72,6 +76,9 @@ class hero:
             hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
 
         states[self.state]()
+
+        hero.hp_image.clip_draw(0, 0, 125, 50, self.x, self.y + 50, 50, 10)
+
     def draw_stand(self):
         self.frame = (self.frame + 1) % 7
     def draw_attack(self):
@@ -543,7 +550,6 @@ def update():
             phase += [phrase(stage_start)]
             E_appear_time_ratio -= 0.1
             E_appear_speed = E_appear_time_ratio
-
 
     H.update()
 
