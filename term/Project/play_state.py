@@ -452,6 +452,7 @@ class arrow:
             return
         if self.hit_box.check_collide(H.body_box):
             H.hp -= self.damage
+            self.del_sign = True
 
 class phrase:
     image = None
