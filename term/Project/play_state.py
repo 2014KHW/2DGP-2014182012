@@ -200,13 +200,6 @@ class hero:
                         for num in range(len(ene.attack_object) - 1):
                             if ene.attack_object[num].del_sign is True:
                                 ene.attack_object.pop(num)
-
-        if len(E) is not 0:
-            for ene in E:
-                if len(ene.attack_object) is not 0:
-                    for obj in ene.attack_object:
-                        if obj.hit_box.check_collide(H.body_box, True):
-                            self.hp -= obj.damage
     def check_hit_attack_with_enemy(self):
         global E
         if self.state is not self.h_attack[self.attack_type]:
@@ -440,6 +433,15 @@ class arrow:
         self.body_box = rectangle(self.x, self.y, 50, 50)
         if self.x > 800 - 25 or self.x < 0 + 25 : self.del_sign = True
         if self.y > 600 - 25 or self.y < 250 : self.del_sign = True
+
+        self.check_hit_attack_with_hero()
+
+    def check_hit_attack_with_hero(self):
+        global H
+        if self.del_sign is True:
+            return
+        if self.hit_box.check_collide(H.body_box):
+            H.hp -= self.damage
 
 class phrase:
     image = None
