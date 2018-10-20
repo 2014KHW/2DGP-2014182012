@@ -19,10 +19,10 @@ def exit():
 def draw():
     global sky, ground, button_list, select_cursor, frame, cur_selection, x
     if x < 572:
-        sky.clip_draw(x, 0, 450, 200, 400, 300, 800, 600)
+        sky.clip_draw(x, 616 - 200, 450, 200, 400, 300, 800, 600)
     elif x >= 572 and x < 1022:
-        sky.clip_draw(x, 0, 1022-x, 200, (1022-x)*400/450, 300, (1022-x)*2, 600)
-        sky.clip_draw(0 , 0, x-572, 200, (1022-x)*800/450 + (x-572)*400/450, 300, (x-572)*2, 600)
+        sky.clip_draw(x, 616 - 200, 1022-x, 200, (1022-x)*400/450+2, 300, (1022-x)*800/450, 600)
+        sky.clip_draw(0 , 616 - 200, x-572, 200, (1022-x)*800/450 + (x-572)*400/450, 300, (x-572)*800/450, 600)
 
     button_list.clip_draw(0, 0, 100, 25, 400, 300 - 50, 200, 50)
     button_list.clip_draw(0, 25, 100, 25, 400, 300, 200, 50)
