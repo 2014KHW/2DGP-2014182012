@@ -386,11 +386,21 @@ class enemy:
                 self.go_R = True
             self.state_changed_time = time.time()
     def update_attack_ready(self):
+        global stage_state
+        if stage_state is stage_pass:
+            self.state = enemy.state_stand
+            self.do_not_change_frame = False
+            return
         if self.state_elapsed_time - self.state_changed_time >= self.attack_ready_time:
             self.state = enemy.state_attack
             self.state_changed_time = time.time()
             self.do_not_change_frame = False
     def update_attack(self):
+        global stage_state
+        if stage_state is stage_pass:
+            self.state = enemy.state_stand
+            self.do_not_change_frame = False
+            return
         if self.state is not enemy.state_attack:
             return
         if self.frame is 0:
@@ -578,6 +588,7 @@ def update():
 
     if len(E) is not 0:
         for ene in E:
+            ene.update()
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
                     obj.update()# 적 공격 오브젝트 이동 부분
@@ -592,9 +603,6 @@ def update():
             stage_elapsed_time = time.time()
             stage_state = stage_pass
             phase += [phrase(stage_pass)]
-        if len(E) is not 0: #적 공격 모션으로 전환해주는 부분
-            for ene in E:
-                ene.update()
 
     if stage_state is stage_pass:
         if stage_elapsed_time - stage_start_time >= stage_pass:
