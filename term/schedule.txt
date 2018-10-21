@@ -120,7 +120,7 @@ enemy 사망				O
 
 || PLAY_STATE ||
 
-*화면 흔들림 효과
+*화면 흔들림 효과			O
 
 *player 이동 구현			O
 
