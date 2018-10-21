@@ -7,8 +7,8 @@ import time
 import math
 
 #상수 선언 부분
-stage_start = 1
-stage_pass = 15
+stage_start = 20
+stage_pass = 10
 class rectangle:
     def __init__(self, x, y, size_x, size_y):
         self.x, self.y = x, y
@@ -85,7 +85,7 @@ class hero:
 
         states[self.state]()
 
-        hero.hp_image.clip_draw(int(125 * (1-self.hp/100)), 0, 125 - int(125 * (1-self.hp/100)), 9, self.x - int(125 * (1-self.hp/100))/2, self.y + 50, 50 - int(125 * (1-self.hp/100))*0.4, 10)
+        hero.hp_image.clip_draw(int(125 * (1-self.hp/100)), 0, 125 - int(125 * (1-self.hp/100)), 9, self.x - int(125 * (1-self.hp/100))/2, self.y + 50, 100 - int(125 * (1-self.hp/100))*0.8, 20)
         draw_rectangle(*self.get_bb('body'))
         #draw_rectangle(*self.get_bb('attack1'))
         #draw_rectangle(*self.get_bb('attack2'))
@@ -94,6 +94,10 @@ class hero:
     def draw_stand(self):
         self.frame = (self.frame + 1) % 7
     def draw_attack(self):
+        global shake
+
+        shake.give_shake()
+
         self.frame = (self.frame + 1) % 7
         if self.look is False:
             hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, '', self.x + 25, self.y - 12, 75, 75)
@@ -118,6 +122,7 @@ class hero:
                     self.frame = 6
             else:
                 self.state = hero.h_stand
+
     def draw_jump(self):
         if self.ascend is True:
             self.frame = (self.frame + 1) % 7
@@ -488,12 +493,51 @@ class phrase:
         if self.x < phrase.original_pos:
             self.x = phrase.original_pos
 
+class shaking:
+    def __init__(self):
+        self.shake_strength = 5
+        self.move = -1
+        self.on_shaking = False
+    def shake(self):
+        global H, E, ground_x, ground_y
+
+        if self.on_shaking is False:
+            return
+        if self.shake_strength is 0:
+            self.on_shaking = False
+            return
+
+        H.x += self.shake_strength * self.move
+        if len(E) is not 0:
+            for ene in E:
+                ene.x += self.shake_strength * self.move
+
+        ground_x += self.shake_strength * self.move
+        ground_y += self.shake_strength * self.move/2
+
+        if self.move is -1:
+            self.move = 1
+        else:
+            self.move = -1
+            self.shake_strength -= 1
+
+    def give_shake(self):
+        if self.on_shaking is False:
+            self.on_shaking = True
+            self.shake_strength = 5
+        else:
+            return
+
+
 def enter():
-    global sky, ground, slot, stage_term, stamp, H, E, phase
+    global sky, ground, slot, stage_term, stamp, H, E, phase, ground_x, ground_y
     global stage_start_time, stage_state
     global E_appear_speed, E_appear_time_ratio
     global hit
+    global shake
 
+    ground_x, ground_y = 400, 100
+    shake = shaking()
     sky = load_image('../Pics/sky_background.png')
     ground = load_image('../Pics/ground_map.png')
     hit = load_image('../Pics/hit_effect.png')
@@ -501,8 +545,8 @@ def enter():
     stage_term = load_image('../Pics/vacant_bar.png')
     stamp = load_image('../Pics/hero_stamp.png')
 
-    E_appear_speed = 1.5 #몬스터 출현 속도
-    E_appear_time_ratio = 10#몬스터 출현 속도 증가량
+    E_appear_speed = 2 #몬스터 출현 속도
+    E_appear_time_ratio = 5#몬스터 출현 속도 증가량
     stage_start_time = time.time() #스테이지 시작 시간
     stage_state = stage_start
 
@@ -518,13 +562,14 @@ def exit():
 
 def draw():
     global sky, ground, slot, stage_term, stamp, H, E, phase
+    global ground_x, ground_y
     global stage_start_time, stage_elapsed_time
     global stage_state
 
     clear_canvas()
 
     sky.clip_draw(200, 100, 400, 450, 400, 300, 800, 600)
-    ground.clip_draw(200, 0, 600, 200, 400, 100, 800, 300)
+    ground.clip_draw(200, 0, 600, 200, ground_x, ground_y, 800, 300)
     slot.clip_draw(0, 0, 125, 125, 50, 600 - 50, 50, 50)
     stage_term.clip_draw(0, 0, 125, 9, 400, 600 - 20, 400, 10)
     if stage_state is stage_start:
@@ -600,6 +645,7 @@ def update():
     global E_appear_speed, E_appear_time_ratio, stage_start_time, stage_elapsed_time
     global stage_state, phase
     global stage_term, stamp
+    global shake
 
     if len(E) is not 0:
         for ene in E:
@@ -635,6 +681,7 @@ def update():
 
 
     H.update()
+    shake.shake()
 
     delay(0.03)
 
