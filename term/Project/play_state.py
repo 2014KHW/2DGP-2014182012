@@ -284,6 +284,7 @@ class enemy:
         self.state_begin_stand_time = 0
         self.state_changed_time = 0
         self.state_elapsed_time = 0
+        self.look = False
         #공격 관련 변수
         self.attack_time = random.uniform(0.1, 2)
         self.attack_object = []
@@ -304,12 +305,23 @@ class enemy:
             enemy.image += [load_image('../Pics/enemy_level3.png')]
         if enemy.hit_effect is None:
             enemy.hit_effect = load_image('../Pics/hit_effect.png')
+    def change_looking(self):
+        global H
+        if self.state is enemy.state_hit:
+            return
+        if self.x >= H.x:
+            self.look = False
+        else:
+            self.look = True
     def draw(self):
         if self.state is enemy.state_appear:
             enemy.appear(self)
             return
 
-        enemy.image[self.lev - 1].clip_draw(self.frame * 25, self.state%5000, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
+        if self.look is True:
+            enemy.image[self.lev - 1].clip_draw(self.frame * 25, self.state%5000, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
+        else:
+            enemy.image[self.lev - 1].clip_composite_draw(self.frame * 25, self.state % 5000, 25, 25, 0, 'h', self.x, self.y, self.draw_scale_x, self.draw_scale_y)
         if self.do_not_change_frame is not True:
             self.frame = (self.frame + 1) % 7
             self.update_attack()
@@ -360,6 +372,7 @@ class enemy:
                 self.attack_object.pop(num)
 
         self.update_hitbox()
+        self.change_looking()
 
     def update_hit(self):
         if self.state_elapsed_time - self.state_changed_time >= self.hit_recovery_time:
@@ -495,7 +508,7 @@ class phrase:
 
 class shaking:
     def __init__(self):
-        self.shake_strength = 5
+        self.shake_strength = 3
         self.move = -1
         self.on_shaking = False
     def shake(self):
