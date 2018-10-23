@@ -145,7 +145,7 @@ enemy 사망				O
 
 == 4주차
 || PLAY_STATE ||
-*PAUSE_KEY 구현
+*PAUSE_KEY 구현				O
 
 || SCORE_STATE ||
 *기록할 목록을 가져오기
