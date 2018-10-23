@@ -9,6 +9,7 @@ import math
 #상수 선언 부분
 stage_start = 20
 stage_pass = 10
+stop = False
 class rectangle:
     def __init__(self, x, y, size_x, size_y):
         self.x, self.y = x, y
@@ -257,6 +258,8 @@ class hero:
                     ene.do_not_change_hit_frame = False
                     ene.do_not_change_frame = False
                     ene.hit_num = (self.attack_num + 1) % 10
+    def time_set(self):
+        pass
 class enemy:
     image = []
     hit_effect = None
@@ -284,6 +287,7 @@ class enemy:
         self.state_begin_stand_time = 0
         self.state_changed_time = 0
         self.state_elapsed_time = 0
+        self.time_storage = 0
         self.look = False
         #공격 관련 변수
         self.attack_time = random.uniform(0.1, 2)
@@ -436,6 +440,13 @@ class enemy:
             self.state_changed_time = time.time()
             if self.lev is not 3:
                 self.attack_object += [arrow(self.x, self.y, self.lev)]
+    def time_set(self):
+        time_storage = self.state_elapsed_time - self.state_changed_time
+        self.state_elapsed_time = time.time()
+        self.state_changed_time = self.state_elapsed_time - time_storage
+        time_storage = self.state_elapsed_time - self.state_begin_stand_time
+        self.state_elapsed_time = time.time()
+        self.state_begin_stand_time = self.state_elapsed_time - time_storage
 
 class arrow:
     image = []
@@ -578,6 +589,10 @@ def draw():
     global ground_x, ground_y
     global stage_start_time, stage_elapsed_time
     global stage_state
+    global stop
+
+    if stop is True:
+        return
 
     clear_canvas()
 
@@ -610,7 +625,7 @@ def draw():
     update_canvas()
 
 def handle_events():
-    global H
+    global H, stop
     eve = get_events()
     for e in eve:
         if e.type is SDL_QUIT:
@@ -652,13 +667,30 @@ def handle_events():
                 if H.state is hero.h_move:
                     H.state = hero.h_stand
                     H.frame = 0
+        if (e.type, e.key) == (SDL_KEYUP, SDLK_p):
+            if stop is True:
+                stop = False
+            else:
+                stop = True
+
 
 def update():
-    global E
+    global E, H
     global E_appear_speed, E_appear_time_ratio, stage_start_time, stage_elapsed_time
     global stage_state, phase
     global stage_term, stamp
     global shake
+    global stop
+
+    if stop is True:
+        H.time_set()
+        if len(E) is not 0:
+            for ene in E:
+                ene.time_set()
+        time_storage = stage_elapsed_time - stage_start_time
+        stage_elapsed_time = time.time()
+        stage_start_time = stage_elapsed_time - time_storage
+        return
 
     if len(E) is not 0:
         for ene in E:
