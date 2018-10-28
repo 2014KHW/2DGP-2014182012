@@ -50,6 +50,7 @@ class enemy:
         self.body_box = rectangle.rectangle(self.x, self.y - 10, 10, 4)
         self.legs_box = rectangle.rectangle(self.x, self.y - 20, 2, 4)
         self.hit_num = -1
+        self.knock_back_range = 5
         if len(enemy.image) is 0:
             enemy.image += [load_image('../Pics/enemy_level1.png')]
             enemy.image += [load_image('../Pics/enemy_level2.png')]
@@ -63,6 +64,57 @@ class enemy:
             self.look = False
         else:
             self.look = True
+    def change_state(self, state, H):
+        global he
+        he = H
+        enter = {
+            enemy.state_hit: self.enter_hit,
+            enemy.state_move: self.enter_move,
+            enemy.state_stand: self.enter_stand,
+            enemy.state_attack_ready: self.enter_attack_ready,
+            enemy.state_attack: self.enter_attack
+        }
+        exit =  {
+            enemy.state_hit: self.exit_hit,
+            enemy.state_move: self.exit_move,
+            enemy.state_stand: self.exit_stand,
+            enemy.state_attack_ready: self.exit_attack_ready,
+            enemy.state_attack: self.exit_attack
+        }
+
+        exit[self.state]
+        self.state = state
+        enter[state]
+
+    def enter_stand(self):
+        pass
+    def enter_move(self):
+        pass
+    def enter_attack_ready(self):
+        pass
+    def enter_attack(self):
+        pass
+    def enter_hit(self):
+        global he
+        self.state_changed_time = time.time()
+        self.state = enemy.enemy.state_hit
+        self.knock_back_range = 5
+        self.frame, self.hit_frame = 0, 0
+        self.do_not_change_hit_frame = False
+        self.do_not_change_frame = False
+        self.hit_num = (he.attack_num + 1) % 10
+
+    def exit_stand(self):
+        pass
+    def exit_move(self):
+        pass
+    def exit_attack_ready(self):
+        pass
+    def exit_attack(self):
+        pass
+    def exit_hit(self):
+        pass
+
     def draw(self):
         if self.state is enemy.state_appear:
             enemy.appear(self)
@@ -128,11 +180,18 @@ class enemy:
         self.change_looking(H)
 
     def update_hit(self):
+        self.knock_back()
         if self.state_elapsed_time - self.state_changed_time >= self.hit_recovery_time:
             self.state = enemy.state_stand
             self.state_changed_time = time.time()
             self.do_not_change_hit_frame = False
             self.do_not_change_frame = False
+    def knock_back(self):
+        if self.knock_back_range is 0:
+            return
+        self.x -= self.knock_back_range
+        self.knock_back_range -= 1
+
     def update_move(self):
         if self.go_R is True:
             self.x = min(800, self.x + self.speed)
