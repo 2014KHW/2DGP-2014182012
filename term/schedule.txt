@@ -147,12 +147,6 @@ enemy 사망				O
 || PLAY_STATE ||
 *PAUSE_KEY 구현				O
 
-|| SCORE_STATE ||
-*기록할 목록을 가져오기
-	-elapsed time
-	-kills
-	-score
-
 
 
 
@@ -165,6 +159,12 @@ enemy 사망				O
 *부족한 구현이 있었다면 추가 구현
 
 *구현 못한 부분 구현
+|| SCORE_STATE ||
+*기록할 목록을 가져오기
+	-elapsed time
+	-kills
+	-score
+
 
 *차기 주차 내용 미리 구현
 
