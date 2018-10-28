@@ -19,7 +19,7 @@ class enemy:
     #시간 상수 정의 부분
     attack_ready_time = 1
     hit_recovery_time = 1.5
-    def __init__(self):
+    def __init__(self, dst_hero):
         self.x, self.y = random.randint(0+50, 800-50), 400
         self.draw_scale_x, self.draw_scale_y = 50, 200
         self.frame = 0
@@ -35,10 +35,12 @@ class enemy:
         self.state_changed_time = 0
         self.state_elapsed_time = 0
         self.time_storage = 0
+        self.from_attack = False
         self.look = False
         #공격 관련 변수
         self.attack_time = random.uniform(0.1, 2)
         self.attack_object = []
+        self.dst_attack = dst_hero
         #이동 관련 변수
         self.move_time = random.uniform(0.1, 0.5)
         self.stand_time = random.uniform(1, 2)
@@ -58,16 +60,13 @@ class enemy:
         if enemy.hit_effect is None:
             enemy.hit_effect = load_image('../Pics/hit_effect.png')
     def change_looking(self):
-        global he
         if self.state is enemy.state_hit:
             return
-        if self.x >= he.x:
+        if self.x >= self.dst_attack.x:
             self.look = False
         else:
             self.look = True
-    def change_state(self, state, H):
-        global he
-        he = H
+    def change_state(self, state):
         enter = {
             enemy.state_hit: self.enter_hit,
             enemy.state_move: self.enter_move,
@@ -83,38 +82,54 @@ class enemy:
             enemy.state_attack: self.exit_attack
         }
 
-        exit[self.state]
+        exit[self.state]()
         self.state = state
-        enter[state]
+        enter[state]()
 
     def enter_stand(self):
-        pass
-    def enter_move(self):
-        pass
-    def enter_attack_ready(self):
-        pass
-    def enter_attack(self):
-        pass
-    def enter_hit(self):
-        global he
+        self.state = enemy.state_stand
+        self.go_R = False
+        self.go_L = False
+        self.frame = 0
         self.state_changed_time = time.time()
-        self.state = enemy.enemy.state_hit
+        if self.from_attack is False:
+            self.state_begin_stand_time = time.time()
+        self.from_attack = False
+    def enter_move(self):
+        self.state = enemy.state_move
+        self.frame = 0
+        if random.randint(0, 1):
+            self.go_L = True
+            self.go_R = False
+        else:
+            self.go_L = False
+            self.go_R = True
+        self.state_changed_time = time.time()
+    def enter_attack_ready(self):
+        self.state = enemy.state_attack_ready
+        self.state_changed_time = time.time()
+        self.frame = 0
+        self.do_not_change_frame = True
+    def enter_attack(self):
+        self.state_changed_time = time.time()
+    def enter_hit(self):
+        self.state_changed_time = time.time()
+        self.state = enemy.state_hit
         self.knock_back_range = 5
         self.frame, self.hit_frame = 0, 0
         self.do_not_change_hit_frame = False
         self.do_not_change_frame = False
-        self.hit_num = (he.attack_num + 1) % 10
-
+        self.hit_num = (self.dst_attack.attack_num + 1) % 10
     def exit_stand(self):
-        pass
+        self.from_attack = False
     def exit_move(self):
-        pass
+        self.from_attack = False
     def exit_attack_ready(self):
-        pass
+        self.do_not_change_frame = False
     def exit_attack(self):
-        pass
+        self.from_attack = True
     def exit_hit(self):
-        pass
+        self.from_attack = False
 
     def draw(self):
         if self.state is enemy.state_appear:
@@ -125,9 +140,10 @@ class enemy:
             enemy.image[self.lev - 1].clip_draw(self.frame * 25, self.state%5000, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
         else:
             enemy.image[self.lev - 1].clip_composite_draw(self.frame * 25, self.state % 5000, 25, 25, 0, 'h', self.x, self.y, self.draw_scale_x, self.draw_scale_y)
-        if self.do_not_change_frame is not True:
+
+        if self.do_not_change_frame is False:
             self.frame = (self.frame + 1) % 7
-            self.update_attack()
+
         self.draw_hit_effect()
 
     def update_hitbox(self):
@@ -157,11 +173,10 @@ class enemy:
             if self.hit_frame is 3:
                 self.do_not_change_hit_frame = True
 
-    def update(self, H, cur_state):
-        global stage_state, he
-        he = H
+    def update(self, cur_state):
+        global stage_state
         stage_state = cur_state
-        states = {
+        update = {
             enemy.state_hit: self.update_hit,
             enemy.state_move: self.update_move,
             enemy.state_stand: self.update_stand,
@@ -170,8 +185,8 @@ class enemy:
         }
 
         self.state_elapsed_time = time.time()
-        if self.state is not enemy.state_attack and self.state is not enemy.state_appear:
-            states[self.state]()
+        if self.state is not enemy.state_appear:
+            update[self.state]()
 
         for num in range(len(self.attack_object) - 1):
             if self.attack_object[num].del_sign is True:
@@ -194,6 +209,7 @@ class enemy:
         self.knock_back_range -= 1
 
     def update_move(self):
+        #print(self.go_L, self.go_R)
         if self.go_R is True:
             self.x = min(800, self.x + self.speed)
             if self.x is 800:
@@ -205,49 +221,29 @@ class enemy:
                 self.go_L = False
                 self.go_R = True
         if self.state_elapsed_time - self.state_changed_time >= self.move_time:
-            self.state = enemy.state_stand
-            self.go_R = False
-            self.go_L = False
-            self.frame = 0
-            self.state_changed_time = time.time()
-            self.state_begin_stand_time = time.time()
+            self.change_state(enemy.state_stand)
     def update_stand(self):
         global stage_state
         if self.state_elapsed_time - self.state_changed_time >= self.attack_time and stage_state is play_state.stage_start:
-            self.state = enemy.state_attack_ready
-            self.state_changed_time = time.time()
-            self.frame = 0
-            self.do_not_change_frame = True
+            self.change_state(enemy.state_attack_ready)
         if self.state_elapsed_time - self.state_begin_stand_time >= self.stand_time:
-            self.state = enemy.state_move
-            self.frame = 0
-            if random.randint(0, 1):
-                self.go_L = True
-            else:
-                self.go_R = True
-            self.state_changed_time = time.time()
+            self.change_state(enemy.state_move)
     def update_attack_ready(self):
         global stage_state
         if stage_state is play_state.stage_pass:
-            self.state = enemy.state_stand
-            self.do_not_change_frame = False
+            self.change_state(enemy.state_stand)
             return
         if self.state_elapsed_time - self.state_changed_time >= self.attack_ready_time:
-            self.state = enemy.state_attack
-            self.state_changed_time = time.time()
-            self.do_not_change_frame = False
+            self.change_state(enemy.state_attack)
     def update_attack(self):
-        global stage_state, he
+        global stage_state
         if stage_state is play_state.stage_pass:
-            self.do_not_change_frame = False
+            self.change_state(enemy.state_stand)
             return
-        if self.state is not enemy.state_attack:
-            return
-        if self.frame is 0:
-            self.state = enemy.state_stand
-            self.state_changed_time = time.time()
+        if self.frame is 6:
             if self.lev is not 3:
-                self.attack_object += [arrow(self.x, self.y, self.lev, he)]
+                self.attack_object += [arrow(self.x, self.y, self.lev, self.dst_attack)]
+            self.change_state(enemy.state_stand)
     def time_set(self):
         time_storage = self.state_elapsed_time - self.state_changed_time
         self.state_elapsed_time = time.time()
@@ -258,20 +254,21 @@ class enemy:
 
 class arrow:
     image = []
-    def __init__(self, og_x, og_y, lev, H):
+    def __init__(self, og_x, og_y, lev, dst_hero):
         self.x, self.y = og_x, og_y
         self.level = lev
         self.speed = 5
         self.damage = self.level * 5
         self.attack_num = -1
-        if H.x < self.x:
+        self.dst_attack = dst_hero
+        if self.dst_attack.x < self.x:
             self.opposite = True
         else:
             self.opposite = False
 
         self.del_sign = False
-        self.dif_x = H.x - self.x
-        self.dif_y = H.y - self.y
+        self.dif_x = self.dst_attack.x - self.x
+        self.dif_y = self.dst_attack.y - self.y
         self.dist = math.sqrt(self.dif_x**2 + self.dif_y**2)
         self.degree = math.atan2(self.dif_y, self.dif_x)
         self.hit_box = rectangle.rectangle(self.x, self.y, 19, 10)
@@ -294,9 +291,8 @@ class arrow:
         self.check_hit_attack_with_hero()
 
     def check_hit_attack_with_hero(self):
-        global he
         if self.del_sign is True:
             return
-        if self.hit_box.check_collide(he.body_box):
-            he.hp -= self.damage
+        if self.hit_box.check_collide(self.dst_attack.body_box):
+            self.dst_attack.hp -= self.damage
             self.del_sign = True
