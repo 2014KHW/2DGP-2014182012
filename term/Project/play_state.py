@@ -56,7 +56,7 @@ class shaking:
             self.on_shaking = False
             return
 
-        H.x += self.shake_strength * self.move
+        H[-1].x += self.shake_strength * self.move
         if len(E) is not 0:
             for ene in E:
                 ene.x += self.shake_strength * self.move
@@ -72,7 +72,7 @@ class shaking:
 
     def give_shake(self):
         global H
-        if self.on_shaking is False and H.state is hero.hero.h_attack[H.attack_type]:
+        if self.on_shaking is False and H[-1].state is hero.hero.h_attack[H[-1].attack_type]:
             self.on_shaking = True
             self.shake_strength = 5
         else:
@@ -102,7 +102,7 @@ def enter():
 
     E = [enemy.enemy()]
 
-    H = hero.hero()
+    H = [hero.hero()]
 
     phase = [phrase(stage_state)]
 
@@ -146,7 +146,9 @@ def draw():
         if phase[-1].x is phrase.original_pos:
             phase.pop()
 
-    H.draw()
+    if len(H) is not 0:
+        for he in H:
+            he.draw()
 
     update_canvas()
 
@@ -158,40 +160,44 @@ def handle_events():
             print('quit')
             game_framework.quit()
         if e.key is SDLK_w:
-            if H.jump is True :
+            if H[-1].jump is True :
                 return
-            H.jump = True
-            H.state = hero.hero.h_jump
-            H.frame = 0
+            H[-1].jump = True
+            H[-1].state = hero.hero.h_jump
+            H[-1].frame = 0
         if e.key is SDLK_j:
-            if H.state is hero.hero.h_stand or H.state is hero.hero.h_move:
+            if H[-1].state is hero.hero.h_stand or H[-1].state is hero.hero.h_move:
                 return
-            H.attack_type = random.randint(0, 1)
-            H.state = hero.hero.h_attack[H.attack_type]
-            H.frame = 0
-            H.attack_num = (H.attack_num + 1)%10
+            H[-1].attack_type = random.randint(0, 1)
+            H[-1].state = hero.hero.h_attack[H[-1].attack_type]
+            H[-1].frame = 0
+            H[-1].attack_num = (H[-1].attack_num + 1)%10
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_a):
-            H.go_L = True
-            if H.state is hero.hero.h_stand:
-                H.state = hero.hero.h_move
-                H.frame = 0
+            H[-1].go_L = True
+            if H[-1].state is hero.hero.h_stand:
+                H[-1].state = hero.hero.h_move
+                H[-1].frame = 0
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_d) :
-            H.go_R = True
-            if H.state is hero.hero.h_stand:
-                H.state = hero.hero.h_move
-                H.frame = 0
+            H[-1].go_R = True
+            if H[-1].state is hero.hero.h_stand:
+                H[-1].state = hero.hero.h_move
+                H[-1].frame = 0
         if (e.type, e.key) == (SDL_KEYUP, SDLK_a):
-            H.go_L = False
-            if (H.go_L, H.go_R) == (False, False):
-                if H.state is hero.hero.h_move:
-                    H.state = hero.hero.h_stand
-                    H.frame = 0
+            H[-1].go_L = False
+            if (H[-1].go_L, H[-1].go_R) == (False, False):
+                if H[-1].state is hero.hero.h_move:
+                    H[-1].state = hero.hero.h_stand
+                    H[-1].frame = 0
         if (e.type, e.key) == (SDL_KEYUP, SDLK_d) :
-            H.go_R = False
-            if (H.go_L, H.go_R) == (False, False):
-                if H.state is hero.hero.h_move:
-                    H.state = hero.hero.h_stand
-                    H.frame = 0
+            H[-1].go_R = False
+            if (H[-1].go_L, H[-1].go_R) == (False, False):
+                if H[-1].state is hero.hero.h_move:
+                    H[-1].state = hero.hero.h_stand
+                    H[-1].frame = 0
+        if (e.type, e.key) == (SDL_KEYUP, SDLK_k):
+            H += [hero.hero(H[-1].x, H[-1].y, H[-1].state, H[-1].hp, H[-1].jump, H[-1].ascend, H[-1].attack_effect, \
+                  H[-1].attack_type, H[-1].attack_frame, H[-1].go_L, H[-1].go_R, H[-1].look)]
+
         if (e.type, e.key) == (SDL_KEYUP, SDLK_p):
             if stop is True:
                 stop = False
@@ -209,7 +215,9 @@ def update():
     global stop
 
     if stop is True:
-        H.time_set()
+        if len(H) is not 0:
+            for he in H:
+                he.time_set()
         if len(E) is not 0:
             for ene in E:
                 ene.time_set()
@@ -221,7 +229,7 @@ def update():
 
     if len(E) is not 0:
         for ene in E:
-            ene.update(H, stage_state)
+            ene.update(H[0], stage_state)
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
                     obj.update()# 적 공격 오브젝트 이동 부분
@@ -252,7 +260,8 @@ def update():
 
 
     total_elapse = stage_elapsed_time - total_start
-    total_score += H.update(E)
+    print(H[-1])
+    total_score += H[-1].update(E)
     shake.give_shake()
     shake.shake()
 
