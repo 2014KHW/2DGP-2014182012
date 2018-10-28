@@ -6,6 +6,10 @@ import random
 import time
 import math
 
+total_elapse = 0
+total_start = time.time()
+total_score = 0
+
 #상수 선언 부분
 stage_start = 20
 stage_pass = 10
@@ -182,7 +186,7 @@ class hero:
             else:
                 return self.x - 20, self.y - 35, self.x, self.y + 15
     def check_hit_attack_with_object(self):
-        global  E
+        global  E, total_score
         if self.state is hero.h_attack[self.attack_type]:
             if len(E) is not 0:
                 for ene in E:
@@ -194,14 +198,18 @@ class hero:
                             if self.common_attack_box1.check_collide(obj.body_box):
                                 if obj.level is 1:
                                     obj.del_sign = True
+                                    total_score += 100
                                 else:
                                     obj.level -= 1
+                                    total_score += 50
                                 obj.attack_num = (self.attack_num+1)%10
                             elif self.common_attack_box2.check_collide(obj.body_box):
                                 if obj.level is 1:
                                     obj.del_sign = True
+                                    total_score += 100
                                 else:
                                     obj.level -= 1
+                                    total_score += 50
                                 obj.attack_num = (self.attack_num+1)%10
                         for num in range(len(ene.attack_object) - 1):
                             if ene.attack_object[num].del_sign is True:
@@ -677,6 +685,7 @@ def handle_events():
 def update():
     global E, H
     global E_appear_speed, E_appear_time_ratio, stage_start_time, stage_elapsed_time
+    global total_start, total_elapse, total_score
     global stage_state, phase
     global stage_term, stamp
     global shake
@@ -689,6 +698,7 @@ def update():
                 ene.time_set()
         time_storage = stage_elapsed_time - stage_start_time
         stage_elapsed_time = time.time()
+        total_start = stage_elapsed_time - total_elapse
         stage_start_time = stage_elapsed_time - time_storage
         return
 
@@ -724,7 +734,8 @@ def update():
             stamp = load_image('../Pics/hero_stamp.png')
 
 
-
+    total_elapse = stage_elapsed_time - total_start
+    total_score += 1
     H.update()
     shake.shake()
 
