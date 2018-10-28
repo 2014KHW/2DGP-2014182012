@@ -205,7 +205,10 @@ class enemy:
     def knock_back(self):
         if self.knock_back_range is 0:
             return
-        self.x -= self.knock_back_range
+        if self.dst_attack.x > self.x:
+            self.x = max(0, self.x - self.knock_back_range)
+        else:
+            self.x = min(self.x + self.knock_back_range, 800)
         self.knock_back_range -= 1
 
     def update_move(self):
