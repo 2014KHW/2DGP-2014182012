@@ -57,10 +57,11 @@ class enemy:
             enemy.image += [load_image('../Pics/enemy_level3.png')]
         if enemy.hit_effect is None:
             enemy.hit_effect = load_image('../Pics/hit_effect.png')
-    def change_looking(self, H):
+    def change_looking(self):
+        global he
         if self.state is enemy.state_hit:
             return
-        if self.x >= H.x:
+        if self.x >= he.x:
             self.look = False
         else:
             self.look = True
@@ -177,7 +178,7 @@ class enemy:
                 self.attack_object.pop(num)
 
         self.update_hitbox()
-        self.change_looking(H)
+        self.change_looking()
 
     def update_hit(self):
         self.knock_back()
