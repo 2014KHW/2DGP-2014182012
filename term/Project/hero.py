@@ -75,7 +75,7 @@ class hero:
         self.frame = (self.frame + 1) % 7
     def draw_attack(self):
 
-        if self.frame is 0 or self.frame is 1:
+        if clamp(0, self.frame, 2):
             if self.look is False:
                 hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, '', self.x, self.y, 60, 60)
             else:
@@ -216,46 +216,16 @@ class hero:
                 if ene.hit_num is self.attack_num:
                     continue
                 if self.common_attack_box1.check_collide(ene.head_box):
-                    ene.state_changed_time = time.time()
-                    ene.state = enemy.enemy.state_hit
-                    ene.frame, ene.hit_frame = 0, 0
-                    ene.do_not_change_hit_frame = False
-                    ene.do_not_change_frame = False
-                    ene.hit_num = (self.attack_num+1) % 10
+                    ene.change_state(enemy.enemy.state_hit)
                 elif self.common_attack_box1.check_collide(ene.body_box):
-                    ene.state_changed_time = time.time()
-                    ene.state = enemy.enemy.state_hit
-                    ene.frame, ene.hit_frame = 0, 0
-                    ene.do_not_change_hit_frame = False
-                    ene.do_not_change_frame = False
-                    ene.hit_num = (self.attack_num + 1) % 10
+                    ene.change_state(enemy.enemy.state_hit)
                 elif self.common_attack_box1.check_collide(ene.legs_box):
-                    ene.state_changed_time = time.time()
-                    ene.state = enemy.enemy.state_hit
-                    ene.frame, ene.hit_frame = 0, 0
-                    ene.do_not_change_hit_frame = False
-                    ene.do_not_change_frame = False
-                    ene.hit_num = (self.attack_num + 1) % 10
+                    ene.change_state(enemy.enemy.state_hit)
                 elif self.common_attack_box2.check_collide(ene.head_box):
-                    ene.state_changed_time = time.time()
-                    ene.state = enemy.enemy.state_hit
-                    ene.frame, ene.hit_frame = 0, 0
-                    ene.do_not_change_hit_frame = False
-                    ene.do_not_change_frame = False
-                    ene.hit_num = (self.attack_num + 1) % 10
+                    ene.change_state(enemy.enemy.state_hit)
                 elif self.common_attack_box2.check_collide(ene.body_box):
-                    ene.state_changed_time = time.time()
-                    ene.state = enemy.enemy.state_hit
-                    ene.frame, ene.hit_frame = 0, 0
-                    ene.do_not_change_hit_frame = False
-                    ene.do_not_change_frame = False
-                    ene.hit_num = (self.attack_num + 1) % 10
+                    ene.change_state(enemy.enemy.state_hit)
                 elif self.common_attack_box2.check_collide(ene.legs_box):
-                    ene.state_changed_time = time.time()
-                    ene.state = enemy.enemy.state_hit
-                    ene.frame, ene.hit_frame = 0, 0
-                    ene.do_not_change_hit_frame = False
-                    ene.do_not_change_frame = False
-                    ene.hit_num = (self.attack_num + 1) % 10
+                    ene.change_state(enemy.enemy.state_hit)
     def time_set(self):
         pass
