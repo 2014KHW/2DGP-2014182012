@@ -100,7 +100,7 @@ def enter():
     stage_start_time = time.time() #스테이지 시작 시간
     stage_state = stage_start
 
-    E = [enemy.enemy()]
+    E = []
 
     H = [hero.hero()]
 
@@ -229,7 +229,7 @@ def update():
 
     if len(E) is not 0:
         for ene in E:
-            ene.update(H[0], stage_state)
+            ene.update(stage_state)
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
                     obj.update()# 적 공격 오브젝트 이동 부분
@@ -238,7 +238,7 @@ def update():
     if stage_state is stage_start:
         if stage_elapsed_time - stage_start_time >= E_appear_speed:
             E_appear_speed += E_appear_time_ratio
-            E += [enemy.enemy()]
+            E += [enemy.enemy(H[-1])]
         if stage_elapsed_time - stage_start_time >= stage_start:
             stage_start_time = time.time()
             stage_elapsed_time = time.time()
@@ -260,7 +260,6 @@ def update():
 
 
     total_elapse = stage_elapsed_time - total_start
-    print(H[-1])
     total_score += H[-1].update(E)
     shake.give_shake()
     shake.shake()
