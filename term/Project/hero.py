@@ -17,24 +17,26 @@ class hero:
     h_attack = [100, 125]
     h_maxheight = 400
     h_minheight = 250
-    def __init__(self):
-        self.x, self.y = 400, 250
+    def __init__(self, px=400, py=250, pstate=h_stand, curhp=100, jmp=False, ascnd=False, attck_effect=False,\
+                 attck_type=random.randint(0,1), attck_frame=0, gol=False, gor=False, look=False):
+        self.x, self.y = px, py
         self.frame = 0
-        self.state = hero.h_stand
+        self.state = pstate
         self.damage = 5
-        self.hp = 100
+        self.hp = curhp
+        self.overwhelming = False #무적
         #점프 관련 변수
-        self.jump = False
-        self.ascend = False
+        self.jump = jmp
+        self.ascend = ascnd
         #공격 관련 변수
-        self.attack_effect = False
-        self.attack_type = random.randint(0, 1)
-        self.attack_frame = 0
+        self.attack_effect = attck_effect
+        self.attack_type = attck_type
+        self.attack_frame = attck_frame
         self.attack_num = 0
         #이동 관련 변수
-        self.go_L = False
-        self.go_R = False
-        self.look = False
+        self.go_L = gol
+        self.go_R = gor
+        self.look = look
         #히트박스
         self.body_box = rectangle.rectangle(self.x, self.y-10, 14, 10)
         self.common_attack_box1 = rectangle.rectangle(self.x + 17, self.y - 11, 17, 33)
@@ -216,16 +218,16 @@ class hero:
                 if ene.hit_num is self.attack_num:
                     continue
                 if self.common_attack_box1.check_collide(ene.head_box):
-                    ene.change_state(enemy.enemy.state_hit)
+                    ene.change_state(enemy.enemy.state_hit, self)
                 elif self.common_attack_box1.check_collide(ene.body_box):
-                    ene.change_state(enemy.enemy.state_hit)
+                    ene.change_state(enemy.enemy.state_hit, self)
                 elif self.common_attack_box1.check_collide(ene.legs_box):
-                    ene.change_state(enemy.enemy.state_hit)
+                    ene.change_state(enemy.enemy.state_hit, self)
                 elif self.common_attack_box2.check_collide(ene.head_box):
-                    ene.change_state(enemy.enemy.state_hit)
+                    ene.change_state(enemy.enemy.state_hit, self)
                 elif self.common_attack_box2.check_collide(ene.body_box):
-                    ene.change_state(enemy.enemy.state_hit)
+                    ene.change_state(enemy.enemy.state_hit, self)
                 elif self.common_attack_box2.check_collide(ene.legs_box):
-                    ene.change_state(enemy.enemy.state_hit)
+                    ene.change_state(enemy.enemy.state_hit, self)
     def time_set(self):
         pass
