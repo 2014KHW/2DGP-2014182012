@@ -218,16 +218,16 @@ class hero:
                 if ene.hit_num is self.attack_num:
                     continue
                 if self.common_attack_box1.check_collide(ene.head_box):
-                    ene.change_state(enemy.enemy.state_hit, self)
+                    ene.change_state(enemy.enemy.state_hit)
                 elif self.common_attack_box1.check_collide(ene.body_box):
-                    ene.change_state(enemy.enemy.state_hit, self)
+                    ene.change_state(enemy.enemy.state_hit)
                 elif self.common_attack_box1.check_collide(ene.legs_box):
-                    ene.change_state(enemy.enemy.state_hit, self)
+                    ene.change_state(enemy.enemy.state_hit)
                 elif self.common_attack_box2.check_collide(ene.head_box):
-                    ene.change_state(enemy.enemy.state_hit, self)
+                    ene.change_state(enemy.enemy.state_hit)
                 elif self.common_attack_box2.check_collide(ene.body_box):
-                    ene.change_state(enemy.enemy.state_hit, self)
+                    ene.change_state(enemy.enemy.state_hit)
                 elif self.common_attack_box2.check_collide(ene.legs_box):
-                    ene.change_state(enemy.enemy.state_hit, self)
+                    ene.change_state(enemy.enemy.state_hit)
     def time_set(self):
         pass
