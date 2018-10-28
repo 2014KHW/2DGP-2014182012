@@ -9,6 +9,7 @@ class hero:
     h_image = None
     attack_image = None
     hp_image = None
+    blur_image = None
     #상수 정의
     h_stand = 0
     h_move = 25
@@ -44,6 +45,8 @@ class hero:
             hero.attack_image = load_image('../Pics/attack_effect.png')
         if hero.hp_image is None:
             hero.hp_image = load_image('../Pics/hp_bar.png')
+        if hero.blur_image is None:
+            hero.blur_image = load_image('../Pics/for_blur.png')
 
     def draw(self):
         states = {
@@ -53,10 +56,6 @@ class hero:
             hero.h_jump: self.draw_jump,
             hero.h_move: self.draw_stand
         }
-        if self.look is False:
-            hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
-        else:
-            hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
 
         states[self.state]()
 
@@ -67,10 +66,28 @@ class hero:
 
 
     def draw_stand(self):
+
+        if self.look is False:
+            hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+        else:
+            hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
+
         self.frame = (self.frame + 1) % 7
     def draw_attack(self):
 
+        if self.frame is 0 or self.frame is 1:
+            if self.look is False:
+                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, '', self.x, self.y, 60, 60)
+            else:
+                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, 'h', self.x, self.y, 60, 60)
+        else:
+            if self.look is False:
+                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+            else:
+                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
+
         self.frame = (self.frame + 1) % 7
+
         if self.look is False:
             hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, '', self.x + 25, self.y - 12, 75, 75)
         else:
@@ -96,6 +113,12 @@ class hero:
                 self.state = hero.h_stand
 
     def draw_jump(self):
+
+        if self.look is False:
+            hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+        else:
+            hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
+
         if self.ascend is True:
             self.frame = (self.frame + 1) % 7
         else:
