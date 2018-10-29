@@ -37,6 +37,9 @@ class hero:
         self.go_L = gol
         self.go_R = gor
         self.look = look
+        self.dashing = False
+        self.dash_dist = 0
+        self.dash_dir = 0
         #히트박스
         self.body_box = rectangle.rectangle(self.x, self.y-10, 14, 10)
         self.common_attack_box1 = rectangle.rectangle(self.x + 17, self.y - 11, 17, 33)
@@ -164,11 +167,13 @@ class hero:
             self.frame = 0
             self.ascend = True
         if self.y > hero.h_maxheight:
-            self.y = hero.h_maxheight
+            if self.dashing is False and self.jump is True:
+                self.y = hero.h_maxheight
             self.ascend = False
 
         if self.overwhelming is False:
             self.init_hit_boxes()
+            self.update_dash()
         score = self.check_hit_attack_with_object(E)
         self.check_hit_attack_with_enemy(E)
         return score
@@ -248,3 +253,21 @@ class hero:
                     ene.change_state(enemy.enemy.state_hit)
     def time_set(self):
         pass
+    def update_dash(self):
+        if self.dashing is False:
+            return
+        if self.jump is False:
+            self.dash_dist = 0
+            return
+        print(self.dash_dir & 10)
+        if self.dash_dir & 1 == 1:
+            self.y += self.dash_dist
+        if self.dash_dir & 10 == 10 or self.dash_dir & 10 == 2 :
+            self.y = max(self.y - self.dash_dist, 250)
+        if self.dash_dir & 100 == 100:
+            self.x -= self.dash_dist
+        if self.dash_dir & 1000 == 1000 or self.dash_dir & 1000 == 992:
+            self.x += self.dash_dist
+
+        if self.dash_dist is not 0:
+            self.dash_dist = max(self.dash_dist - 10, 0)
