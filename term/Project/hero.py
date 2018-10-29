@@ -25,6 +25,7 @@ class hero:
         self.damage = 5
         self.hp = curhp
         self.overwhelming = False #무적
+        self.del_time = 0
         #점프 관련 변수
         self.jump = jmp
         self.ascend = ascnd
@@ -40,6 +41,7 @@ class hero:
         self.dashing = False
         self.dash_dist = 0
         self.dash_dir = 0
+        self.del_sign = False
         #히트박스
         self.body_box = rectangle.rectangle(self.x, self.y-10, 14, 10)
         self.common_attack_box1 = rectangle.rectangle(self.x + 17, self.y - 11, 17, 33)
@@ -71,6 +73,10 @@ class hero:
             draw_rectangle(*self.get_bb('body'))
             #draw_rectangle(*self.get_bb('attack1'))
             #draw_rectangle(*self.get_bb('attack2'))
+        else:
+            elapsed_time = time.time()
+            if elapsed_time - self.del_time > 0.3:
+                self.del_sign = True
 
 
     def draw_stand(self):
