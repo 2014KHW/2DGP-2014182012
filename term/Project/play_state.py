@@ -220,6 +220,7 @@ def handle_events():
                     continue
                 else:
                     he.overwhelming = True
+            H[-2].del_time = time.time()
             H[-1].dash_dist = 30
             H[-1].dashing = True
             H[-1].dash_dir = 0
@@ -266,9 +267,18 @@ def update():
     if len(E) is not 0:
         for ene in E:
             ene.update(stage_state)
+            if len(H) is 1:
+                ene.dst_attack = H[0]
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
                     obj.update()# 적 공격 오브젝트 이동 부분
+    if len(H) is not 0:
+        for num in range(len(H) - 1):
+            if H[num].del_sign is True:
+                H.pop(num)
+                num -= 1
+                continue
+
 
     stage_elapsed_time = time.time()
     if stage_state is stage_start:
