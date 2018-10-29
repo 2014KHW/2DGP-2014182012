@@ -61,20 +61,29 @@ class hero:
 
         states[self.state]()
 
-        hero.hp_image.clip_draw(int(125 * (1-self.hp/100)), 0, 125 - int(125 * (1-self.hp/100)), 9, self.x - int(125 * (1-self.hp/100))/2, self.y + 50, 100 - int(125 * (1-self.hp/100))*0.8, 20)
-        draw_rectangle(*self.get_bb('body'))
-        #draw_rectangle(*self.get_bb('attack1'))
-        #draw_rectangle(*self.get_bb('attack2'))
+        if self.overwhelming is False:
+            hero.hp_image.clip_draw(int(125 * (1 - self.hp / 100)), 0, 125 - int(125 * (1 - self.hp / 100)), 9,\
+                                    self.x - int(125 * (1 - self.hp / 100)) / 2, self.y + 50,\
+                                    100 - int(125 * (1 - self.hp / 100)) * 0.8, 20)
+            draw_rectangle(*self.get_bb('body'))
+            #draw_rectangle(*self.get_bb('attack1'))
+            #draw_rectangle(*self.get_bb('attack2'))
 
 
     def draw_stand(self):
 
-        if self.look is False:
-            hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
-        else:
-            hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
+        if self.overwhelming is False:
+            if self.look is False:
+                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+            else:
+                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
 
-        self.frame = (self.frame + 1) % 7
+            self.frame = (self.frame + 1) % 7
+        else:
+            if self.look is False:
+                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, '', self.x, self.y, 60, 60)
+            else:
+                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, 'h', self.x, self.y, 60, 60)
     def draw_attack(self):
 
         if clamp(0, self.frame, 2):
@@ -88,7 +97,8 @@ class hero:
             else:
                 hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
 
-        self.frame = (self.frame + 1) % 7
+        if self.overwhelming is False:
+            self.frame = (self.frame + 1) % 7
 
         if self.look is False:
             hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, '', self.x + 25, self.y - 12, 75, 75)
@@ -99,7 +109,7 @@ class hero:
             self.attack_frame = (self.attack_frame + 1) % 4
             if self.attack_frame is 0:
                 self.attack_effect = False
-        if self.jump is True:
+        if self.jump is True and self.overwhelming is False:
             if self.ascend is True:
                 self.y += 2
             else:
@@ -115,16 +125,22 @@ class hero:
                 self.state = hero.h_stand
 
     def draw_jump(self):
+        if self.overwhelming is False:
+            if self.look is False:
+                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+            else:
+                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
 
-        if self.look is False:
-            hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+            if self.ascend is True:
+                self.frame = (self.frame + 1) % 7
+            else:
+                self.frame = 6
         else:
-            hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
+            if self.look is False:
+                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, '', self.x, self.y, 60, 60)
+            else:
+                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, 'h', self.x, self.y, 60, 60)
 
-        if self.ascend is True:
-            self.frame = (self.frame + 1) % 7
-        else:
-            self.frame = 6
     def update(self, E):
         if self.state is hero.h_jump:
             if self.ascend is True:
@@ -151,7 +167,8 @@ class hero:
             self.y = hero.h_maxheight
             self.ascend = False
 
-        self.init_hit_boxes()
+        if self.overwhelming is False:
+            self.init_hit_boxes()
         score = self.check_hit_attack_with_object(E)
         self.check_hit_attack_with_enemy(E)
         return score
