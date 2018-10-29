@@ -84,7 +84,8 @@ def enter():
     global stage_start_time, stage_state
     global E_appear_speed, E_appear_time_ratio
     global hit
-    global shake
+    global shake, up_key_on, down_key_on, left_key_on, right_key_on
+    global dash_dir # 1: 상 10: 하 100: 좌 1000: 우
 
     ground_x, ground_y = 400, 100
     shake = shaking()
@@ -99,6 +100,8 @@ def enter():
     E_appear_time_ratio = 5#몬스터 출현 속도 증가량
     stage_start_time = time.time() #스테이지 시작 시간
     stage_state = stage_start
+
+    up_key_on, down_key_on, left_key_on, right_key_on = False, False, False, False
 
     E = []
 
@@ -153,52 +156,85 @@ def draw():
     update_canvas()
 
 def handle_events():
-    global H, stop
+    global H, stop, up_key_on, down_key_on, left_key_on, right_key_on
     eve = get_events()
     for e in eve:
         if e.type is SDL_QUIT:
             print('quit')
             game_framework.quit()
-        if e.key is SDLK_w:
-            if H[-1].jump is True :
-                return
-            H[-1].jump = True
-            H[-1].state = hero.hero.h_jump
-            H[-1].frame = 0
-        if e.key is SDLK_j:
+        if e.key == SDLK_j:
             if H[-1].state is hero.hero.h_stand or H[-1].state is hero.hero.h_move:
                 return
             H[-1].attack_type = random.randint(0, 1)
             H[-1].state = hero.hero.h_attack[H[-1].attack_type]
             H[-1].frame = 0
             H[-1].attack_num = (H[-1].attack_num + 1)%10
+        if (e.type, e.key) == (SDL_KEYDOWN, SDLK_w):
+            up_key_on = True
+            down_key_on = False
+            if H[-1].jump is True :
+                return
+            H[-1].jump = True
+            H[-1].state = hero.hero.h_jump
+            H[-1].frame = 0
+        if (e.type, e.key) == (SDL_KEYDOWN, SDLK_s):
+            down_key_on = True
+            up_key_on = False
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_a):
             H[-1].go_L = True
             if H[-1].state is hero.hero.h_stand:
                 H[-1].state = hero.hero.h_move
                 H[-1].frame = 0
+            left_key_on = True
+            right_key_on = False
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_d) :
             H[-1].go_R = True
             if H[-1].state is hero.hero.h_stand:
                 H[-1].state = hero.hero.h_move
                 H[-1].frame = 0
+            right_key_on = True
+            left_key_on = False
+        if (e.type, e.key) == (SDL_KEYUP, SDLK_w):
+            up_key_on = False
+        if (e.type, e.key) == (SDL_KEYUP, SDLK_s):
+            down_key_on = False
         if (e.type, e.key) == (SDL_KEYUP, SDLK_a):
             H[-1].go_L = False
             if (H[-1].go_L, H[-1].go_R) == (False, False):
                 if H[-1].state is hero.hero.h_move:
                     H[-1].state = hero.hero.h_stand
                     H[-1].frame = 0
+            left_key_on = False
         if (e.type, e.key) == (SDL_KEYUP, SDLK_d) :
             H[-1].go_R = False
             if (H[-1].go_L, H[-1].go_R) == (False, False):
                 if H[-1].state is hero.hero.h_move:
                     H[-1].state = hero.hero.h_stand
                     H[-1].frame = 0
-        if (e.type, e.key) == (SDL_KEYUP, SDLK_k):
+            right_key_on = False
+        if (e.type, e.key) == (SDL_KEYDOWN, SDLK_k):
             H += [hero.hero(H[-1].x, H[-1].y, H[-1].state, H[-1].hp, H[-1].jump, H[-1].ascend, H[-1].attack_effect, \
                   H[-1].attack_type, H[-1].attack_frame, H[-1].go_L, H[-1].go_R, H[-1].look)]
+            for he in H:
+                if he is H[-1]:
+                    continue
+                else:
+                    he.overwhelming = True
+            H[-1].dash_dist = 30
+            H[-1].dashing = True
+            H[-1].dash_dir = 0
+            H[-1].ascend = False
+            if up_key_on is True:
+                H[-1].dash_dir += 1
+                H[-1].dash_dist = 45
+            if down_key_on is True:
+                H[-1].dash_dir += 10
+            if left_key_on is True:
+                H[-1].dash_dir += 100
+            if right_key_on is True:
+                H[-1].dash_dir += 1000
 
-        if (e.type, e.key) == (SDL_KEYUP, SDLK_p):
+        if (e.type, e.key) == (SDL_KEYDOWN, SDLK_p):
             if stop is True:
                 stop = False
             else:
