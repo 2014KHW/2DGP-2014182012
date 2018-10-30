@@ -42,6 +42,51 @@ class phrase:
         if self.x < phrase.original_pos:
             self.x = phrase.original_pos
 
+class number:
+    number_image = None
+    def __init__(self, num):
+        self.num = num
+        self.draw_list = [0, 0, 0, 0, 0, 0, 0]
+        self.updated_list = [0, 0, 0, 0, 0, 0, 0]
+        self.cur_num = 0
+        self.change = False
+        self.x = 0
+        self.y = [450, 450, 450, 450, 450, 450]
+        if number.number_image is None:
+            number.number_image = load_image('../Pics/nums.png')
+
+    def draw(self):
+        for i in range(6):
+            number.number_image.clip_draw(self.x, self.y[i], 50, 50, 800 - (i + 1) * 25, 600 - 25)
+    def change_num(self, num):
+        self.num = num
+        index = -1
+        while num is not 0:
+            z_to_n = num % 10
+            self.updated_list[index] = z_to_n
+            num //= 10
+            index -= 1
+        return
+
+    def update(self):
+        for i in range(6):
+            self.cur_num = self.draw_list[i]
+            self.num = self.updated_list[i]
+            self.update_number(i)
+    def update_number(self, index):
+        if self.num == self.cur_num:
+            return
+        elif self.num > self.cur_num:
+            self.y[index] -= 3
+            if self.y[index] <= self.num * 50:
+                self.y[index] = self.num * 50
+                self.cur_num = self.num
+        elif self.num < self.cur_num:
+            self.y[index] += 3
+            if self.y[index] >= self.num * 50:
+                self.y[index] = self.num * 50
+                self.cur_num = self.num
+
 class shaking:
     def __init__(self):
         self.shake_strength = 3
@@ -86,6 +131,7 @@ def enter():
     global hit
     global shake, up_key_on, down_key_on, left_key_on, right_key_on
     global dash_dir # 1: 상 10: 하 100: 좌 1000: 우
+    global cur_score
 
     ground_x, ground_y = 400, 100
     shake = shaking()
@@ -103,9 +149,11 @@ def enter():
 
     up_key_on, down_key_on, left_key_on, right_key_on = False, False, False, False
 
-    E = []
-
     H = [hero.hero()]
+
+    E = [enemy.enemy(H[-1])]
+
+    cur_score = number(0)
 
     phase = [phrase(stage_state)]
 
@@ -119,6 +167,7 @@ def draw():
     global stage_start_time, stage_elapsed_time
     global stage_state
     global stop
+    global cur_score
 
     if stop is True:
         return
@@ -152,6 +201,8 @@ def draw():
     if len(H) is not 0:
         for he in H:
             he.draw()
+
+    cur_score.draw()
 
     update_canvas()
 
@@ -250,6 +301,7 @@ def update():
     global stage_term, stamp
     global shake
     global stop
+    global cur_score
 
     if stop is True:
         if len(H) is not 0:
@@ -279,6 +331,7 @@ def update():
                 num -= 1
                 continue
 
+    cur_score.update()
 
     stage_elapsed_time = time.time()
     if stage_state is stage_start:
@@ -307,6 +360,7 @@ def update():
 
     total_elapse = stage_elapsed_time - total_start
     total_score += H[-1].update(E)
+    cur_score.change_num(total_score)
     shake.give_shake()
     shake.shake()
 
