@@ -1,6 +1,7 @@
 from pico2d import *
 import game_framework
 import json
+from collections import OrderedDict
 import play_state
 import menu_state
 
@@ -18,7 +19,6 @@ class score:
         self.new_record = False
         self.score = 0
         self.kills = 0
-        self.time = 0
         self.x, self.y = 400, (5 - order_num) * 120
         if score.alphabet == None:
             score.alphabet = load_image('../Pics/alphabet.png')
@@ -59,13 +59,60 @@ class score:
             length += 1
         return length
 
+def rearrange_list(left, right):
+    global s_data, s_list
+
+    i , j , pivot = left, right - 1, right
+
+    if left < right:
+        while i < j:
+            if s_list[i].score >= s_list[pivot].score:
+                i += 1
+            elif s_list[j].score <= s_list[pivot].score:
+                j -= 1
+            else:
+                swap_score(s_list[i], s_list[j])
+                i += 1
+
+        if s_list[pivot].score > s_list[i].score:
+            swap_score(s_list[i], s_list[pivot])
+            pivot = i
+        else:
+            swap_score(s_list[i + 1], s_list[pivot])
+            pivot = i + 1
+
+        rearrange_list(left, pivot - 1)
+        rearrange_list(pivot, right)
+
+def swap_score(dst, src):
+    tmp = score()
+    init_score(tmp, dst)
+    init_score(dst, src)
+    init_score(src, tmp)
+    del tmp
+
+def init_score(dst, src):
+    dst.score = src.score
+    dst.kills = src.kills
+
+def store_data():
+    global s_data, cur_score
+
+    s_data = OrderedDict()
+    s_data = cur_score
+
+    with open('score_table.json', 'w') as f:
+        json.dump(s_data, f, ensure_ascii=False, indent="\t")
+
+
 def enter():
     global s_data, s_file, s_list
     global cur_score
 
-    s_data = []
-    s_file = open('score_table.json')
+    s_data = {}
+    s_file = open('score_table.json', 'r')
     cur_score = json.load(s_file)
+    s_file.close()
 
     s_list = []
 
@@ -81,7 +128,23 @@ def enter():
         s_list += [s]
         num += 1
 
+    for i in s_list:
+        print(i.score)
 
+    rearrange_list(0, len(s_list) - 1)
+
+    for i in s_list:
+        print(i.score)
+
+def exit():
+    global s_data, s_file, s_list
+    global cur_score
+
+
+
+    s_file.close()
+    del s_list
+    del s_data
 
 def draw():
     global s_list
@@ -97,9 +160,6 @@ def handle_events():
     pass
 
 def update():
-    pass
-
-def exit():
     pass
 
 def pause():
