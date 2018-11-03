@@ -1,0 +1,34 @@
+{
+	"player":[
+		{
+		"name" : "empty",
+		"score" : 0,
+		"kills" : 0,
+		"time" : 0
+		},
+		{
+		"name" : "empty",
+		"score" : 0,
+		"kills" : 0,
+		"time" : 0
+		},
+		{
+		"name" : "empty",
+		"score" : 0,
+		"kills" : 0,
+		"time" : 0
+		},
+		{
+		"name" : "empty",
+		"score" : 0,
+		"kills" : 0,
+		"time" : 0
+		},
+		{
+		"name" : "empty",
+		"score" : 0,
+		"kills" : 0,
+		"time" : 0
+		}
+	]
+}
