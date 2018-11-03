@@ -2,33 +2,33 @@
 	"player":[
 		{
 		"name" : "empty",
-		"score" : 0,
-		"kills" : 0,
-		"time" : 0
+		"score" : 951007,
+		"kills" : 11,
+		"time" : 77
 		},
 		{
 		"name" : "empty",
-		"score" : 0,
-		"kills" : 0,
+		"score" : 123456,
+		"kills" : 111,
+		"time" : 945875
+		},
+		{
+		"name" : "simpson",
+		"score" : 789,
+		"kills" : 56,
 		"time" : 0
 		},
 		{
-		"name" : "empty",
-		"score" : 0,
-		"kills" : 0,
-		"time" : 0
+		"name" : "robot",
+		"score" : 123115,
+		"kills" : 10,
+		"time" : 710826
 		},
 		{
-		"name" : "empty",
-		"score" : 0,
-		"kills" : 0,
-		"time" : 0
-		},
-		{
-		"name" : "empty",
-		"score" : 0,
-		"kills" : 0,
-		"time" : 0
+		"name" : "babo",
+		"score" : 33,
+		"kills" : 1235,
+		"time" : 65
 		}
 	]
 }
