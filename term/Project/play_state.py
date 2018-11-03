@@ -12,6 +12,7 @@ import enemy
 total_elapse = 0
 total_start = time.time()
 total_score = 0
+toral_kills = 0
 
 #상수 선언 부분
 stage_start = 20
