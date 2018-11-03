@@ -164,9 +164,9 @@ enemy 사망				O
 
 || SCORE_STATE ||
 *기록할 목록을 가져오기
-	-elapsed time
-	-kills
-	-score
+	-elapsed time			O
+	-kills				O
+	-score				O
 
 (+추가) 공격 시 흐린이미지 적용		O
 (+추가) 공중에서 k키를 누를경우 대쉬	O
