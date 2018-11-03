@@ -1,6 +1,7 @@
 from pico2d import *
 import game_framework
 import json
+import time
 from collections import OrderedDict
 import play_state
 import menu_state
@@ -19,7 +20,11 @@ class score:
         self.new_record = False
         self.score = 0
         self.kills = 0
-        self.x, self.y = 400, (5 - order_num) * 120
+        self.decided = False
+        self.new = False
+        self.no_written = True
+        self.order = order_num
+        self.x, self.y = 400, (5 - self.order) * 120
         if score.alphabet == None:
             score.alphabet = load_image('../Pics/alphabet.png')
         if score.table == None:
@@ -28,7 +33,10 @@ class score:
             score.number = load_image('../Pics/nums_opposite.png')
 
     def draw(self):
-        score.table.clip_draw(0, 60, 400, 60, self.x, self.y - 60, 800, 120)
+        if self.new is True:
+            score.table.clip_draw(0, 0, 400, 60, self.x, self.y - 60, 800, 120)
+        else:
+            score.table.clip_draw(0, 60, 400, 60, self.x, self.y - 60, 800, 120)
         self.draw_name()
         self.draw_score()
         self.draw_kills()
@@ -58,6 +66,17 @@ class score:
             num *= 10
             length += 1
         return length
+    def set_order(self, num):
+        self.order = num;
+        self.y = (5 - self.order) * 120
+    def put(self, char):
+        if len(self.name) > 10:
+            return
+        if self.no_written == True:
+            self.name = char
+            self.no_written = False
+        else:
+            self.name = self.name + char
 
 def rearrange_list(left, right):
     global s_data, s_list
@@ -84,19 +103,33 @@ def rearrange_list(left, right):
         rearrange_list(left, pivot - 1)
         rearrange_list(pivot, right)
 
-def swap_score(dst, src):
+def swap_score(dst, src, sort = True):
     tmp = score()
-    init_score(tmp, dst)
-    init_score(dst, src)
-    init_score(src, tmp)
+    init_score(tmp, dst, sort)
+    init_score(dst, src, sort)
+    init_score(src, tmp, sort)
     del tmp
 
-def init_score(dst, src):
+def init_score(dst, src, sort = True):
     dst.score = src.score
     dst.kills = src.kills
+    dst.name = src.name
+    dst.new = src.new
+    if sort is True:
+        dst.order = src.order
+        dst.set_order(dst.order)
+    dst.no_written = src.no_written
+
+def get_new():
+    global s_list
+    for i in range(len(s_list)):
+        if s_list[i].new is True:
+            return s_list[i]
 
 def store_data():
     global s_data, cur_score
+
+    update_score_list()
 
     s_data = OrderedDict()
     s_data = cur_score
@@ -104,14 +137,29 @@ def store_data():
     with open('score_table.json', 'w') as f:
         json.dump(s_data, f, ensure_ascii=False, indent="\t")
 
+def update_score_list():
+    global cur_score, s_list
+
+    for i in range(len(s_list)):
+        cur_score['player'][i]['name'] = s_list[i].name
+        cur_score['player'][i]['score'] = s_list[i].score
+        cur_score['player'][i]['kills'] = s_list[i].kills
 
 def enter():
     global s_data, s_file, s_list
     global cur_score
+    global recent_score
 
     s_data = {}
     s_file = open('score_table.json', 'r')
     cur_score = json.load(s_file)
+
+    recent_score = score()
+    recent_score.new = True
+    recent_score.score = play_state.total_score
+    recent_score.kills = play_state.total_kills
+    recent_score.name = "new"
+
     s_file.close()
 
     s_list = []
@@ -124,17 +172,33 @@ def enter():
         s.name = l['name']
         s.score = l['score']
         s.kills = l['kills']
-        s.time = l['time']
+        s.no_written = False
+        s.new = False
         s_list += [s]
         num += 1
 
-    for i in s_list:
-        print(i.score)
-
     rearrange_list(0, len(s_list) - 1)
 
-    for i in s_list:
-        print(i.score)
+    compare_and_put_score()
+
+def compare_and_put_score():
+    global recent_score, s_list
+
+    for i in range(len(s_list)):
+        if recent_score.score >= s_list[i].score:
+            print(recent_score.score, s_list[i].score)
+            move_list(i)
+            return
+
+def move_list(num):
+    global s_list, recent_score
+
+    i = num
+    #3부터 들어가지않고 무조건 0이됨
+    while i < len(s_list):
+        print(i)
+        swap_score(recent_score, s_list[i], False)
+        i += 1
 
 def exit():
     global s_data, s_file, s_list
@@ -157,10 +221,117 @@ def draw():
     update_canvas()
 
 def handle_events():
-    pass
+    global decide_time
+    eve = get_events()
+    for e in eve:
+        if (e.type, e.key) == (SDL_KEYDOWN, SDLK_RETURN):
+            decide_name()
+            decide_time = time.time()
+        elif (e.type, e.key) == (SDL_KEYDOWN, SDLK_BACKSPACE):
+            n = get_new()
+            n.name = n.name[0 : len(n.name) - 1]
+        elif (e.type, e.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
+            game_framework.change_state(menu_state)
+        elif e.type == SDL_QUIT:
+            store_data()
+            game_framework.quit()
+        elif e.type == SDL_KEYDOWN:
+            if e.key == SDLK_a:
+                n = get_new()
+                n.put('a')
+            elif e.key == SDLK_b:
+                n = get_new()
+                n.put('b')
+            elif e.key == SDLK_c:
+                n = get_new()
+                n.put('c')
+            elif e.key == SDLK_d:
+                n = get_new()
+                n.put('d')
+            elif e.key == SDLK_e:
+                n = get_new()
+                n.put('e')
+            elif e.key == SDLK_f:
+                n = get_new()
+                n.put('f')
+            elif e.key == SDLK_g:
+                n = get_new()
+                n.put('g')
+            elif e.key == SDLK_h:
+                n = get_new()
+                n.put('h')
+            elif e.key == SDLK_i:
+                n = get_new()
+                n.put('i')
+            elif e.key == SDLK_j:
+                n = get_new()
+                n.put('j')
+            elif e.key == SDLK_k:
+                n = get_new()
+                n.put('k')
+            elif e.key == SDLK_l:
+                n = get_new()
+                n.put('l')
+            elif e.key == SDLK_m:
+                n = get_new()
+                n.put('m')
+            elif e.key == SDLK_n:
+                n = get_new()
+                n.put('n')
+            elif e.key == SDLK_o:
+                n = get_new()
+                n.put('o')
+            elif e.key == SDLK_p:
+                n = get_new()
+                n.put('p')
+            elif e.key == SDLK_q:
+                n = get_new()
+                n.put('q')
+            elif e.key == SDLK_r:
+                n = get_new()
+                n.put('r')
+            elif e.key == SDLK_s:
+                n = get_new()
+                n.put('s')
+            elif e.key == SDLK_t:
+                n = get_new()
+                n.put('t')
+            elif e.key == SDLK_u:
+                n = get_new()
+                n.put('u')
+            elif e.key == SDLK_v:
+                n = get_new()
+                n.put('v')
+            elif e.key == SDLK_w:
+                n = get_new()
+                n.put('w')
+            elif e.key == SDLK_x:
+                n = get_new()
+                n.put('x')
+            elif e.key == SDLK_y:
+                n = get_new()
+                n.put('y')
+            elif e.key == SDLK_z:
+                n = get_new()
+                n.put('z')
+
+def decide_name():
+    n = get_new()
+    if n.decided == True:
+        return
+    n.decided = True
 
 def update():
-    pass
+    global decide_time
+
+    n = get_new()
+    if n.decided == True and decide_time is not 0:
+        print('in')
+        if time.time() - decide_time > 0.5:
+            store_data()
+            game_framework.change_state(menu_state)
+
+    delay(0.03)
 
 def pause():
     pass
@@ -172,5 +343,7 @@ if __name__ == '__main__':
     import sys
     current_module = sys.modules[__name__]
     open_canvas()
+    play_state.total_score = 12300
+    play_state.total_kills = 310
     game_framework.run(current_module)
     close_canvas()
