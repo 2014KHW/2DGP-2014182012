@@ -10,6 +10,7 @@ class hero:
     attack_image = None
     hp_image = None
     blur_image = None
+    hit_image = None
     #상수 정의
     h_stand = 0
     h_move = 25
@@ -46,6 +47,7 @@ class hero:
         self.body_box = rectangle.rectangle(self.x, self.y-10, 14, 10)
         self.common_attack_box1 = rectangle.rectangle(self.x + 17, self.y - 11, 17, 33)
         self.common_attack_box2 = rectangle.rectangle(self.x + 4, self.y - 19, 35, 19)
+        self.hit = []
         if hero.h_image is None:
             hero.h_image = load_image('../Pics/hero.png')
         if hero.attack_image is None:
@@ -54,6 +56,8 @@ class hero:
             hero.hp_image = load_image('../Pics/hp_bar.png')
         if hero.blur_image is None:
             hero.blur_image = load_image('../Pics/for_blur.png')
+        if hero.hit_image is None:
+            hero.hit_image = load_image('../Pics/hero_hit.png')
 
     def draw(self):
         states = {
@@ -61,10 +65,14 @@ class hero:
             hero.h_attack[0]: self.draw_attack,
             hero.h_attack[1]: self.draw_attack,
             hero.h_jump: self.draw_jump,
-            hero.h_move: self.draw_stand
+            hero.h_move: self.draw_stand,
         }
 
         states[self.state]()
+
+        if len(self.hit) is not 0:
+            for h in range(len(self.hit)):
+                self.hit[h].draw()
 
         if self.overwhelming is False:
             hero.hp_image.clip_draw(int(125 * (1 - self.hp / 100)), 0, 125 - int(125 * (1 - self.hp / 100)), 9,\
@@ -180,6 +188,15 @@ class hero:
         if self.overwhelming is False:
             self.init_hit_boxes()
             self.update_dash()
+
+            if len(self.hit) is not 0:
+                for h in range(len(self.hit) - 1):
+                    if self.hit[h].del_sign is True:
+                        self.hit.pop(h)
+                        continue
+                    self.hit[h].update(self)
+
+
         score = self.check_hit_attack_with_object(E)
         self.check_hit_attack_with_enemy(E)
         return score
@@ -290,3 +307,28 @@ class hero:
 
         if self.dash_dist is not 0:
             self.dash_dist = max(self.dash_dist - 10, 0)
+
+class hit:
+    hit_over_time = 5
+    def __init__(self, deg, h):
+        self.deg = deg + 180
+        self.rad = math.pi * (deg + 180) / 180
+        self.x = h.x + 5 * math.cos(self.rad)
+        self.y = h.y + 5 * math.sin(self.rad)
+        self.hit_frame = 0
+        self.hit_begin_time = time.time()
+        self.del_sign = False
+    def draw(self):
+        if self.del_sign is True:
+            return
+        hero.hit_image.clip_composite_draw(self.hit_frame * 50, 0, 50, 50, \
+                                           self.deg, '', \
+                                           self.x + 5 * math.cos(self.rad), self.y + 5 * math.sin(self.rad), 20, 20)
+    def update(self, h):
+        self.x = h.x + 5 * math.cos(self.rad)
+        self.y = h.y + 5 * math.sin(self.rad)
+        if self.del_sign is True:
+            return
+        self.hit_frame = (self.hit_frame + 1) % 4
+        if time.time() - self.hit_begin_time > hit.hit_over_time:
+            self.del_sign = True
