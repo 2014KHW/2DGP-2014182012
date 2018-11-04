@@ -325,6 +325,12 @@ def update():
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
                     obj.update()# 적 공격 오브젝트 이동 부분
+
+    for i in range(len(E) - 1):
+        if E[i].del_sign is True:
+            if E[i].state_elapsed_time - E[i].state_changed_time > 2:
+                E.pop(i)
+
     if len(H) is not 0:
         for num in range(len(H) - 1):
             if H[num].del_sign is True:
