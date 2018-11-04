@@ -46,10 +46,8 @@ class phrase:
 class number:
     number_image = None
     def __init__(self, num):
-        self.num = num
+        self.score = num
         self.draw_list = [0, 0, 0, 0, 0, 0, 0]
-        self.updated_list = [0, 0, 0, 0, 0, 0, 0]
-        self.cur_num = 0
         self.change = False
         self.x = 0
         self.y = [450, 450, 450, 450, 450, 450]
@@ -60,33 +58,34 @@ class number:
         for i in range(6):
             number.number_image.clip_draw(self.x, self.y[i], 50, 50, 800 - (i + 1) * 25, 600 - 25)
     def change_num(self, num):
-        self.num = num
-        index = -1
-        while num is not 0:
-            z_to_n = num % 10
-            self.updated_list[index] = z_to_n
-            num //= 10
-            index -= 1
+        if self.score == num:
+            return
+
+        self.score = num
+        tmp_score = num
+
+        for i in range(len(self.draw_list)):
+            self.draw_list[i] = tmp_score % 10
+            print(tmp_score, tmp_score % 10)
+            tmp_score //= 10
+
         return
 
-    def update(self):
-        for i in range(6):
-            self.cur_num = self.draw_list[i]
-            self.num = self.updated_list[i]
+    def update(self, num):
+        self.change_num(num)
+        for i in range(len(self.draw_list) - 1):
             self.update_number(i)
     def update_number(self, index):
-        if self.num == self.cur_num:
+        if self.y[index] == (9 - self.draw_list[index]) * 50:
             return
-        elif self.num > self.cur_num:
+        elif self.y[index] > (9 - self.draw_list[index]) * 50:
             self.y[index] -= 3
-            if self.y[index] <= self.num * 50:
-                self.y[index] = self.num * 50
-                self.cur_num = self.num
-        elif self.num < self.cur_num:
+            if self.y[index] <= (9 - self.draw_list[index]) * 50:
+                self.y[index] = (9 - self.draw_list[index]) * 50
+        elif self.y[index] < (9 - self.draw_list[index]) * 50:
             self.y[index] += 3
-            if self.y[index] >= self.num * 50:
-                self.y[index] = self.num * 50
-                self.cur_num = self.num
+            if self.y[index] >= (9 - self.draw_list[index]) * 50:
+                self.y[index] = (9 - self.draw_list[index]) * 50
 
 class shaking:
     def __init__(self):
@@ -338,7 +337,7 @@ def update():
                 num -= 1
                 continue
 
-    cur_score.update()
+    cur_score.update(total_score)
 
     stage_elapsed_time = time.time()
     if stage_state is stage_start:
@@ -367,7 +366,6 @@ def update():
 
     total_elapse = stage_elapsed_time - total_start
     total_score += H[-1].update(E)
-    cur_score.change_num(total_score)
     shake.give_shake()
     shake.shake()
 
