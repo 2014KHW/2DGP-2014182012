@@ -247,16 +247,27 @@ class hero:
                     continue
                 if self.common_attack_box1.check_collide(ene.head_box):
                     ene.change_state(enemy.enemy.state_hit)
+                    self.give_damage(ene)
                 elif self.common_attack_box1.check_collide(ene.body_box):
                     ene.change_state(enemy.enemy.state_hit)
+                    self.give_damage(ene)
                 elif self.common_attack_box1.check_collide(ene.legs_box):
                     ene.change_state(enemy.enemy.state_hit)
+                    self.give_damage(ene)
                 elif self.common_attack_box2.check_collide(ene.head_box):
                     ene.change_state(enemy.enemy.state_hit)
+                    self.give_damage(ene)
                 elif self.common_attack_box2.check_collide(ene.body_box):
                     ene.change_state(enemy.enemy.state_hit)
+                    self.give_damage(ene)
                 elif self.common_attack_box2.check_collide(ene.legs_box):
                     ene.change_state(enemy.enemy.state_hit)
+                    self.give_damage(ene)
+    def give_damage(self, e):
+        e.hp -= self.damage
+        if e.hp < 0:
+            e.change_state(enemy.enemy.state_die[e.lev - 1])
+
     def time_set(self):
         pass
     def update_dash(self):
