@@ -16,6 +16,7 @@ class enemy:
     state_attack = 50
     state_attack_ready = 5050
     state_hit = 75
+    state_die = [100, 125, 100]
     #시간 상수 정의 부분
     attack_ready_time = 1
     hit_recovery_time = 1.5
@@ -37,6 +38,7 @@ class enemy:
         self.time_storage = 0
         self.from_attack = False
         self.look = False
+        self.del_sign = False
         #공격 관련 변수
         self.attack_time = random.uniform(0.1, 2)
         self.attack_object = []
@@ -72,14 +74,16 @@ class enemy:
             enemy.state_move: self.enter_move,
             enemy.state_stand: self.enter_stand,
             enemy.state_attack_ready: self.enter_attack_ready,
-            enemy.state_attack: self.enter_attack
+            enemy.state_attack: self.enter_attack,
+            enemy.state_die[self.lev - 1]: self.enter_die
         }
         exit =  {
             enemy.state_hit: self.exit_hit,
             enemy.state_move: self.exit_move,
             enemy.state_stand: self.exit_stand,
             enemy.state_attack_ready: self.exit_attack_ready,
-            enemy.state_attack: self.exit_attack
+            enemy.state_attack: self.exit_attack,
+            enemy.state_die[self.lev - 1]: self.exit_die
         }
 
         exit[self.state]()
@@ -120,6 +124,9 @@ class enemy:
         self.do_not_change_hit_frame = False
         self.do_not_change_frame = False
         self.hit_num = (self.dst_attack.attack_num + 1) % 10
+    def enter_die(self):
+        self.frame = 0
+        self.del_sign = True
     def exit_stand(self):
         self.from_attack = False
     def exit_move(self):
@@ -130,7 +137,8 @@ class enemy:
         self.from_attack = True
     def exit_hit(self):
         self.from_attack = False
-
+    def exit_die(self):
+        self.from_attack = False
     def draw(self):
         if self.state is enemy.state_appear:
             enemy.appear(self)
@@ -181,7 +189,8 @@ class enemy:
             enemy.state_move: self.update_move,
             enemy.state_stand: self.update_stand,
             enemy.state_attack_ready: self.update_attack_ready,
-            enemy.state_attack: self.update_attack
+            enemy.state_attack: self.update_attack,
+            enemy.state_die[self.lev - 1]: self.update_die
         }
 
         self.state_elapsed_time = time.time()
@@ -247,6 +256,16 @@ class enemy:
             if self.lev is not 3:
                 self.attack_object += [arrow(self.x, self.y, self.lev, self.dst_attack)]
             self.change_state(enemy.state_stand)
+
+    def update_die(self):
+        if self.frame is 6 and self.do_not_change_frame is False:
+            self.do_not_change_frame = True
+            self.state_changed_time = time.time()
+            return
+
+        if self.do_not_change_frame is True:
+            self.state_elapsed_time = time.time()
+
     def time_set(self):
         time_storage = self.state_elapsed_time - self.state_changed_time
         self.state_elapsed_time = time.time()
