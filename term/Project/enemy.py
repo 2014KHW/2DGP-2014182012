@@ -201,6 +201,8 @@ class enemy:
             if self.attack_object[num].del_sign is True:
                 self.attack_object.pop(num)
 
+        if self.del_sign is True:
+            return
         self.update_hitbox()
         self.change_looking()
 
