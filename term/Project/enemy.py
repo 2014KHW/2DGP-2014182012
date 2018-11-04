@@ -319,4 +319,5 @@ class arrow:
             return
         if self.hit_box.check_collide(self.dst_attack.body_box):
             self.dst_attack.hp -= self.damage
+            self.dst_attack.hit += [hero.hit(self.degree, self.dst_attack)]
             self.del_sign = True
