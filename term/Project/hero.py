@@ -245,6 +245,8 @@ class hero:
                     continue
                 if ene.hit_num is self.attack_num:
                     continue
+                if ene.del_sign is True:
+                    continue
                 if self.common_attack_box1.check_collide(ene.head_box):
                     ene.change_state(enemy.enemy.state_hit)
                     self.give_damage(ene)
