@@ -6,6 +6,8 @@ from collections import OrderedDict
 import play_state
 import menu_state
 
+none_decided = False
+
 class score:
     alphabet = None
     number = None
@@ -316,16 +318,28 @@ def handle_events():
                 n.put('z')
 
 def decide_name():
+    global none_decided
+
     n = get_new()
+    if n == None:
+        none_decided = True
+        return
     if n.decided == True:
         return
     n.decided = True
 
 def update():
     global decide_time
+    global none_decided
 
     n = get_new()
-    if n.decided == True and decide_time is not 0:
+    if n == None:
+        if none_decided is False:
+            pass
+        elif time.time() - decide_time > 0.5:
+            store_data()
+            game_framework.change_state(menu_state)
+    elif n.decided == True and decide_time is not 0:
         print('in')
         if time.time() - decide_time > 0.5:
             store_data()
