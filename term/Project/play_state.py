@@ -66,7 +66,6 @@ class number:
 
         for i in range(len(self.draw_list)):
             self.draw_list[i] = tmp_score % 10
-            print(tmp_score, tmp_score % 10)
             tmp_score //= 10
 
         return
@@ -325,10 +324,10 @@ def update():
                 for obj in ene.attack_object:
                     obj.update()# 적 공격 오브젝트 이동 부분
 
-    for i in range(len(E) - 1):
-        if E[i].del_sign is True:
-            if E[i].state_elapsed_time - E[i].state_changed_time > 2:
-                E.pop(i)
+    for i in range(len(E)):
+        if E[i - 1].del_sign is True:
+            if E[i - 1].state_elapsed_time - E[i - 1].state_changed_time > 2:
+                E.pop(i - 1)
 
     if len(H) is not 0:
         for num in range(len(H) - 1):
