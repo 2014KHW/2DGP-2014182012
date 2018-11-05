@@ -310,22 +310,23 @@ class hero:
 class hit:
     hit_over_time = 2
     def __init__(self, deg, h):
-        self.deg = deg + 180
+        self.deg = deg + 3.14
         self.rad = math.pi * (deg + 180) / 180
         self.x = h.x + 5 * math.cos(self.rad)
         self.y = h.y + 5 * math.sin(self.rad)
         self.hit_frame = 0
         self.hit_begin_time = time.time()
         self.del_sign = False
+        print(deg, self.deg)
     def draw(self):
         if self.del_sign is True:
             return
         hero.hit_image.clip_composite_draw(self.hit_frame * 50, 0, 50, 50, \
                                            self.deg, '', \
-                                           self.x + 5 * math.cos(self.rad), self.y + 5 * math.sin(self.rad), 40, 40)
+                                           self.x + 5 * math.cos(self.deg), self.y + 5 * math.sin(self.deg), 40, 40)
     def update(self, h):
-        self.x = h.x - 30 * math.cos(self.rad)
-        self.y = h.y - 30 * math.sin(self.rad)
+        self.x = h.x + 30 * math.cos(self.deg)
+        self.y = h.y + 30 * math.sin(self.deg)
         if self.del_sign is True:
             return
         self.hit_frame = (self.hit_frame + 1) % 4
