@@ -12,7 +12,7 @@ import enemy
 total_elapse = 0
 total_start = time.time()
 total_score = 0
-toral_kills = 0
+total_kills = 0
 
 #상수 선언 부분
 stage_start = 20
@@ -141,8 +141,8 @@ def enter():
     stage_term = load_image('../Pics/vacant_bar.png')
     stamp = load_image('../Pics/hero_stamp.png')
 
-    E_appear_speed = 2 #몬스터 출현 속도
-    E_appear_time_ratio = 5#몬스터 출현 속도 증가량
+    E_appear_speed = 0.5 #몬스터 출현 속도
+    E_appear_time_ratio = 0.5 #몬스터 출현 속도 증가량
     stage_start_time = time.time() #스테이지 시작 시간
     stage_state = stage_start
 
@@ -159,6 +159,8 @@ def enter():
 def exit():
     global ground, H, E, hit, slot, stage_term, stamp
     del ground, H, E, hit, slot, stage_term, stamp
+
+    print('called')
 
 def draw():
     global sky, ground, slot, stage_term, stamp, H, E, phase
@@ -324,12 +326,18 @@ def update():
                 for obj in ene.attack_object:
                     obj.update()# 적 공격 오브젝트 이동 부분
 
-    for i in range(len(E)):
-        if E[i - 1].del_sign is True:
-            if E[i - 1].state_elapsed_time - E[i - 1].state_changed_time > 2:
-                E.pop(i - 1)
+    e_num = len(E)
+    for i in range(e_num):
+        if E[i].del_sign is True:
+            if E[i].state_elapsed_time - E[i].state_changed_time > 2:
+                E.pop(i)
+                e_num -= 1
 
+    print(len(H))
     if len(H) is not 0:
+        if H[-1].hp < 0:
+            game_framework.change_state(score_state)
+            return
         for num in range(len(H)):
             if H[num - 1].del_sign is True:
                 H.pop(num - 1)
