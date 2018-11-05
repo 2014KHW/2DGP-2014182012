@@ -190,11 +190,11 @@ class hero:
             self.update_dash()
 
             if len(self.hit) is not 0:
-                for h in range(len(self.hit) - 1):
-                    if self.hit[h].del_sign is True:
-                        self.hit.pop(h)
+                for h in range(len(self.hit)):
+                    if self.hit[h - 1].del_sign is True:
+                        self.hit.pop(h - 1)
                         continue
-                    self.hit[h].update(self)
+                    self.hit[h - 1].update(self)
 
 
         score = self.check_hit_attack_with_object(E)
@@ -295,7 +295,6 @@ class hero:
         if self.jump is False:
             self.dash_dist = 0
             return
-        print(self.dash_dir & 10)
         if self.dash_dir & 1 == 1:
             self.y += self.dash_dist
         if self.dash_dir & 10 == 10 or self.dash_dir & 10 == 2 :
@@ -309,7 +308,7 @@ class hero:
             self.dash_dist = max(self.dash_dist - 10, 0)
 
 class hit:
-    hit_over_time = 5
+    hit_over_time = 2
     def __init__(self, deg, h):
         self.deg = deg + 180
         self.rad = math.pi * (deg + 180) / 180
@@ -323,10 +322,10 @@ class hit:
             return
         hero.hit_image.clip_composite_draw(self.hit_frame * 50, 0, 50, 50, \
                                            self.deg, '', \
-                                           self.x + 5 * math.cos(self.rad), self.y + 5 * math.sin(self.rad), 20, 20)
+                                           self.x + 5 * math.cos(self.rad), self.y + 5 * math.sin(self.rad), 40, 40)
     def update(self, h):
-        self.x = h.x + 5 * math.cos(self.rad)
-        self.y = h.y + 5 * math.sin(self.rad)
+        self.x = h.x - 30 * math.cos(self.rad)
+        self.y = h.y - 30 * math.sin(self.rad)
         if self.del_sign is True:
             return
         self.hit_frame = (self.hit_frame + 1) % 4
