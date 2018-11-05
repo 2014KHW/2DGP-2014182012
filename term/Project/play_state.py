@@ -330,9 +330,9 @@ def update():
                 E.pop(i - 1)
 
     if len(H) is not 0:
-        for num in range(len(H) - 1):
-            if H[num].del_sign is True:
-                H.pop(num)
+        for num in range(len(H)):
+            if H[num - 1].del_sign is True:
+                H.pop(num - 1)
                 num -= 1
                 continue
 
