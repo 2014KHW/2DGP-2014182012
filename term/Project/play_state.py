@@ -224,9 +224,7 @@ def handle_events():
             down_key_on = False
             if H[-1].jump is True :
                 return
-            H[-1].jump = True
-            H[-1].state = hero.hero.h_jump
-            H[-1].frame = 0
+            H[-1].change_state(hero.hero.h_jump)
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_s):
             down_key_on = True
             up_key_on = False
@@ -300,7 +298,7 @@ def update():
     global stage_term, stamp
     global shake
     global stop
-    global cur_score
+    global cur_score, up_key_on
 
     if stop is True:
         if len(H) is not 0:
@@ -338,6 +336,8 @@ def update():
         if H[-1].hp < 0:
             game_framework.change_state(score_state)
             return
+        if up_key_on is True and H[-1].jump is False:
+            H[-1].change_state(hero.hero.h_jump)
         for num in range(len(H)):
             if H[num - 1].del_sign is True:
                 H.pop(num - 1)
