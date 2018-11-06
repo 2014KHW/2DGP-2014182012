@@ -314,6 +314,7 @@ def update():
         if none_decided is False:
             pass
         elif time.time() - decide_time > 0.5:
+            none_decided = False
             store_data()
             game_framework.change_state(menu_state)
     elif n.decided == True and decide_time is not 0:
