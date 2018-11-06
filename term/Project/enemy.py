@@ -43,6 +43,7 @@ class enemy:
         self.attack_time = random.uniform(0.1, 2)
         self.attack_object = []
         self.dst_attack = dst_hero
+        self.last_dst_attack = None
         #이동 관련 변수
         self.move_time = random.uniform(0.1, 0.5)
         self.stand_time = random.uniform(1, 2)
@@ -123,7 +124,7 @@ class enemy:
         self.frame, self.hit_frame = 0, 0
         self.do_not_change_hit_frame = False
         self.do_not_change_frame = False
-        self.hit_num = (self.dst_attack.attack_num + 1) % 10
+        self.hit_num = (self.last_dst_attack.attack_num + 1) % 10
     def enter_die(self):
         self.frame = 0
         self.del_sign = True
@@ -181,7 +182,7 @@ class enemy:
             if self.hit_frame is 3:
                 self.do_not_change_hit_frame = True
 
-    def update(self, cur_state):
+    def update(self, cur_state, last_hero):
         global stage_state
         stage_state = cur_state
         update = {
@@ -203,6 +204,10 @@ class enemy:
 
         if self.del_sign is True:
             return
+
+        for ao in range(len(self.attack_object)):
+            self.attack_object[ao - 1].last_dst_attack = last_hero
+
         self.update_hitbox()
         self.change_looking()
 
@@ -256,7 +261,7 @@ class enemy:
             return
         if self.frame is 6:
             if self.lev is not 3:
-                self.attack_object += [arrow(self.x, self.y, self.lev, self.dst_attack)]
+                self.attack_object += [arrow(self.x, self.y, self.lev, self.dst_attack, self.last_dst_attack)]
             self.change_state(enemy.state_stand)
 
     def update_die(self):
@@ -278,13 +283,14 @@ class enemy:
 
 class arrow:
     image = []
-    def __init__(self, og_x, og_y, lev, dst_hero):
+    def __init__(self, og_x, og_y, lev, dst_hero, last_dst_hero):
         self.x, self.y = og_x, og_y
         self.level = lev
         self.speed = 5
         self.damage = self.level * 5
         self.attack_num = -1
         self.dst_attack = dst_hero
+        self.last_dst_attack = last_dst_hero
         if self.dst_attack.x < self.x:
             self.opposite = True
         else:
@@ -317,9 +323,8 @@ class arrow:
     def check_hit_attack_with_hero(self):
         if self.del_sign is True:
             return
-        if self.hit_box.check_collide(self.dst_attack.body_box):
-            if self.dst_attack.del_sign is True:
-                return
-            self.dst_attack.hp -= self.damage
-            self.dst_attack.hit += [hero.hit(self.degree, self.dst_attack)]
+        print(self.last_dst_attack.x, self.last_dst_attack.y)
+        if self.hit_box.check_collide(self.last_dst_attack.body_box):
+            self.last_dst_attack.hp -= self.damage
+            self.last_dst_attack.hit += [hero.hit(self.degree, self.last_dst_attack)]
             self.del_sign = True
