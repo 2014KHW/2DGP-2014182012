@@ -331,7 +331,7 @@ def update():
         if E[i].del_sign is True:
             if E[i].state_elapsed_time - E[i].state_changed_time > 2:
                 E.pop(i)
-                e_num -= 1
+                break
 
     print(len(H))
     if len(H) is not 0:
@@ -341,8 +341,7 @@ def update():
         for num in range(len(H)):
             if H[num - 1].del_sign is True:
                 H.pop(num - 1)
-                num -= 1
-                continue
+                break
 
     cur_score.update(total_score)
 
