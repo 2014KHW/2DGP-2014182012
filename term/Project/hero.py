@@ -20,7 +20,7 @@ class hero:
     h_attack = [100, 125]
     h_maxheight = 400
     h_minheight = 250
-    def __init__(self, px=400, py=250, pstate=h_stand, curhp=100, jmp=False, ascnd=False, attck_effect=False,\
+    def __init__(self, px=400, py=250, pstate=h_stand, curhp=100, jmp=False, ascnd=True, attck_effect=False,\
                  attck_type=random.randint(0,1), attck_frame=0, gol=False, gor=False, look=False):
         self.x, self.y = px, py
         self.frame = 0
@@ -32,6 +32,7 @@ class hero:
         #점프 관련 변수
         self.jump = jmp
         self.ascend = ascnd
+        self.stand_begin_time = time.time()
         #공격 관련 변수
         self.attack_effect = attck_effect
         self.attack_type = attck_type
@@ -173,7 +174,7 @@ class hero:
         global enemies, tmp_score
 
         update = {
-            hero.h_stand: self.update_move,
+            hero.h_stand: self.update_stand,
             hero.h_move: self.update_move,
             hero.h_attack[0]: self.update_attack,
             hero.h_attack[1]: self.update_attack,
@@ -196,7 +197,13 @@ class hero:
 
         return tmp_score
     def update_stand(self):
-        pass
+        print(time.time() - self.stand_begin_time)
+        if self.go_R is True:
+            self.change_state(hero.h_move)
+        if self.go_L is True:
+            self.change_state(hero.h_move)
+        if time.time() - self.stand_begin_time > 5:
+            self.change_state(hero.h_jump)
     def update_move(self):
         if self.go_R is True:
             self.x += 5
@@ -258,10 +265,12 @@ class hero:
     def enter_stand(self):
         self.frame = 0
         self.state = hero.h_stand
+        self.stand_begin_time = time.time()
     def enter_attack(self):
         self.frame = 0
         self.state = hero.h_attack
     def enter_jump(self):
+        self.jump = True
         self.frame = 0
         self.state = hero.h_jump
     def exit_move(self):
