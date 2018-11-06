@@ -318,6 +318,8 @@ class arrow:
         if self.del_sign is True:
             return
         if self.hit_box.check_collide(self.dst_attack.body_box):
+            if self.dst_attack.del_sign is True:
+                return
             self.dst_attack.hp -= self.damage
             self.dst_attack.hit += [hero.hit(self.degree, self.dst_attack)]
             self.del_sign = True
