@@ -320,8 +320,11 @@ def update():
     if len(E) is not 0:
         for ene in E:
             ene.update(stage_state)
-            if len(H) is 1:
-                ene.dst_attack = H[0]
+            if len(H) is not 0:
+                for h in H:
+                    if h.del_sign is False:
+                        ene.dst_attack = h
+                        break
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
                     obj.update()# 적 공격 오브젝트 이동 부분
