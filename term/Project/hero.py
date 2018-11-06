@@ -186,8 +186,8 @@ class hero:
             self.ascend = False
 
         if self.overwhelming is False:
-            self.init_hit_boxes()
             self.update_dash()
+            self.init_hit_boxes()
 
             if len(self.hit) is not 0:
                 for h in range(len(self.hit)):
@@ -195,7 +195,6 @@ class hero:
                         self.hit.pop(h - 1)
                         break
                     self.hit[h - 1].update(self)
-
 
         score = self.check_hit_attack_with_object(E)
         self.check_hit_attack_with_enemy(E)
@@ -306,8 +305,6 @@ class hero:
 
         if self.dash_dist is not 0:
             self.dash_dist = max(self.dash_dist - 10, 0)
-
-        self.init_hit_boxes()
 
 class hit:
     hit_over_time = 2
