@@ -20,7 +20,7 @@ class enemy:
     #시간 상수 정의 부분
     attack_ready_time = 1
     hit_recovery_time = 1.5
-    def __init__(self, dst_hero):
+    def __init__(self, dst_hero, last_hero):
         self.x, self.y = random.randint(0+50, 800-50), 400
         self.draw_scale_x, self.draw_scale_y = 50, 200
         self.frame = 0
@@ -43,7 +43,7 @@ class enemy:
         self.attack_time = random.uniform(0.1, 2)
         self.attack_object = []
         self.dst_attack = dst_hero
-        self.last_dst_attack = None
+        self.last_dst_attack = last_hero
         #이동 관련 변수
         self.move_time = random.uniform(0.1, 0.5)
         self.stand_time = random.uniform(1, 2)
