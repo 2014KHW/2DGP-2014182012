@@ -323,7 +323,10 @@ class arrow:
     def check_hit_attack_with_hero(self):
         if self.del_sign is True:
             return
-        print(self.last_dst_attack.x, self.last_dst_attack.y)
+        if self.last_dst_attack.state is hero.hero.h_stand:
+            return
+        if self.last_dst_attack.state is hero.hero.h_move:
+            return
         if self.hit_box.check_collide(self.last_dst_attack.body_box):
             self.last_dst_attack.hp -= self.damage
             self.last_dst_attack.hit += [hero.hit(self.degree, self.last_dst_attack)]
