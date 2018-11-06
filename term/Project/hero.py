@@ -193,7 +193,7 @@ class hero:
                 for h in range(len(self.hit)):
                     if self.hit[h - 1].del_sign is True:
                         self.hit.pop(h - 1)
-                        continue
+                        break
                     self.hit[h - 1].update(self)
 
 
@@ -306,6 +306,8 @@ class hero:
 
         if self.dash_dist is not 0:
             self.dash_dist = max(self.dash_dist - 10, 0)
+
+        self.init_hit_boxes()
 
 class hit:
     hit_over_time = 2
