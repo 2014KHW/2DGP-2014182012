@@ -238,83 +238,60 @@ def handle_events():
             store_data()
             game_framework.quit()
         elif e.type == SDL_KEYDOWN:
+            n = get_new()
+            if n is None:
+                return
             if e.key == SDLK_a:
-                n = get_new()
                 n.put('a')
             elif e.key == SDLK_b:
-                n = get_new()
                 n.put('b')
             elif e.key == SDLK_c:
-                n = get_new()
                 n.put('c')
             elif e.key == SDLK_d:
-                n = get_new()
                 n.put('d')
             elif e.key == SDLK_e:
-                n = get_new()
                 n.put('e')
             elif e.key == SDLK_f:
-                n = get_new()
                 n.put('f')
             elif e.key == SDLK_g:
-                n = get_new()
                 n.put('g')
             elif e.key == SDLK_h:
-                n = get_new()
                 n.put('h')
             elif e.key == SDLK_i:
-                n = get_new()
                 n.put('i')
             elif e.key == SDLK_j:
-                n = get_new()
                 n.put('j')
             elif e.key == SDLK_k:
-                n = get_new()
                 n.put('k')
             elif e.key == SDLK_l:
-                n = get_new()
                 n.put('l')
             elif e.key == SDLK_m:
-                n = get_new()
                 n.put('m')
             elif e.key == SDLK_n:
-                n = get_new()
                 n.put('n')
             elif e.key == SDLK_o:
-                n = get_new()
                 n.put('o')
             elif e.key == SDLK_p:
-                n = get_new()
                 n.put('p')
             elif e.key == SDLK_q:
-                n = get_new()
                 n.put('q')
             elif e.key == SDLK_r:
-                n = get_new()
                 n.put('r')
             elif e.key == SDLK_s:
-                n = get_new()
                 n.put('s')
             elif e.key == SDLK_t:
-                n = get_new()
                 n.put('t')
             elif e.key == SDLK_u:
-                n = get_new()
                 n.put('u')
             elif e.key == SDLK_v:
-                n = get_new()
                 n.put('v')
             elif e.key == SDLK_w:
-                n = get_new()
                 n.put('w')
             elif e.key == SDLK_x:
-                n = get_new()
                 n.put('x')
             elif e.key == SDLK_y:
-                n = get_new()
                 n.put('y')
             elif e.key == SDLK_z:
-                n = get_new()
                 n.put('z')
 
 def decide_name():
