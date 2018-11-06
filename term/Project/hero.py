@@ -5,6 +5,8 @@ import rectangle
 import play_state
 from pico2d import *
 
+tmp_score = 0
+
 class hero:
     h_image = None
     attack_image = None
@@ -140,7 +142,6 @@ class hero:
                     self.frame = 6
             else:
                 self.state = hero.h_stand
-
     def draw_jump(self):
         if self.overwhelming is False:
             if self.look is False:
@@ -158,32 +159,29 @@ class hero:
             else:
                 hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, 'h', self.x, self.y, 60, 60)
 
-    def update(self, E):
-        if self.state is hero.h_jump:
-            if self.ascend is True:
-                self.y += 10
-            if self.ascend is False:
-                self.y -= 5
-        if self.go_R is True:
-            self.x += 5
-            self.look = False
-            if self.state is hero.h_stand:
-                self.state = hero.h_move
-        if self.go_L is True:
-            self.x -= 5
-            self.look = True
-            if self.state is hero.h_stand:
-                self.state = hero.h_move
+    def check_max_min_height(self):
         if self.y < hero.h_minheight:
             self.jump = False
             self.y = hero.h_minheight
-            self.state = hero.h_stand
-            self.frame = 0
+            self.change_state(hero.h_stand)
             self.ascend = True
         if self.y > hero.h_maxheight:
             if self.dashing is False and self.jump is True:
                 self.y = hero.h_maxheight
             self.ascend = False
+    def update(self, E):
+        global enemies, tmp_score
+
+        update = {
+            hero.h_stand: self.update_move,
+            hero.h_move: self.update_move,
+            hero.h_attack[0]: self.update_attack,
+            hero.h_attack[1]: self.update_attack,
+            hero.h_jump: self.update_jump
+        }
+
+        enemies = E
+        update[self.state]()
 
         if self.overwhelming is False:
             self.update_dash()
@@ -196,9 +194,85 @@ class hero:
                         break
                     self.hit[h - 1].update(self)
 
-        score = self.check_hit_attack_with_object(E)
-        self.check_hit_attack_with_enemy(E)
-        return score
+        return tmp_score
+    def update_stand(self):
+        pass
+    def update_move(self):
+        if self.go_R is True:
+            self.x += 5
+            self.look = False
+            if self.state is hero.h_stand:
+                self.state = hero.h_move
+        if self.go_L is True:
+            self.x -= 5
+            self.look = True
+            if self.state is hero.h_stand:
+                self.state = hero.h_move
+    def update_attack(self):
+        global enemies, tmp_score
+        tmp_score = self.check_hit_attack_with_object(enemies)
+        self.check_hit_attack_with_enemy(enemies)
+        if self.go_R is True:
+            self.x += 5
+            self.look = False
+        if self.go_L is True:
+            self.x -= 5
+            self.look = True
+        self.check_max_min_height()
+        return tmp_score
+    def update_jump(self):
+        if self.ascend is True:
+            self.y += 10
+        if self.ascend is False:
+            self.y -= 5
+        if self.go_R is True:
+            self.x += 5
+            self.look = False
+        if self.go_L is True:
+            self.x -= 5
+            self.look = True
+        self.check_max_min_height()
+
+    def change_state(self, state):
+        enter = {
+            hero.h_move: self.enter_move,
+            hero.h_stand: self.enter_stand,
+            hero.h_attack[0]: self.enter_attack,
+            hero.h_attack[1]: self.enter_attack,
+            hero.h_jump: self.enter_jump
+        }
+        exit =  {
+            hero.h_move: self.exit_move,
+            hero.h_stand: self.exit_stand,
+            hero.h_attack[0]: self.enter_attack,
+            hero.h_attack[1]: self.enter_attack,
+            hero.h_jump: self.exit_jump
+        }
+
+        exit[self.state]()
+        self.state = state
+        enter[state]()
+    def enter_move(self):
+        self.frame = 0
+        self.state = hero.h_move
+    def enter_stand(self):
+        self.frame = 0
+        self.state = hero.h_stand
+    def enter_attack(self):
+        self.frame = 0
+        self.state = hero.h_attack
+    def enter_jump(self):
+        self.frame = 0
+        self.state = hero.h_jump
+    def exit_move(self):
+        pass
+    def exit_stand(self):
+        pass
+    def exit_attack(self):
+        pass
+    def exit_jump(self):
+        pass
+
     def init_hit_boxes(self):
         if self.look is False:
             self.body_box = rectangle.rectangle(self.x, self.y - 10, 14, 10)
