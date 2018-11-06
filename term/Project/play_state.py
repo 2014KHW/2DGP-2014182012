@@ -150,7 +150,7 @@ def enter():
 
     H = [hero.hero()]
 
-    E = [enemy.enemy(H[-1])]
+    E = [enemy.enemy(H[-1], H[-1])]
 
     cur_score = number(0)
 
@@ -159,8 +159,6 @@ def enter():
 def exit():
     global ground, H, E, hit, slot, stage_term, stamp
     del ground, H, E, hit, slot, stage_term, stamp
-
-    print('called')
 
 def draw():
     global sky, ground, slot, stage_term, stamp, H, E, phase
@@ -351,7 +349,7 @@ def update():
     if stage_state is stage_start:
         if stage_elapsed_time - stage_start_time >= E_appear_speed:
             E_appear_speed += E_appear_time_ratio
-            E += [enemy.enemy(H[-1])]
+            E += [enemy.enemy(H[-1], H[-1])]
         if stage_elapsed_time - stage_start_time >= stage_start:
             stage_start_time = time.time()
             stage_elapsed_time = time.time()
