@@ -319,7 +319,7 @@ def update():
 
     if len(E) is not 0:
         for ene in E:
-            ene.update(stage_state)
+            ene.update(stage_state, H[-1])
             if len(H) is not 0:
                 for h in H:
                     if h.del_sign is False:
@@ -336,7 +336,6 @@ def update():
                 E.pop(i)
                 break
 
-    print(len(H))
     if len(H) is not 0:
         if H[-1].hp < 0:
             game_framework.change_state(score_state)
