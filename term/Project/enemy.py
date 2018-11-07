@@ -78,7 +78,7 @@ class enemy:
             enemy.state_attack: self.enter_attack,
             enemy.state_die[self.lev - 1]: self.enter_die
         }
-        exit =  {
+        exit = {
             enemy.state_hit: self.exit_hit,
             enemy.state_move: self.exit_move,
             enemy.state_stand: self.exit_stand,
@@ -326,6 +326,8 @@ class arrow:
         if self.last_dst_attack.state is hero.hero.h_stand:
             return
         if self.last_dst_attack.state is hero.hero.h_move:
+            return
+        if self.last_dst_attack.state is hero.hero.h_jump_ready:
             return
         if self.hit_box.check_collide(self.last_dst_attack.body_box):
             self.last_dst_attack.hp -= self.damage

@@ -224,7 +224,7 @@ def handle_events():
             down_key_on = False
             if H[-1].jump is True :
                 return
-            H[-1].change_state(hero.hero.h_jump)
+            H[-1].change_state(hero.hero.h_jump_ready)
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_s):
             down_key_on = True
             up_key_on = False
@@ -244,6 +244,9 @@ def handle_events():
             left_key_on = False
         if (e.type, e.key) == (SDL_KEYUP, SDLK_w):
             up_key_on = False
+            if H[-1].jump is True or H[-1].state != hero.hero.h_jump_ready:
+                return
+            H[-1].change_state(hero.hero.h_jump)
         if (e.type, e.key) == (SDL_KEYUP, SDLK_s):
             down_key_on = False
         if (e.type, e.key) == (SDL_KEYUP, SDLK_a):
@@ -336,8 +339,6 @@ def update():
         if H[-1].hp < 0:
             game_framework.change_state(score_state)
             return
-        if up_key_on is True and H[-1].jump is False:
-            H[-1].change_state(hero.hero.h_jump)
         for num in range(len(H)):
             if H[num - 1].del_sign is True:
                 H.pop(num - 1)

@@ -16,6 +16,7 @@ class hero:
     #상수 정의
     h_stand = 0
     h_move = 25
+    h_jump_ready = 50
     h_jump = 75
     h_attack = [100, 125]
     h_maxheight = 400
@@ -31,6 +32,8 @@ class hero:
         self.del_time = 0
         #점프 관련 변수
         self.jump = jmp
+        self.quake_body = 0
+        self.quake_right = False
         self.ascend = ascnd
         self.stand_begin_time = time.time()
         #공격 관련 변수
@@ -67,10 +70,10 @@ class hero:
             hero.h_stand: self.draw_stand,
             hero.h_attack[0]: self.draw_attack,
             hero.h_attack[1]: self.draw_attack,
+            hero.h_jump_ready: self.draw_jump_ready,
             hero.h_jump: self.draw_jump,
             hero.h_move: self.draw_stand,
         }
-
         states[self.state]()
 
         if len(self.hit) is not 0:
@@ -143,6 +146,19 @@ class hero:
                     self.frame = 6
             else:
                 self.state = hero.h_stand
+    def draw_jump_ready(self):
+        if self.overwhelming is False:
+            if self.look is False:
+                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x + self.quake_body, self.y, 50, 50)
+            else:
+                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x + self.quake_body, self.y, 50, 50)
+
+            self.frame = (self.frame + 1) % 7
+        else:
+            if self.look is False:
+                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, '', self.x, self.y, 60, 60)
+            else:
+                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, 'h', self.x, self.y, 60, 60)
     def draw_jump(self):
         if self.overwhelming is False:
             if self.look is False:
@@ -178,9 +194,9 @@ class hero:
             hero.h_move: self.update_move,
             hero.h_attack[0]: self.update_attack,
             hero.h_attack[1]: self.update_attack,
+            hero.h_jump_ready: self.update_jump_ready,
             hero.h_jump: self.update_jump
         }
-
         enemies = E
         update[self.state]()
 
@@ -197,7 +213,6 @@ class hero:
 
         return tmp_score
     def update_stand(self):
-        print(time.time() - self.stand_begin_time)
         if self.go_R is True:
             self.change_state(hero.h_move)
         if self.go_L is True:
@@ -227,6 +242,12 @@ class hero:
             self.look = True
         self.check_max_min_height()
         return tmp_score
+    def update_jump_ready(self):
+        if self.quake_body > 0:
+            self.quake_body -= 1
+            self.quake_body =- self.quake_body
+        elif self.quake_body < 0:
+            self.quake_body = -self.quake_body
     def update_jump(self):
         if self.ascend is True:
             self.y += 10
@@ -246,38 +267,44 @@ class hero:
             hero.h_stand: self.enter_stand,
             hero.h_attack[0]: self.enter_attack,
             hero.h_attack[1]: self.enter_attack,
+            hero.h_jump_ready: self.enter_jump_ready,
             hero.h_jump: self.enter_jump
         }
         exit =  {
             hero.h_move: self.exit_move,
             hero.h_stand: self.exit_stand,
-            hero.h_attack[0]: self.enter_attack,
-            hero.h_attack[1]: self.enter_attack,
+            hero.h_attack[0]: self.exit_attack,
+            hero.h_attack[1]: self.exit_attack,
+            hero.h_jump_ready: self.exit_jump_ready,
             hero.h_jump: self.exit_jump
         }
+
 
         exit[self.state]()
         self.state = state
         enter[state]()
+
+        print(self.state, state)
     def enter_move(self):
         self.frame = 0
-        self.state = hero.h_move
     def enter_stand(self):
         self.frame = 0
-        self.state = hero.h_stand
         self.stand_begin_time = time.time()
     def enter_attack(self):
         self.frame = 0
-        self.state = hero.h_attack
+    def enter_jump_ready(self):
+        self.frame = 0
+        self.quake_body = 10
     def enter_jump(self):
         self.jump = True
         self.frame = 0
-        self.state = hero.h_jump
     def exit_move(self):
         pass
     def exit_stand(self):
         pass
     def exit_attack(self):
+        pass
+    def exit_jump_ready(self):
         pass
     def exit_jump(self):
         pass
@@ -399,7 +426,6 @@ class hit:
         self.hit_frame = 0
         self.hit_begin_time = time.time()
         self.del_sign = False
-        print(deg, self.deg)
     def draw(self):
         if self.del_sign is True:
             return
