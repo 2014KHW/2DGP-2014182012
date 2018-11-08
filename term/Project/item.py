@@ -27,37 +27,41 @@ class pill:
             pill.image = load_image('../Pics/hp_recovery.png')
 
     def draw(self):
-        pill.image.clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x, self.y, 100, 100)
+        pill.image.clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x, self.y + self.v_deg, 100, 100)
 
     def update(self, h):
         if self.shake_right is True:
-            self.shake_deg += 1
-            if self.shake_deg >= self.shake_max:
+            self.shake_deg += 1*math.pi/180
+            print(self.shake_deg, self.shake_max*math.pi/180, self.shake_deg > self.shake_max*math.pi/180)
+            if self.shake_deg >= self.shake_max*math.pi/180:
                 self.shake_right = False
                 self.shake_max = random.randint(10, 20)
         else:
-            self.shake_deg -= 1
-            if self.shake_deg <= self.shake_min:
+            self.shake_deg -= 1*math.pi/180
+            print(self.shake_deg, self.shake_min*math.pi/180, self.shake_deg < self.shake_min*math.pi/180)
+            if self.shake_deg <= self.shake_min*math.pi/180:
                 self.shake_right = True
                 self.shake_min = -random.randint(10, 20)
 
         if self.up is True:
-            self.v_deg += 5 + self.a
+            self.v_deg += 2 + self.a
             if self.v_deg > 0:
-                self.a -= 0.3
+                self.a -= 0.2
             else:
-                self.a += 0.3
+                self.a += 0.2
             if self.v_deg >= self.ascend_max:
                 self.up = False
+                self.a = 0
         else:
-            self.v_deg -= 5 + self.a
+            self.v_deg -= 2 + self.a
             if self.v_deg < 0:
-                self.a -= 0.3
+                self.a -= 0.2
             else:
-                self.a += 0.3
+                self.a += 0.2
             self.a -= 0.3
             if self.v_deg <= self.ascend_min:
                 self.up = True
+                self.a = 0
 
         self.init_box()
         self.check_body_with_hero(h)
