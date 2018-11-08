@@ -10,7 +10,7 @@ class pill:
     ascend_max = 20
     ascend_min = -20
     def __init__(self):
-        self.x, self.y = random.randint(0 + 100, 800 - 100), 275
+        self.x, self.y = random.randint(0 + 100, 800 - 100), 250
         self.recovery_ratio = 0.4
         self.shake_max = random.randint(10, 20)
         self.shake_min = -random.randint(10, 20)
@@ -19,7 +19,7 @@ class pill:
         self.up = True
         self.v_deg = 0
         self.a = 0
-        self.hit_box = rectangle.rectangle(self.x, self.y, 20, 35)
+        self.hit_box = rectangle.rectangle(self.x, self.y, 20/5, 35/5)
 
         self.del_sign = False
 
@@ -27,7 +27,7 @@ class pill:
             pill.image = load_image('../Pics/hp_recovery.png')
 
     def draw(self):
-        pill.image.clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x, self.y + self.v_deg, 100, 100)
+        pill.image.clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x, self.y + self.v_deg, 40, 40)
 
     def update(self, h):
         if self.shake_right is True:
@@ -67,7 +67,7 @@ class pill:
         self.check_body_with_hero(h)
 
     def init_box(self):
-        self.hit_box = rectangle.rectangle(self.x, self.y, 20, 35)
+        self.hit_box = rectangle.rectangle(self.x, self.y, 20/5, 35/5)
     def check_body_with_hero(self, h):
         if self.hit_box.check_collide(h.body_box):
             self.give_hill(h)
