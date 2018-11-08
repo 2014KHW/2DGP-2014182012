@@ -69,4 +69,4 @@ class pill:
             self.give_hill(h)
             self.del_sign = True
     def give_hill(self, h):
-        h.hp += hero.hero.max_hp*self.recovery_ratio
+        h.hp = min(hero.hero.max_hp, h.hp + hero.hero.max_hp*self.recovery_ratio)
