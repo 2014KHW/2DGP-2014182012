@@ -21,6 +21,8 @@ class pill:
         self.a = 0
         self.hit_box = rectangle.rectangle(self.x, self.y, 20, 35)
 
+        self.del_sign = False
+
         if pill.image == None:
             pill.image = load_image('../Pics/hp_recovery.png')
 
@@ -65,5 +67,6 @@ class pill:
     def check_body_with_hero(self, h):
         if self.hit_box.check_collide(h.body_box):
             self.give_hill(h)
+            self.del_sign = True
     def give_hill(self, h):
         h.hp += hero.hero.max_hp*self.recovery_ratio
