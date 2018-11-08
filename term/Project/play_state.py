@@ -131,6 +131,7 @@ def enter():
     global shake, up_key_on, down_key_on, left_key_on, right_key_on
     global dash_dir # 1: 상 10: 하 100: 좌 1000: 우
     global cur_score
+    global Item, Item_create_time
 
     ground_x, ground_y = 400, 100
     shake = shaking()
@@ -151,6 +152,9 @@ def enter():
     H = [hero.hero()]
 
     E = [enemy.enemy(H[-1], H[-1])]
+    
+    Item = []
+    Item_create_time = 1
 
     cur_score = number(0)
 
