@@ -20,6 +20,7 @@ class hero:
     h_jump = 75
     h_attack = [100, 125]
     h_minheight = 250
+    max_hp = 100
     def __init__(self, px=400, py=250, pstate=h_stand, curhp=100, jmp=False, ascnd=True, attck_effect=False,\
                  attck_type=random.randint(0,1), attck_frame=0, gol=False, gor=False, look=False):
         self.x, self.y = px, py
@@ -396,6 +397,7 @@ class hero:
                 elif self.common_attack_box2.check_collide(ene.legs_box):
                     ene.change_state(enemy.enemy.state_hit)
                     self.give_damage(ene)
+
     def give_damage(self, e):
         e.hp -= self.damage
         if e.hp < 0:
