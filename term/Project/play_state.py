@@ -8,6 +8,7 @@ import math
 import rectangle
 import hero
 import enemy
+import item
 
 total_elapse = 0
 total_start = time.time()
@@ -131,7 +132,7 @@ def enter():
     global shake, up_key_on, down_key_on, left_key_on, right_key_on
     global dash_dir # 1: 상 10: 하 100: 좌 1000: 우
     global cur_score
-    global Item, Item_create_time
+    global Item, Item_last_create_time, Item_create_time
 
     ground_x, ground_y = 400, 100
     shake = shaking()
@@ -152,8 +153,9 @@ def enter():
     H = [hero.hero()]
 
     E = [enemy.enemy(H[-1], H[-1])]
-    
+
     Item = []
+    Item_last_create_time = time.time()
     Item_create_time = 1
 
     cur_score = number(0)
@@ -204,6 +206,10 @@ def draw():
     if len(H) is not 0:
         for he in H:
             he.draw()
+
+    if len(Item) is not 0:
+        for i in Item:
+            i.draw()
 
     cur_score.draw()
 
@@ -306,6 +312,7 @@ def update():
     global shake
     global stop
     global cur_score, up_key_on
+    global Item, Item_last_create_time, Item_create_time
 
     if stop is True:
         if len(H) is not 0:
@@ -318,8 +325,10 @@ def update():
         stage_elapsed_time = time.time()
         total_start = stage_elapsed_time - total_elapse
         stage_start_time = stage_elapsed_time - time_storage
+        time_storage = stage_elapsed_time - Item_last_create_time
+        Item_last_create_time = stage_elapsed_time - time_storage
         return
-
+    #업데이트 부분
     if len(E) is not 0:
         for ene in E:
             ene.update(stage_state, H[-1])
@@ -331,9 +340,12 @@ def update():
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
                     obj.update()# 적 공격 오브젝트 이동 부분
+    if len(Item) is not 0:
+        for i in Item:
+            i.update(H[-1])
 
-    e_num = len(E)
-    for i in range(e_num):
+    #del_sign에의한 삭제부분
+    for i in range(len(E)):
         if E[i].del_sign is True:
             if E[i].state_elapsed_time - E[i].state_changed_time > 2:
                 E.pop(i)
@@ -347,6 +359,13 @@ def update():
             if H[num - 1].del_sign is True:
                 H.pop(num - 1)
                 break
+    if len(Item) is not 0:
+        for i in range(len(Item)):
+            if Item[i].del_sign is True:
+                Item.pop(i)
+                break
+
+
 
     cur_score.update(total_score)
 
@@ -362,6 +381,9 @@ def update():
             phase += [phrase(stage_pass)]
             stage_term = load_image('../Pics/vacant_bar2.png')
             stamp = load_image('../Pics/enemy_stamp.png')
+        if stage_elapsed_time - Item_last_create_time > Item_create_time:
+            Item += [item.pill()]
+            Item_last_create_time = time.time()
 
     if stage_state is stage_pass:
         if stage_elapsed_time - stage_start_time >= stage_pass:
