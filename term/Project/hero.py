@@ -43,6 +43,7 @@ class hero:
         self.attack_type = attck_type
         self.attack_frame = attck_frame
         self.attack_num = 0
+        self.extra_hit_size_x, self.extra_hit_size_y = 0, 0
         #이동 관련 변수
         self.go_L = gol
         self.go_R = gor
@@ -126,9 +127,9 @@ class hero:
             self.frame = (self.frame + 1) % 7
 
         if self.look is False:
-            hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, '', self.x + 25, self.y - 12, 75, 75)
+            hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, '', self.x + 25, self.y - 12, 75 + self.extra_hit_size_x, 75 + self.extra_hit_size_y)
         else:
-            hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, 'h', self.x - 25, self.y - 12, 75, 75)
+            hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, 'h', self.x - 25, self.y - 12, 75 + self.extra_hit_size_x, 75 + self.extra_hit_size_y)
 
         if self.attack_effect is True:
             self.attack_frame = (self.attack_frame + 1) % 4
@@ -318,12 +319,12 @@ class hero:
     def init_hit_boxes(self):
         if self.look is False:
             self.body_box = rectangle.rectangle(self.x, self.y - 10, 14, 10)
-            self.common_attack_box1 = rectangle.rectangle(self.x + 25, self.y, 25, 20)
-            self.common_attack_box2 = rectangle.rectangle(self.x + 10, self.y - 25, 10, 10)
+            self.common_attack_box1 = rectangle.rectangle(self.x + 25, self.y, 25 + self.extra_hit_size_x, 20 + self.extra_hit_size_y)
+            self.common_attack_box2 = rectangle.rectangle(self.x + 10, self.y - 25, 10 + self.extra_hit_size_x, 10 + self.extra_hit_size_y)
         else:
             self.body_box = rectangle.rectangle(self.x, self.y - 10, 14, 10)
-            self.common_attack_box1 = rectangle.rectangle(self.x - 25, self.y, 25, 20)
-            self.common_attack_box2 = rectangle.rectangle(self.x - 10, self.y - 25, 10, 10)
+            self.common_attack_box1 = rectangle.rectangle(self.x - 25, self.y, 25 + self.extra_hit_size_x, 20 + self.extra_hit_size_y)
+            self.common_attack_box2 = rectangle.rectangle(self.x - 10, self.y - 25, 10 + self.extra_hit_size_x, 10 + self.extra_hit_size_y)
     def get_bb(self, str):
         if str is 'body':
             return self.x - 14, self.y - 20, self.x + 14, self.y
