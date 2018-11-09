@@ -382,7 +382,7 @@ def update():
             stage_term = load_image('../Pics/vacant_bar2.png')
             stamp = load_image('../Pics/enemy_stamp.png')
         if stage_elapsed_time - Item_last_create_time > Item_create_time:
-            Item += [item.pill()]
+            Item += [item.item(random.randint(1, 2))]
             Item_last_create_time = time.time()
 
     if stage_state is stage_pass:
