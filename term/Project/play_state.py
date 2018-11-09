@@ -275,7 +275,7 @@ def handle_events():
             right_key_on = False
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_k):
             H += [hero.hero(H[-1].x, H[-1].y, H[-1].state, H[-1].hp, H[-1].jump, H[-1].ascend, H[-1].attack_effect, \
-                  H[-1].attack_type, H[-1].attack_frame, H[-1].go_L, H[-1].go_R, H[-1].look)]
+                  H[-1].attack_type, H[-1].attack_frame, H[-1].go_L, H[-1].go_R, H[-1].look, H[-1].extra_hit_size_x, H[-1].extra_hit_size_y)]
             for he in H:
                 if he is H[-1]:
                     continue
