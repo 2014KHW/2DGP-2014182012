@@ -16,7 +16,7 @@ class item:
     ascend_max = 20
     ascend_min = -20
     def __init__(self, num):
-        self.name = name_table[num]
+        #self.name = name_table[num]
         self.kind = num
         self.x, self.y = random.randint(0 + 100, 800 - 100), 250
         self.recovery_ratio = 0.4
@@ -31,12 +31,12 @@ class item:
 
         self.del_sign = False
 
-        if item.image == None:
+        if len(item.image) is 0:
             item.image += [load_image('../Pics/hp_recovery.png')]
             item.image += [load_image('../Pics/enhance_hero.png')]
 
     def draw(self):
-        item.image[self.num].clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x, self.y + self.v_deg, 40, 40)
+        item.image[self.kind - 1].clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x, self.y + self.v_deg, 40, 40)
 
     def update(self, h):
         if self.shake_right is True:
@@ -81,7 +81,7 @@ class item:
             2: self.init_skull
         }
 
-        init_table[self.num]()
+        init_table[self.kind]()
     def init_pill(self):
         self.hit_box = rectangle.rectangle(self.x, self.y, 20 / 5, 35 / 5)
     def init_skull(self):
@@ -92,7 +92,7 @@ class item:
             2: self.give_enhance
         }
         if self.hit_box.check_collide(h.body_box):
-            affect_table[self.num](h)
+            affect_table[self.kind](h)
             self.del_sign = True
     def give_hill(self, h):
         h.hp = min(hero.hero.max_hp, h.hp + hero.hero.max_hp*self.recovery_ratio)
