@@ -22,7 +22,8 @@ class hero:
     h_minheight = 250
     max_hp = 100
     def __init__(self, px=400, py=250, pstate=h_stand, curhp=100, jmp=False, ascnd=True, attck_effect=False,\
-                 attck_type=random.randint(0,1), attck_frame=0, gol=False, gor=False, look=False):
+                 attck_type=random.randint(0,1), attck_frame=0, gol=False, gor=False, look=False,
+                 size_attack_x = 0, size_attack_y = 0):
         self.x, self.y = px, py
         self.frame = 0
         self.state = pstate
@@ -43,7 +44,7 @@ class hero:
         self.attack_type = attck_type
         self.attack_frame = attck_frame
         self.attack_num = 0
-        self.extra_hit_size_x, self.extra_hit_size_y = 0, 0
+        self.extra_hit_size_x, self.extra_hit_size_y = size_attack_x, size_attack_y
         #이동 관련 변수
         self.go_L = gol
         self.go_R = gor
