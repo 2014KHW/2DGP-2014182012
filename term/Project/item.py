@@ -5,11 +5,19 @@ import enemy
 import rectangle
 from pico2d import *
 
-class pill:
-    image = None
+name_table = {
+    1: 'pill',
+    2: 'skull',
+    3: ''
+}
+
+class item:
+    image = []
     ascend_max = 20
     ascend_min = -20
-    def __init__(self):
+    def __init__(self, num):
+        self.name = name_table[num]
+        self.kind = num
         self.x, self.y = random.randint(0 + 100, 800 - 100), 250
         self.recovery_ratio = 0.4
         self.shake_max = random.randint(10, 20)
@@ -23,22 +31,23 @@ class pill:
 
         self.del_sign = False
 
-        if pill.image == None:
-            pill.image = load_image('../Pics/hp_recovery.png')
+        if item.image == None:
+            item.image += [load_image('../Pics/hp_recovery.png')]
+            item.image += [load_image('../Pics/enhance_hero.png')]
 
     def draw(self):
-        pill.image.clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x, self.y + self.v_deg, 40, 40)
+        item.image[self.num].clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x, self.y + self.v_deg, 40, 40)
 
     def update(self, h):
         if self.shake_right is True:
             self.shake_deg += 1*math.pi/180
-            print(self.shake_deg, self.shake_max*math.pi/180, self.shake_deg > self.shake_max*math.pi/180)
+            #print(self.shake_deg, self.shake_max*math.pi/180, self.shake_deg > self.shake_max*math.pi/180)
             if self.shake_deg >= self.shake_max*math.pi/180:
                 self.shake_right = False
                 self.shake_max = random.randint(10, 20)
         else:
             self.shake_deg -= 1*math.pi/180
-            print(self.shake_deg, self.shake_min*math.pi/180, self.shake_deg < self.shake_min*math.pi/180)
+            #print(self.shake_deg, self.shake_min*math.pi/180, self.shake_deg < self.shake_min*math.pi/180)
             if self.shake_deg <= self.shake_min*math.pi/180:
                 self.shake_right = True
                 self.shake_min = -random.randint(10, 20)
@@ -67,10 +76,28 @@ class pill:
         self.check_body_with_hero(h)
 
     def init_box(self):
-        self.hit_box = rectangle.rectangle(self.x, self.y, 20/5, 35/5)
+        init_table = {
+            1: self.init_pill,
+            2: self.init_skull
+        }
+
+        init_table[self.num]()
+    def init_pill(self):
+        self.hit_box = rectangle.rectangle(self.x, self.y, 20 / 5, 35 / 5)
+    def init_skull(self):
+        self.hit_box = rectangle.rectangle(self.x, self.y, 30 / 6, 40 / 5)
     def check_body_with_hero(self, h):
+        affect_table = {
+            1: self.give_hill,
+            2: self.give_enhance
+        }
         if self.hit_box.check_collide(h.body_box):
-            self.give_hill(h)
+            affect_table[self.num](h)
             self.del_sign = True
     def give_hill(self, h):
         h.hp = min(hero.hero.max_hp, h.hp + hero.hero.max_hp*self.recovery_ratio)
+    def give_enhance(self, h):
+        h.damage *= 2
+        h.extra_hit_size_x += 10
+        h.extra_hit_size_y += 10
+        #화면 반전
