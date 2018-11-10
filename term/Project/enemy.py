@@ -204,10 +204,14 @@ class enemy:
         }
 
         if self.last_dst_attack.ate_depress is True and len(self.depress_obj) is 0:
-            self.depress_obj += [depress(self.x, self.y, 30, 5), depress(self.x, self.y, -25, -10), depress(self.x, self.y, 5, 20)]
+            self.depress_obj += [depress(self.x, self.y, 25, 10), depress(self.x, self.y, 10, 20), depress(self.x, self.y, -20, 10)]
             self.damage = 0
         elif self.last_dst_attack.ate_depress is False:
             self.damage = 5 * self.lev
+
+        if len(self.depress_obj) is not 0:
+            for d in self.depress_obj:
+                d.update(self)
 
         self.state_elapsed_time = time.time()
         if self.state is not enemy.state_appear:
@@ -359,5 +363,6 @@ class depress:
             enemy.depress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x + self.gap_e_x, self.y + self.gap_e_y, 30, 30)
         else:
             enemy.depress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x - self.gap_e_x, self.y - self.gap_e_y, 30, 30)
-    def update(self):
+    def update(self, e):
         self.deg = (self.deg + 1) % 360
+        self.x, self.y = e.x, e.y
