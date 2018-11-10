@@ -40,6 +40,7 @@ class enemy:
         self.from_attack = False
         self.look = False
         self.del_sign = False
+        self.depress = True
         #약화 상태 변수
         self.depress_obj = []
         #공격 관련 변수
@@ -202,11 +203,8 @@ class enemy:
             enemy.state_attack: self.update_attack,
             enemy.state_die[self.lev - 1]: self.update_die
         }
-
-        if self.last_dst_attack.ate_depress is True and len(self.depress_obj) is 0:
-            self.depress_obj += [depress(self.x, self.y, 25, 10), depress(self.x, self.y, 10, 20), depress(self.x, self.y, -20, 10)]
-            self.damage = 0
-        elif self.last_dst_attack.ate_depress is False:
+        if self.depress is False:
+            self.depress_obj = []
             self.damage = 5 * self.lev
 
         if len(self.depress_obj) is not 0:
@@ -329,6 +327,9 @@ class arrow:
         draw_rectangle(self.x - 19, self.y - 10, self.x + 19, self.y + 10)
 
     def update(self, e):
+        if self.dist == 0:
+            self.check_hit_attack_with_hero(e)
+            return
         self.x += self.dif_x * self.speed/self.dist
         self.y += self.dif_y * self.speed/self.dist
         self.hit_box = rectangle.rectangle(self.x, self.y, 19, 10)
