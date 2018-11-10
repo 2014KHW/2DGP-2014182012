@@ -9,6 +9,7 @@ from pico2d import *
 class enemy:
     image = []
     hit_effect = None
+    depress_effect = None
     #상태 상수 정의 부분
     state_appear = 10
     state_stand = 0
@@ -39,6 +40,8 @@ class enemy:
         self.from_attack = False
         self.look = False
         self.del_sign = False
+        #약화 상태 변수
+        self.depress_obj = []
         #공격 관련 변수
         self.attack_time = random.uniform(0.1, 2)
         self.attack_object = []
@@ -62,6 +65,8 @@ class enemy:
             enemy.image += [load_image('../Pics/enemy_level3.png')]
         if enemy.hit_effect is None:
             enemy.hit_effect = load_image('../Pics/hit_effect.png')
+        if enemy.depress_effect is None:
+            enemy.depress_effect = load_image('../Pics/weak_icon.png')
     def change_looking(self):
         if self.state is enemy.state_hit:
             return
@@ -145,6 +150,10 @@ class enemy:
             enemy.appear(self)
             return
 
+        if len(self.depress_obj) is not 0:
+            for d in self.depress_obj:
+                d.draw(self.look)
+
         if self.look is True:
             enemy.image[self.lev - 1].clip_draw(self.frame * 25, self.state%5000, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
         else:
@@ -193,6 +202,12 @@ class enemy:
             enemy.state_attack: self.update_attack,
             enemy.state_die[self.lev - 1]: self.update_die
         }
+
+        if self.last_dst_attack.ate_depress is True and len(self.depress_obj) is 0:
+            self.depress_obj += [depress(self.x, self.y, 30, 5), depress(self.x, self.y, -25, -10), depress(self.x, self.y, 5, 20)]
+            self.damage = 0
+        elif self.last_dst_attack.ate_depress is False:
+            self.damage = 5 * self.lev
 
         self.state_elapsed_time = time.time()
         if self.state is not enemy.state_appear:
@@ -333,3 +348,16 @@ class arrow:
             self.last_dst_attack.hp -= self.damage
             self.last_dst_attack.hit += [hero.hit(self.degree, self.last_dst_attack)]
             self.del_sign = True
+
+class depress:
+    def __init__(self, x, y, dir_x, dir_y):
+        self.x, self.y = x, y
+        self.gap_e_x, self.gap_e_y = dir_x, dir_y
+        self.deg = random.randint(0, 359)
+    def draw(self, look):
+        if look is True:
+            enemy.depress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x + self.gap_e_x, self.y + self.gap_e_y, 30, 30)
+        else:
+            enemy.depress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x - self.gap_e_x, self.y - self.gap_e_y, 30, 30)
+    def update(self):
+        self.deg = (self.deg + 1) % 360
