@@ -306,7 +306,6 @@ class arrow:
         self.x, self.y = og_x, og_y
         self.level = lev
         self.speed = 5
-        self.damage = self.level * 5
         self.attack_num = -1
         self.dst_attack = dst_hero
         self.last_dst_attack = last_dst_hero
@@ -329,7 +328,7 @@ class arrow:
         arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, self.degree, '', self.x, self.y, 50, 50)
         draw_rectangle(self.x - 19, self.y - 10, self.x + 19, self.y + 10)
 
-    def update(self):
+    def update(self, e):
         self.x += self.dif_x * self.speed/self.dist
         self.y += self.dif_y * self.speed/self.dist
         self.hit_box = rectangle.rectangle(self.x, self.y, 19, 10)
@@ -337,9 +336,9 @@ class arrow:
         if self.x > 800 - 25 or self.x < 0 + 25 : self.del_sign = True
         if self.y > 600 - 25 or self.y < 250 : self.del_sign = True
 
-        self.check_hit_attack_with_hero()
+        self.check_hit_attack_with_hero(e)
 
-    def check_hit_attack_with_hero(self):
+    def check_hit_attack_with_hero(self, e):
         if self.del_sign is True:
             return
         if self.last_dst_attack.state is hero.hero.h_stand:
@@ -349,7 +348,7 @@ class arrow:
         if self.last_dst_attack.state is hero.hero.h_jump_ready:
             return
         if self.hit_box.check_collide(self.last_dst_attack.body_box):
-            self.last_dst_attack.hp -= self.damage
+            self.last_dst_attack.hp -= e.damage
             self.last_dst_attack.hit += [hero.hit(self.degree, self.last_dst_attack)]
             self.del_sign = True
 
@@ -362,7 +361,7 @@ class depress:
         if look is True:
             enemy.depress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x + self.gap_e_x, self.y + self.gap_e_y, 30, 30)
         else:
-            enemy.depress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x - self.gap_e_x, self.y - self.gap_e_y, 30, 30)
+            enemy.depress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x - self.gap_e_x, self.y + self.gap_e_y, 30, 30)
     def update(self, e):
         self.deg = (self.deg + 1) % 360
         self.x, self.y = e.x, e.y
