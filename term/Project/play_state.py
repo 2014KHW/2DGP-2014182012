@@ -340,7 +340,7 @@ def update():
                         break
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
-                    obj.update()# 적 공격 오브젝트 이동 부분
+                    obj.update(ene)# 적 공격 오브젝트 이동 부분
     if len(Item) is not 0:
         for i in Item:
             i.update(H[-1])
