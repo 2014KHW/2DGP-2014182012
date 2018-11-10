@@ -8,7 +8,7 @@ from pico2d import *
 name_table = {
     1: 'pill',
     2: 'skull',
-    3: ''
+    3: 'depress'
 }
 
 class item:
@@ -16,6 +16,11 @@ class item:
     ascend_max = 20
     ascend_min = -20
     def __init__(self, num):
+        self.init_table = {
+            1: self.init_pill,
+            2: self.init_skull,
+            3: self.init_depress
+        }
         #self.name = name_table[num]
         self.kind = num
         self.x, self.y = random.randint(0 + 100, 800 - 100), 250
@@ -27,13 +32,14 @@ class item:
         self.up = True
         self.v_deg = 0
         self.a = 0
-        self.hit_box = rectangle.rectangle(self.x, self.y, 20/5, 35/5)
+        self.hit_box = self.init_box()
 
         self.del_sign = False
 
         if len(item.image) is 0:
             item.image += [load_image('../Pics/hp_recovery.png')]
             item.image += [load_image('../Pics/enhance_hero.png')]
+            item.image += [load_image('../Pics/weakening_enemy.png')]
 
     def draw(self):
         item.image[self.kind - 1].clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x, self.y + self.v_deg, 40, 40)
@@ -76,20 +82,18 @@ class item:
         self.check_body_with_hero(h)
 
     def init_box(self):
-        init_table = {
-            1: self.init_pill,
-            2: self.init_skull
-        }
-
-        init_table[self.kind]()
+        self.init_table[self.kind]()
     def init_pill(self):
         self.hit_box = rectangle.rectangle(self.x, self.y, 20 / 5, 35 / 5)
     def init_skull(self):
-        self.hit_box = rectangle.rectangle(self.x, self.y, 30 / 6, 40 / 5)
+        self.hit_box = rectangle.rectangle(self.x, self.y, 30 / 5, 40 / 5)
+    def init_depress(self):
+        self.hit_box = rectangle.rectangle(self.x, self.y, 40 / 5, 45 / 5)
     def check_body_with_hero(self, h):
         affect_table = {
             1: self.give_hill,
-            2: self.give_enhance
+            2: self.give_enhance,
+            3: self.give_depress_e
         }
         if self.hit_box.check_collide(h.body_box):
             affect_table[self.kind](h)
@@ -101,3 +105,6 @@ class item:
         h.extra_hit_size_x += 10
         h.extra_hit_size_y += 10
         #화면 반전
+    def give_depress_e(self, h):
+        h.ate_depress = True
+
