@@ -275,7 +275,8 @@ def handle_events():
             right_key_on = False
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_k):
             H += [hero.hero(H[-1].x, H[-1].y, H[-1].state, H[-1].hp, H[-1].jump, H[-1].ascend, H[-1].attack_effect, \
-                  H[-1].attack_type, H[-1].attack_frame, H[-1].go_L, H[-1].go_R, H[-1].look, H[-1].extra_hit_size_x, H[-1].extra_hit_size_y)]
+                  H[-1].attack_type, H[-1].attack_frame, H[-1].go_L, H[-1].go_R, H[-1].look, H[-1].extra_hit_size_x, H[-1].extra_hit_size_y,\
+                  H[-1].ate_depress)]
             for he in H:
                 if he is H[-1]:
                     continue
@@ -382,7 +383,7 @@ def update():
             stage_term = load_image('../Pics/vacant_bar2.png')
             stamp = load_image('../Pics/enemy_stamp.png')
         if stage_elapsed_time - Item_last_create_time > Item_create_time:
-            Item += [item.item(random.randint(1, 2))]
+            Item += [item.item(random.randint(1, 3))]
             Item_last_create_time = time.time()
 
     if stage_state is stage_pass:
