@@ -21,9 +21,10 @@ class hero:
     h_attack = [100, 125]
     h_minheight = 250
     max_hp = 100
+    h_item_exist_time = 5
     def __init__(self, px=400, py=250, pstate=h_stand, curhp=100, jmp=False, ascnd=True, attck_effect=False,\
                  attck_type=random.randint(0,1), attck_frame=0, gol=False, gor=False, look=False,
-                 size_attack_x = 0, size_attack_y = 0):
+                 size_attack_x = 0, size_attack_y = 0, eat=False):
         self.x, self.y = px, py
         self.frame = 0
         self.state = pstate
@@ -31,6 +32,8 @@ class hero:
         self.hp = curhp
         self.overwhelming = False #무적
         self.del_time = 0
+        self.ate_depress = eat
+        self.ate_begin_time = 0
         #점프 관련 변수
         self.jump = jmp
         self.maxheight = 0
@@ -202,6 +205,10 @@ class hero:
             hero.h_jump: self.update_jump
         }
         enemies = E
+
+        if self.ate_depress is True and self.ate_begin_time is 0:
+            self.ate_begin_time = time.time()
+
         update[self.state]()
 
         if self.overwhelming is False:
