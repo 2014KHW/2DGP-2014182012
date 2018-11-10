@@ -44,7 +44,7 @@ class item:
     def draw(self):
         item.image[self.kind - 1].clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x, self.y + self.v_deg, 40, 40)
 
-    def update(self, h):
+    def update(self, h, e):
         if self.shake_right is True:
             self.shake_deg += 1*math.pi/180
             #print(self.shake_deg, self.shake_max*math.pi/180, self.shake_deg > self.shake_max*math.pi/180)
@@ -79,7 +79,7 @@ class item:
                 self.a = 0
 
         self.init_box()
-        self.check_body_with_hero(h)
+        self.check_body_with_hero(h, e)
 
     def init_box(self):
         self.init_table[self.kind]()
@@ -89,22 +89,28 @@ class item:
         self.hit_box = rectangle.rectangle(self.x, self.y, 30 / 5, 40 / 5)
     def init_depress(self):
         self.hit_box = rectangle.rectangle(self.x, self.y, 40 / 5, 45 / 5)
-    def check_body_with_hero(self, h):
+    def check_body_with_hero(self, h, e):
         affect_table = {
             1: self.give_hill,
             2: self.give_enhance,
             3: self.give_depress_e
         }
         if self.hit_box.check_collide(h.body_box):
-            affect_table[self.kind](h)
+            affect_table[self.kind](h, e)
             self.del_sign = True
-    def give_hill(self, h):
+    def give_hill(self, h, e):
         h.hp = min(hero.hero.max_hp, h.hp + hero.hero.max_hp*self.recovery_ratio)
-    def give_enhance(self, h):
+    def give_enhance(self, h, e):
         h.damage *= 2
         h.extra_hit_size_x += 10
         h.extra_hit_size_y += 10
         #화면 반전
-    def give_depress_e(self, h):
+    def give_depress_e(self, h, e):
         h.ate_depress = True
+        if len(e) is not 0:
+            for ene in e:
+                ene.depress = True
+                ene.depress_obj += [enemy.depress(self.x, self.y, 25, 10), enemy.depress(self.x, self.y, 10, 20),
+                                     enemy.depress(self.x, self.y, -20, 10)]
+                ene.damage = 0
 
