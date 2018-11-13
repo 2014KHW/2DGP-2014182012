@@ -24,7 +24,7 @@ class hero:
     h_item_exist_time = 5
     def __init__(self, px=400, py=250, pstate=h_stand, curhp=100, jmp=False, ascnd=True, attck_effect=False,\
                  attck_type=random.randint(0,1), attck_frame=0, gol=False, gor=False, look=False,
-                 size_attack_x = 0, size_attack_y = 0, eat = False):
+                 size_attack_x = 0, size_attack_y = 0, eat = False, mh = 0):
         self.x, self.y = px, py
         self.frame = 0
         self.state = pstate
@@ -36,7 +36,7 @@ class hero:
         self.ate_begin_time = 0
         #점프 관련 변수
         self.jump = jmp
-        self.maxheight = 0
+        self.maxheight = mh
         self.quake_body = 0
         self.quake_right = False
         self.ascend = ascnd
@@ -267,7 +267,7 @@ class hero:
             self.quake_body =- self.quake_body
         elif self.quake_body < 0:
             self.quake_body = -self.quake_body
-        self.maxheight = 250 + 100
+        self.maxheight = min(get_canvas_height(), self.maxheight + 10)
     def update_jump(self):
         if self.ascend is True:
             self.y += 10
@@ -313,8 +313,10 @@ class hero:
     def enter_jump_ready(self):
         self.frame = 0
         self.quake_body = 10
-    def enter_jump(self):
         self.jump_ready_time = time.time()
+        self.maxheight = 250 + 50
+    def enter_jump(self):
+        self.jump_ready_time = 0
         self.ascend = True
         self.jump = True
         self.frame = 0
@@ -325,10 +327,7 @@ class hero:
     def exit_attack(self):
         pass
     def exit_jump_ready(self):
-        if time.time() - self.jump_ready_time > 1.5:
-            self.maxheight = 600
-        else:
-            self.maxheight = 400
+        pass
     def exit_jump(self):
         self.maxheight = 0
 
