@@ -267,6 +267,7 @@ class hero:
             self.quake_body =- self.quake_body
         elif self.quake_body < 0:
             self.quake_body = -self.quake_body
+        self.maxheight = 250 + 100
     def update_jump(self):
         if self.ascend is True:
             self.y += 10
@@ -302,8 +303,6 @@ class hero:
         exit[self.state]()
         self.state = state
         enter[state]()
-
-        print(self.state, state)
     def enter_move(self):
         self.frame = 0
     def enter_stand(self):
@@ -316,6 +315,7 @@ class hero:
         self.quake_body = 10
     def enter_jump(self):
         self.jump_ready_time = time.time()
+        self.ascend = True
         self.jump = True
         self.frame = 0
     def exit_move(self):
@@ -330,7 +330,7 @@ class hero:
         else:
             self.maxheight = 400
     def exit_jump(self):
-        pass
+        self.maxheight = 0
 
     def init_hit_boxes(self):
         if self.look is False:

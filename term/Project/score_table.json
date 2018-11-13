@@ -13,15 +13,15 @@
 			"time": 945875
 		},
 		{
-			"name": "simpson",
-			"score": 789,
-			"kills": 56,
-			"time": 0
-		},
-		{
 			"name": "robot",
 			"score": 123115,
 			"kills": 10,
+			"time": 0
+		},
+		{
+			"name": "simpson",
+			"score": 789,
+			"kills": 56,
 			"time": 710826
 		},
 		{
