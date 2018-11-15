@@ -42,6 +42,8 @@ class hero:
         self.ascend = ascnd
         self.jump_ready_time = 0
         self.stand_begin_time = time.time()
+        self.va_speed = 0
+        self.va_a = 0
         #공격 관련 변수
         self.attack_effect = attck_effect
         self.attack_type = attck_type
@@ -267,11 +269,15 @@ class hero:
             self.quake_body =- self.quake_body
         elif self.quake_body < 0:
             self.quake_body = -self.quake_body
+        self.va_speed += 1
     def update_jump(self):
+        global va_speed_size
         if self.ascend is True:
-            self.y += 10
+            self.y += self.va_speed - self.va_a
+            self.va_a += va_speed_size
         if self.ascend is False:
-            self.y -= 5
+            self.y -= self.va_speed - self.va_a
+            self.va_a -= va_speed_size
         if self.go_R is True:
             self.x += 5
             self.look = False
@@ -313,6 +319,7 @@ class hero:
         self.frame = 0
     def enter_jump_ready(self):
         self.frame = 0
+        self.va_speed = 15
         self.quake_body = 10
     def enter_jump(self):
         self.jump_ready_time = time.time()
@@ -325,6 +332,9 @@ class hero:
     def exit_attack(self):
         pass
     def exit_jump_ready(self):
+        global va_speed_size
+        va_speed_size = self.maxheight / self.va_speed
+
         if time.time() - self.jump_ready_time > 1.5:
             self.maxheight = 600
         else:
