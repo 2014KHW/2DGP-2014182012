@@ -7,6 +7,8 @@ import play_state
 import menu_state
 
 none_decided = False
+score_storage = 0
+kills_storage = 0
 
 class score:
     alphabet = None
@@ -158,15 +160,15 @@ def enter():
 
     recent_score = score()
     recent_score.new = True
-    recent_score.score = play_state.total_score
-    recent_score.kills = play_state.total_kills
+    recent_score.score = score_storage
+    recent_score.kills = kills_storage
     recent_score.name = "new"
 
     s_file.close()
 
     s_list = []
 
-    print(cur_score)
+    print(recent_score.score)
 
     num = 0
     for l in cur_score['player']:
@@ -188,7 +190,7 @@ def compare_and_put_score():
 
     for i in range(len(s_list)):
         if recent_score.score >= s_list[i].score:
-            print(recent_score.score, s_list[i].score)
+            #print(recent_score.score, s_list[i].score)
             move_list(i)
             return
 
@@ -198,7 +200,7 @@ def move_list(num):
     i = num
     #3부터 들어가지않고 무조건 0이됨
     while i < len(s_list):
-        print(i)
+        #print(i)
         swap_score(recent_score, s_list[i], False)
         i += 1
 
@@ -318,7 +320,6 @@ def update():
             store_data()
             game_framework.change_state(menu_state)
     elif n.decided == True and decide_time is not 0:
-        print('in')
         if time.time() - decide_time > 0.5:
             store_data()
             game_framework.change_state(menu_state)

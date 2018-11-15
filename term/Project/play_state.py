@@ -303,7 +303,7 @@ def handle_events():
 def update():
     global E, H
     global E_appear_speed, E_appear_time_ratio, stage_start_time, stage_elapsed_time
-    global total_start, total_elapse, total_score
+    global total_start, total_elapse, total_score, total_kills
     global stage_state, phase
     global stage_term, stamp
     global shake
@@ -345,11 +345,13 @@ def update():
     for i in range(len(E)):
         if E[i].del_sign is True:
             if E[i].state_elapsed_time - E[i].state_changed_time > 2:
+                total_kills += 1
                 E.pop(i)
                 break
 
     if len(H) is not 0:
         if H[-1].hp < 0:
+            score_state.score_storage = total_score
             game_framework.change_state(score_state)
             return
         for num in range(len(H)):

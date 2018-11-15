@@ -293,7 +293,7 @@ class hero:
         if self.go_L is True:
             self.x -= 5
             self.look = True
-        print(self.y, self.maxheight)
+        #print(self.y, self.maxheight)
         self.check_max_min_height()
 
     def change_state(self, state):
