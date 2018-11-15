@@ -24,7 +24,7 @@ class hero:
     h_item_exist_time = 5
     def __init__(self, px=400, py=250, pstate=h_stand, curhp=100, jmp=False, ascnd=True, attck_effect=False,\
                  attck_type=random.randint(0,1), attck_frame=0, gol=False, gor=False, look=False,
-                 size_attack_x = 0, size_attack_y = 0, eat = False):
+                 size_attack_x = 0, size_attack_y = 0, eat = False, mh = 0):
         self.x, self.y = px, py
         self.frame = 0
         self.state = pstate
@@ -36,7 +36,7 @@ class hero:
         self.ate_begin_time = 0
         #점프 관련 변수
         self.jump = jmp
-        self.maxheight = 0
+        self.maxheight = mh
         self.quake_body = 0
         self.quake_right = False
         self.ascend = ascnd
@@ -141,11 +141,7 @@ class hero:
             self.attack_frame = (self.attack_frame + 1) % 4
             if self.attack_frame is 0:
                 self.attack_effect = False
-        if self.jump is True and self.overwhelming is False:
-            if self.ascend is True:
-                self.y += 2
-            else:
-                self.y -= 2
+
         if self.frame is 0 or self.y is 250:
             if self.jump is True:
                 self.state = hero.h_jump
@@ -177,6 +173,8 @@ class hero:
 
             if self.ascend is True:
                 self.frame = (self.frame + 1) % 7
+                if self.va_speed < self.va_a:
+                    self.ascend = False
             else:
                 self.frame = 6
         else:
@@ -254,6 +252,13 @@ class hero:
     def update_attack(self):
         global enemies, tmp_score
         tmp_score = self.check_hit_attack_with_object(enemies)
+        if self.dashing is True:
+            self.change_state(hero.h_jump)
+            return tmp_score
+        if self.ascend is True:
+            self.y += 2
+        else:
+            self.y -= 2
         self.check_hit_attack_with_enemy(enemies)
         if self.go_R is True:
             self.x += 5
@@ -261,6 +266,7 @@ class hero:
         if self.go_L is True:
             self.x -= 5
             self.look = True
+        #print(self.y, self.maxheight)
         self.check_max_min_height()
         return tmp_score
     def update_jump_ready(self):
@@ -269,21 +275,25 @@ class hero:
             self.quake_body =- self.quake_body
         elif self.quake_body < 0:
             self.quake_body = -self.quake_body
+        self.maxheight += 10
         self.va_speed += 1
     def update_jump(self):
         global va_speed_size
         if self.ascend is True:
             self.y += self.va_speed - self.va_a
             self.va_a += va_speed_size
+
         if self.ascend is False:
             self.y -= self.va_speed - self.va_a
             self.va_a -= va_speed_size
+
         if self.go_R is True:
             self.x += 5
             self.look = False
         if self.go_L is True:
             self.x -= 5
             self.look = True
+        print(self.y, self.maxheight)
         self.check_max_min_height()
 
     def change_state(self, state):
@@ -308,19 +318,20 @@ class hero:
         exit[self.state]()
         self.state = state
         enter[state]()
-
-        print(self.state, state)
     def enter_move(self):
         self.frame = 0
     def enter_stand(self):
         self.frame = 0
         self.stand_begin_time = time.time()
     def enter_attack(self):
+        self.dashing = False
         self.frame = 0
     def enter_jump_ready(self):
         self.frame = 0
-        self.va_speed = 15
+        self.va_speed = 5
+        self.va_a = 0
         self.quake_body = 10
+        self.maxheight = 250 + 50
     def enter_jump(self):
         self.jump_ready_time = time.time()
         self.jump = True
@@ -333,14 +344,12 @@ class hero:
         pass
     def exit_jump_ready(self):
         global va_speed_size
-        va_speed_size = self.maxheight / self.va_speed
 
-        if time.time() - self.jump_ready_time > 1.5:
-            self.maxheight = 600
-        else:
-            self.maxheight = 400
+        va_speed_size = self.va_speed ** 2 / self.maxheight
+
     def exit_jump(self):
-        pass
+        global va_speed_size
+        va_speed_size = 0
 
     def init_hit_boxes(self):
         if self.look is False:
@@ -435,19 +444,20 @@ class hero:
     def update_dash(self):
         if self.dashing is False:
             return
-        if self.jump is False:
+        if self.jump is False or self.dash_dist is 0:
             self.dash_dist = 0
+            self.dashing = False
             return
         if self.dash_dir & 1 == 1:
             self.y += self.dash_dist
-        if self.dash_dir & 10 == 10 or self.dash_dir & 10 == 2 :
+        if self.dash_dir & 10 == 10 or self.dash_dir & 10 == 2:
             self.y = max(self.y - self.dash_dist, 250)
         if self.dash_dir & 100 == 100:
             self.x -= self.dash_dist
         if self.dash_dir & 1000 == 1000 or self.dash_dir & 1000 == 992:
             self.x += self.dash_dist
 
-        if self.dash_dist is not 0:
+        if self.dash_dist > 0:
             self.dash_dist = max(self.dash_dist - 10, 0)
 
 class hit:
