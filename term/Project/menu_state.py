@@ -1,6 +1,7 @@
 from pico2d import *
 import game_framework
 import play_state
+import score_state
 
 def enter():
     global sky, ground, button_list, select_cursor, frame, cur_selection, x
@@ -41,7 +42,8 @@ def handle_events():
             elif e.key == SDLK_RETURN:
                 if cur_selection is 0:
                     pass
-                    #game_framework.change_state(score_state)
+                    score_state.score_storage = -1
+                    game_framework.change_state(score_state)
                 elif cur_selection is 1:
                     game_framework.change_state(play_state)
                 elif cur_selection is -1:
