@@ -276,26 +276,22 @@ def handle_events():
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_k):
             H += [hero.hero(H[-1].x, H[-1].y, H[-1].state, H[-1].hp, H[-1].jump, H[-1].ascend, H[-1].attack_effect, \
                   H[-1].attack_type, H[-1].attack_frame, H[-1].go_L, H[-1].go_R, H[-1].look, H[-1].extra_hit_size_x, H[-1].extra_hit_size_y,\
-                    H[-1].ate_depress)]
+                    H[-1].ate_depress, H[-1].maxheight)]
             for he in H:
-                if he is H[-1]:
-                    continue
-                else:
-                    he.overwhelming = True
+                if he is not H[-1]: he.overwhelming = True
             H[-2].del_time = time.time()
             H[-1].dash_dist = 30
             H[-1].dashing = True
             H[-1].dash_dir = 0
             H[-1].ascend = False
             if up_key_on is True:
-                H[-1].dash_dir += 1
-                H[-1].dash_dist = 45
+                H[-1].dash_dir |= 1
             if down_key_on is True:
-                H[-1].dash_dir += 10
+                H[-1].dash_dir |= 10
             if left_key_on is True:
-                H[-1].dash_dir += 100
+                H[-1].dash_dir |= 100
             if right_key_on is True:
-                H[-1].dash_dir += 1000
+                H[-1].dash_dir |= 1000
 
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_p):
             if stop is True:
