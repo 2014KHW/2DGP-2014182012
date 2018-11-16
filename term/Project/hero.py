@@ -193,6 +193,7 @@ class hero:
             if self.dashing is False and self.jump is True:
                 self.y = self.maxheight
             self.ascend = False
+        print('self.y : ', self.y, 'self.ascend : ', self.ascend)
     def update(self, E):
         global enemies, tmp_score
 
@@ -232,11 +233,16 @@ class hero:
 
         return tmp_score
     def update_stand(self):
+        global va_speed_size
         if self.go_R is True:
             self.change_state(hero.h_move)
         if self.go_L is True:
             self.change_state(hero.h_move)
         if time.time() - self.stand_begin_time > 5:
+            va_speed_size = 0.5
+            self.va_a = 5
+            self.va_speed = 15
+            self.maxheight = 400
             self.change_state(hero.h_jump)
     def update_move(self):
         if self.go_R is True:
@@ -284,11 +290,12 @@ class hero:
         if self.ascend is True:
             self.y += self.va_speed - self.va_a
             self.va_a += va_speed_size
+            print(self.va_speed, self.va_a, va_speed_size)
 
         if self.ascend is False:
             self.y -= self.va_speed - self.va_a
             self.va_a -= va_speed_size
-
+            print(self.va_speed, self.va_a, va_speed_size)
         if self.go_R is True:
             self.x += 5
             self.look = False
