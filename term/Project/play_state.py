@@ -352,6 +352,7 @@ def update():
     if len(H) is not 0:
         if H[-1].hp < 0:
             score_state.score_storage = total_score
+            score_state.kills_storage = total_kills
             game_framework.change_state(score_state)
             return
         for num in range(len(H)):
