@@ -110,7 +110,7 @@ class item:
         if len(e) is not 0:
             for ene in e:
                 ene.depress = True
-                ene.depress_obj += [enemy.depress(self.x, self.y, 25, 10), enemy.depress(self.x, self.y, 10, 20),
+                ene.depress_obj = [enemy.depress(self.x, self.y, 25, 10), enemy.depress(self.x, self.y, 10, 20),
                                      enemy.depress(self.x, self.y, -20, 10)]
                 ene.damage = 0
 
