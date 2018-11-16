@@ -333,7 +333,8 @@ class hero:
         self.quake_body = 10
         self.maxheight = 250 + 50
     def enter_jump(self):
-        self.jump_ready_time = time.time()
+        self.jump_ready_time = 0
+        self.ascend = True
         self.jump = True
         self.frame = 0
     def exit_move(self):
