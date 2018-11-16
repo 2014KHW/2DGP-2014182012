@@ -257,8 +257,10 @@ class hero:
             return tmp_score
         if self.ascend is True:
             self.y += 2
+            print('aT')
         else:
             self.y -= 2
+            print('aF')
         self.check_hit_attack_with_enemy(enemies)
         if self.go_R is True:
             self.x += 5
@@ -355,12 +357,12 @@ class hero:
     def init_hit_boxes(self):
         if self.look is False:
             self.body_box = rectangle.rectangle(self.x, self.y - 10, 14, 10)
-            self.common_attack_box1 = rectangle.rectangle(self.x + 25, self.y, 25 + self.extra_hit_size_x, 20 + self.extra_hit_size_y)
-            self.common_attack_box2 = rectangle.rectangle(self.x + 10, self.y - 25, 10 + self.extra_hit_size_x, 10 + self.extra_hit_size_y)
+            self.common_attack_box1 = rectangle.rectangle(self.x + 25, self.y, 25 + self.extra_hit_size_x//2, 20 + self.extra_hit_size_y//2)
+            self.common_attack_box2 = rectangle.rectangle(self.x + 10, self.y - 25, 10 + self.extra_hit_size_x//2, 10 + self.extra_hit_size_y//2)
         else:
             self.body_box = rectangle.rectangle(self.x, self.y - 10, 14, 10)
-            self.common_attack_box1 = rectangle.rectangle(self.x - 25, self.y, 25 + self.extra_hit_size_x, 20 + self.extra_hit_size_y)
-            self.common_attack_box2 = rectangle.rectangle(self.x - 10, self.y - 25, 10 + self.extra_hit_size_x, 10 + self.extra_hit_size_y)
+            self.common_attack_box1 = rectangle.rectangle(self.x - 25, self.y, 25 + self.extra_hit_size_x//2, 20 + self.extra_hit_size_y//2)
+            self.common_attack_box2 = rectangle.rectangle(self.x - 10, self.y - 25, 10 + self.extra_hit_size_x//2, 10 + self.extra_hit_size_y//2)
     def get_bb(self, str):
         if str is 'body':
             return self.x - 14, self.y - 20, self.x + 14, self.y
