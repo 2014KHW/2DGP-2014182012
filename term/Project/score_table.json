@@ -2,28 +2,28 @@
 	"player": [
 		{
 			"name": "khw",
-			"score": 951007,
-			"kills": 11
+			"score": 25,
+			"kills": 22
 		},
 		{
 			"name": "empty",
-			"score": 123456,
-			"kills": 111
+			"score": 45,
+			"kills": 100
 		},
 		{
 			"name": "robot",
-			"score": 123115,
+			"score": 56,
 			"kills": 10
 		},
 		{
-			"name": "simpson",
-			"score": 789,
-			"kills": 56
+			"name": "new",
+			"score": 35,
+			"kills": 2
 		},
 		{
-			"name": "babo",
-			"score": 33,
-			"kills": 1235
+			"name": "simpson",
+			"score": 55,
+			"kills": 23
 		}
 	]
 }
