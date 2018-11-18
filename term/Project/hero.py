@@ -90,9 +90,9 @@ class hero:
                 self.hit[h].draw()
 
         if self.overwhelming is False:
-            hero.hp_image.clip_draw(int(125 * (1 - self.hp / 100)), 0, 125 - int(125 * (1 - self.hp / 100)), 9,\
-                                    self.x - int(125 * (1 - self.hp / 100)) / 2, self.y + 50,\
-                                    100 - int(125 * (1 - self.hp / 100)) * 0.8, 20)
+            hero.hp_image.clip_draw(int(125 * (1 - self.hp / hero.max_hp)), 0, 125 - int(125 * (1 - self.hp / hero.max_hp)), 9,\
+                                    self.x - int(125 * (1 - self.hp / hero.max_hp)) / 2, self.y + 50,\
+                                    100 - int(125 * (1 - self.hp / hero.max_hp)) * 0.8, 20)
             draw_rectangle(*self.get_bb('body'))
             #draw_rectangle(*self.get_bb('attack1'))
             #draw_rectangle(*self.get_bb('attack2'))
