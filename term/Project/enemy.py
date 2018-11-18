@@ -10,6 +10,8 @@ class enemy:
     image = []
     hit_effect = None
     depress_effect = None
+    #기타 상수
+    max_hp = 10
     #상태 상수 정의 부분
     state_appear = 10
     state_stand = 0
@@ -28,7 +30,7 @@ class enemy:
         self.hit_frame = 0
         self.lev = random.randint(1, 3)
         self.damage = 5 * self.lev
-        self.hp = 10 * self.lev
+        self.hp = enemy.max_hp * self.lev
         #상태 관련 변수
         self.state = enemy.state_appear
         self.do_not_change_frame = False
