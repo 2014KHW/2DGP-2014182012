@@ -395,6 +395,10 @@ def update():
             E_appear_speed = E_appear_time_ratio
             stage_term = load_image('../Pics/vacant_bar.png')
             stamp = load_image('../Pics/hero_stamp.png')
+            H[-1].hp += 5
+            H[-1].max_hp += 5
+            enemy.enemy.max_hp *= 1.5
+
 
 
     total_elapse = stage_elapsed_time - total_start
