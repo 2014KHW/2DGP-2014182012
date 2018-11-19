@@ -10,6 +10,9 @@ class enemy:
     image = []
     hit_effect = None
     depress_effect = None
+    Rimage = []
+    Rhit_effect = None
+    Rdepress_effect = None
     #기타 상수
     max_hp = 10
     #상태 상수 정의 부분
@@ -43,6 +46,7 @@ class enemy:
         self.look = False
         self.del_sign = False
         self.depress = True
+        self.change_pics = False
         #약화 상태 변수
         self.depress_obj = []
         #공격 관련 변수
@@ -66,10 +70,15 @@ class enemy:
             enemy.image += [load_image('../Pics/enemy_level1.png')]
             enemy.image += [load_image('../Pics/enemy_level2.png')]
             enemy.image += [load_image('../Pics/enemy_level3.png')]
+            enemy.Rimage += [load_image('../R_Pics/enemy_level1.png')]
+            enemy.Rimage += [load_image('../R_Pics/enemy_level2.png')]
+            enemy.Rimage += [load_image('../R_Pics/enemy_level3.png')]
         if enemy.hit_effect is None:
             enemy.hit_effect = load_image('../Pics/hit_effect.png')
+            enemy.Rhit_effect = load_image('../R_Pics/hit_effect.png')
         if enemy.depress_effect is None:
             enemy.depress_effect = load_image('../Pics/weak_icon.png')
+            enemy.Rdepress_effect = load_image('../R_Pics/weak_icon.png')
     def change_looking(self):
         if self.state is enemy.state_hit:
             return
@@ -157,10 +166,20 @@ class enemy:
             for d in self.depress_obj:
                 d.draw(self.look)
 
-        if self.look is True:
-            enemy.image[self.lev - 1].clip_draw(self.frame * 25, self.state%5000, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
+        if self.change_pics is False:
+            if self.look is True:
+                enemy.image[self.lev - 1].clip_draw(self.frame * 25, self.state % 5000, 25, 25, self.x, self.y,
+                                                    self.draw_scale_x, self.draw_scale_y)
+            else:
+                enemy.image[self.lev - 1].clip_composite_draw(self.frame * 25, self.state % 5000, 25, 25, 0, 'h',
+                                                              self.x, self.y, self.draw_scale_x, self.draw_scale_y)
         else:
-            enemy.image[self.lev - 1].clip_composite_draw(self.frame * 25, self.state % 5000, 25, 25, 0, 'h', self.x, self.y, self.draw_scale_x, self.draw_scale_y)
+            if self.look is True:
+                enemy.Rimage[self.lev - 1].clip_draw(self.frame * 25, self.state % 5000, 25, 25, self.x, self.y,
+                                                    self.draw_scale_x, self.draw_scale_y)
+            else:
+                enemy.Rimage[self.lev - 1].clip_composite_draw(self.frame * 25, self.state % 5000, 25, 25, 0, 'h',
+                                                              self.x, self.y, self.draw_scale_x, self.draw_scale_y)
 
         if self.do_not_change_frame is False:
             self.frame = (self.frame + 1) % 7
@@ -172,7 +191,12 @@ class enemy:
         self.body_box = rectangle.rectangle(self.x, self.y - 10, 10, 4)
         self.legs_box = rectangle.rectangle(self.x, self.y - 20, 2, 4)
     def appear(self):
-        enemy.image[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, self.draw_scale_x, self.draw_scale_y)
+        if self.change_pics is False:
+            enemy.image[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, self.draw_scale_x,
+                                                self.draw_scale_y)
+        else:
+            enemy.Rimage[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, self.draw_scale_x,
+                                                self.draw_scale_y)
         self.y -= 20
         self.draw_scale_y -= 20
 
@@ -188,7 +212,10 @@ class enemy:
 
     def draw_hit_effect(self):
         if self.state is enemy.state_hit:
-            enemy.hit_effect.clip_draw(self.hit_frame * 50, 0, 50, 50, self.x, self.y, 75, 75)
+            if self.change_pics is False:
+                enemy.hit_effect.clip_draw(self.hit_frame * 50, 0, 50, 50, self.x, self.y, 75, 75)
+            else:
+                enemy.Rhit_effect.clip_draw(self.hit_frame * 50, 0, 50, 50, self.x, self.y, 75, 75)
             if self.do_not_change_hit_frame is False:
                 self.hit_frame = (self.hit_frame + 1) % 4
             if self.hit_frame is 3:
@@ -205,6 +232,7 @@ class enemy:
             enemy.state_attack: self.update_attack,
             enemy.state_die[self.lev - 1]: self.update_die
         }
+        self.change_pics = last_hero.change_pics
         if self.depress is False:
             self.depress_obj = []
             self.damage = 5 * self.lev
@@ -280,7 +308,7 @@ class enemy:
             return
         if self.frame is 6:
             if self.lev is not 3:
-                self.attack_object += [arrow(self.x, self.y, self.lev, self.dst_attack, self.last_dst_attack)]
+                self.attack_object += [arrow(self.x, self.y, self.lev, self.dst_attack, self.last_dst_attack, self.change_pics)]
             self.change_state(enemy.state_stand)
 
     def update_die(self):
@@ -302,7 +330,8 @@ class enemy:
 
 class arrow:
     image = []
-    def __init__(self, og_x, og_y, lev, dst_hero, last_dst_hero):
+    Rimage = []
+    def __init__(self, og_x, og_y, lev, dst_hero, last_dst_hero, cp):
         self.x, self.y = og_x, og_y
         self.level = lev
         self.speed = 5
@@ -320,12 +349,18 @@ class arrow:
         self.dist = math.sqrt(self.dif_x**2 + self.dif_y**2)
         self.degree = math.atan2(self.dif_y, self.dif_x)
         self.hit_box = rectangle.rectangle(self.x, self.y, 19, 10)
+        self.change_pics = cp
 
         if len(arrow.image) is 0:
             arrow.image += [load_image('../Pics/enemy1_attack.png')]
             arrow.image += [load_image('../Pics/enemy2_attack.png')]
+            arrow.Rimage += [load_image('../R_Pics/enemy1_attack.png')]
+            arrow.Rimage += [load_image('../R_Pics/enemy2_attack.png')]
     def draw(self):
-        arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, self.degree, '', self.x, self.y, 50, 50)
+        if self.change_pics is False:
+            arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, self.degree, '', self.x, self.y, 50, 50)
+        else:
+            arrow.Rimage[self.level - 1].clip_composite_draw(0, 0, 50, 50, self.degree, '', self.x, self.y, 50, 50)
         draw_rectangle(self.x - 19, self.y - 10, self.x + 19, self.y + 10)
 
     def update(self, e):
@@ -352,19 +387,31 @@ class arrow:
             return
         if self.hit_box.check_collide(self.last_dst_attack.body_box):
             self.last_dst_attack.hp -= e.damage
-            self.last_dst_attack.hit += [hero.hit(self.degree, self.last_dst_attack)]
+            self.last_dst_attack.hit += [hero.hit(self.degree, self.last_dst_attack, self.change_pics)]
             self.del_sign = True
 
 class depress:
-    def __init__(self, x, y, dir_x, dir_y):
+    def __init__(self, x, y, dir_x, dir_y, rev):
         self.x, self.y = x, y
         self.gap_e_x, self.gap_e_y = dir_x, dir_y
         self.deg = random.randint(0, 359)
+        self.change_pics = rev
     def draw(self, look):
-        if look is True:
-            enemy.depress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x + self.gap_e_x, self.y + self.gap_e_y, 30, 30)
+        if self.change_pics is False:
+            if look is True:
+                enemy.depress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x + self.gap_e_x,
+                                                         self.y + self.gap_e_y, 30, 30)
+            else:
+                enemy.depress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x - self.gap_e_x,
+                                                         self.y + self.gap_e_y, 30, 30)
         else:
-            enemy.depress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x - self.gap_e_x, self.y + self.gap_e_y, 30, 30)
+            if look is True:
+                enemy.Rdepress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x + self.gap_e_x,
+                                                         self.y + self.gap_e_y, 30, 30)
+            else:
+                enemy.Rdepress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x - self.gap_e_x,
+                                                         self.y + self.gap_e_y, 30, 30)
     def update(self, e):
+        self.change_pics = e.change_pics
         self.deg = (self.deg + 1) % 360
         self.x, self.y = e.x, e.y

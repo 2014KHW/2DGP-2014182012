@@ -13,6 +13,11 @@ class hero:
     hp_image = None
     blur_image = None
     hit_image = None
+    Rh_image = None
+    Rattack_image = None
+    Rhp_image = None
+    Rblur_image = None
+    Rhit_image = None
     #상수 정의
     h_stand = 0
     h_move = 25
@@ -25,7 +30,7 @@ class hero:
     h_opposite_time = 5
     def __init__(self, px=400, py=250, pstate=h_stand, curhp=100, jmp=False, ascnd=True, attck_effect=False,\
                  attck_type=random.randint(0,1), attck_frame=0, gol=False, gor=False, look=False,
-                 size_attack_x = 0, size_attack_y = 0, eat = False, mh = 0, cht=0, chp = False):
+                 size_attack_x=0, size_attack_y=0, eat=False, mh=0, cht=0, chp=False):
         self.x, self.y = px, py
         self.frame = 0
         self.state = pstate
@@ -68,14 +73,19 @@ class hero:
         self.hit = []
         if hero.h_image is None:
             hero.h_image = load_image('../Pics/hero.png')
+            hero.Rh_image = load_image('../R_Pics/hero.png')
         if hero.attack_image is None:
             hero.attack_image = load_image('../Pics/attack_effect.png')
+            hero.Rattack_image = load_image('../R_Pics/attack_effect.png')
         if hero.hp_image is None:
             hero.hp_image = load_image('../Pics/hp_bar.png')
+            hero.Rhp_image = load_image('../R_Pics/hp_bar.png')
         if hero.blur_image is None:
             hero.blur_image = load_image('../Pics/for_blur.png')
+            hero.Rblur_image = load_image('../R_Pics/for_blur.png')
         if hero.hit_image is None:
             hero.hit_image = load_image('../Pics/hero_hit.png')
+            hero.Rhit_image = load_image('../R_Pics/hero_hit.png')
 
     def draw(self):
         states = {
@@ -93,9 +103,16 @@ class hero:
                 self.hit[h].draw()
 
         if self.overwhelming is False:
-            hero.hp_image.clip_draw(int(125 * (1 - self.hp / hero.max_hp)), 0, 125 - int(125 * (1 - self.hp / hero.max_hp)), 9,\
-                                    self.x - int(125 * (1 - self.hp / hero.max_hp)) / 2, self.y + 50,\
-                                    100 - int(125 * (1 - self.hp / hero.max_hp)) * 0.8, 20)
+            if self.change_pics is False:
+                hero.hp_image.clip_draw(int(125 * (1 - self.hp / hero.max_hp)), 0,
+                                        125 - int(125 * (1 - self.hp / hero.max_hp)), 9, \
+                                        self.x - int(125 * (1 - self.hp / hero.max_hp)) / 2, self.y + 50, \
+                                        100 - int(125 * (1 - self.hp / hero.max_hp)) * 0.8, 20)
+            else:
+                hero.Rhp_image.clip_draw(int(125 * (1 - self.hp / hero.max_hp)), 0,
+                                        125 - int(125 * (1 - self.hp / hero.max_hp)), 9, \
+                                        self.x - int(125 * (1 - self.hp / hero.max_hp)) / 2, self.y + 50, \
+                                        100 - int(125 * (1 - self.hp / hero.max_hp)) * 0.8, 20)
             draw_rectangle(*self.get_bb('body'))
             #draw_rectangle(*self.get_bb('attack1'))
             #draw_rectangle(*self.get_bb('attack2'))
@@ -107,38 +124,92 @@ class hero:
 
     def draw_stand(self):
 
-        if self.overwhelming is False:
-            if self.look is False:
-                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
-            else:
-                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
+        if self.change_pics is False:
+            if self.overwhelming is False:
+                if self.look is False:
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+                else:
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50,
+                                                     50)
 
-            self.frame = (self.frame + 1) % 7
-        else:
-            if self.look is False:
-                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, '', self.x, self.y, 60, 60)
+                self.frame = (self.frame + 1) % 7
             else:
-                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, 'h', self.x, self.y, 60, 60)
+                if self.look is False:
+                    hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
+                                                        self.x, self.y, 60, 60)
+                else:
+                    hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
+                                                        self.x, self.y, 60, 60)
+        else:
+            if self.overwhelming is False:
+                if self.look is False:
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+                else:
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50,
+                                                     50)
+
+                self.frame = (self.frame + 1) % 7
+            else:
+                if self.look is False:
+                    hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
+                                                        self.x, self.y, 60, 60)
+                else:
+                    hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
+                                                        self.x, self.y, 60, 60)
     def draw_attack(self):
 
-        if clamp(0, self.frame, 2):
-            if self.look is False:
-                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, '', self.x, self.y, 60, 60)
+        if self.change_pics is False:
+            if clamp(0, self.frame, 2):
+                if self.look is False:
+                    hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
+                                                        self.x, self.y, 60, 60)
+                else:
+                    hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
+                                                        self.x, self.y, 60, 60)
             else:
-                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, 'h', self.x, self.y, 60, 60)
-        else:
+                if self.look is False:
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+                else:
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50,
+                                                     50)
+
+            if self.overwhelming is False:
+                self.frame = (self.frame + 1) % 7
+
             if self.look is False:
-                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+                hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, '',
+                                                      self.x + 25, self.y - 12, 75 + self.extra_hit_size_x,
+                                                      75 + self.extra_hit_size_y)
             else:
-                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
-
-        if self.overwhelming is False:
-            self.frame = (self.frame + 1) % 7
-
-        if self.look is False:
-            hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, '', self.x + 25, self.y - 12, 75 + self.extra_hit_size_x, 75 + self.extra_hit_size_y)
+                hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, 'h',
+                                                      self.x - 25, self.y - 12, 75 + self.extra_hit_size_x,
+                                                      75 + self.extra_hit_size_y)
         else:
-            hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, 'h', self.x - 25, self.y - 12, 75 + self.extra_hit_size_x, 75 + self.extra_hit_size_y)
+            if clamp(0, self.frame, 2):
+                if self.look is False:
+                    hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
+                                                        self.x, self.y, 60, 60)
+                else:
+                    hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
+                                                        self.x, self.y, 60, 60)
+            else:
+                if self.look is False:
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+                else:
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50,
+                                                     50)
+
+            if self.overwhelming is False:
+                self.frame = (self.frame + 1) % 7
+
+            if self.look is False:
+                hero.Rattack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, '',
+                                                      self.x + 25, self.y - 12, 75 + self.extra_hit_size_x,
+                                                      75 + self.extra_hit_size_y)
+            else:
+                hero.Rattack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, 'h',
+                                                      self.x - 25, self.y - 12, 75 + self.extra_hit_size_x,
+                                                      75 + self.extra_hit_size_y)
 
         if self.attack_effect is True:
             self.attack_frame = (self.attack_frame + 1) % 4
@@ -155,36 +226,83 @@ class hero:
             else:
                 self.state = hero.h_stand
     def draw_jump_ready(self):
-        if self.overwhelming is False:
-            if self.look is False:
-                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x + self.quake_body, self.y, 50, 50)
-            else:
-                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x + self.quake_body, self.y, 50, 50)
+        if self.change_pics is False:
+            if self.overwhelming is False:
+                if self.look is False:
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '',
+                                                     self.x + self.quake_body, self.y, 50, 50)
+                else:
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h',
+                                                     self.x + self.quake_body, self.y, 50, 50)
 
-            self.frame = (self.frame + 1) % 7
-        else:
-            if self.look is False:
-                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, '', self.x, self.y, 60, 60)
-            else:
-                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, 'h', self.x, self.y, 60, 60)
-    def draw_jump(self):
-        if self.overwhelming is False:
-            if self.look is False:
-                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
-            else:
-                hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50, 50)
-
-            if self.ascend is True:
                 self.frame = (self.frame + 1) % 7
-                if self.va_speed < self.va_a:
-                    self.ascend = False
             else:
-                self.frame = 6
+                if self.look is False:
+                    hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
+                                                        self.x, self.y, 60, 60)
+                else:
+                    hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
+                                                        self.x, self.y, 60, 60)
         else:
-            if self.look is False:
-                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, '', self.x, self.y, 60, 60)
+            if self.overwhelming is False:
+                if self.look is False:
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '',
+                                                     self.x + self.quake_body, self.y, 50, 50)
+                else:
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h',
+                                                     self.x + self.quake_body, self.y, 50, 50)
+
+                self.frame = (self.frame + 1) % 7
             else:
-                hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state*2 + 10, 30, 30, 0, 'h', self.x, self.y, 60, 60)
+                if self.look is False:
+                    hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
+                                                        self.x, self.y, 60, 60)
+                else:
+                    hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
+                                                        self.x, self.y, 60, 60)
+    def draw_jump(self):
+        if self.change_pics is False:
+            if self.overwhelming is False:
+                if self.look is False:
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+                else:
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50,
+                                                     50)
+
+                if self.ascend is True:
+                    self.frame = (self.frame + 1) % 7
+                    if self.va_speed < self.va_a:
+                        self.ascend = False
+                else:
+                    self.frame = 6
+            else:
+                if self.look is False:
+                    hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
+                                                        self.x, self.y, 60, 60)
+                else:
+                    hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
+                                                        self.x, self.y, 60, 60)
+        else:
+            if self.overwhelming is False:
+                if self.look is False:
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+                else:
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50,
+                                                     50)
+
+                if self.ascend is True:
+                    self.frame = (self.frame + 1) % 7
+                    if self.va_speed < self.va_a:
+                        self.ascend = False
+                else:
+                    self.frame = 6
+            else:
+                if self.look is False:
+                    hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
+                                                        self.x, self.y, 60, 60)
+                else:
+                    hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
+                                                        self.x, self.y, 60, 60)
 
     def check_max_min_height(self):
         if self.y < hero.h_minheight:
@@ -220,10 +338,10 @@ class hero:
 
         if self.ate_depress is True and time.time() - self.ate_begin_time > hero.h_item_exist_time:
             self.ate_depress = False
-        if self.extra_hit_time != 0 and time.time() - self.extra_hit_time > hero.h_opposite_time:
+        if self.extra_hit_time is not 0 and time.time() - self.extra_hit_time > hero.h_opposite_time:
             self.extra_hit_size_x, self.extra_hit_size_y = 0, 0
-            self.hit_time = 0
-            self.change_pics = True
+            self.extra_hit_time = 0
+            self.change_pics = False
 
         update[self.state]()
 
@@ -477,7 +595,7 @@ class hero:
 
 class hit:
     hit_over_time = 2
-    def __init__(self, deg, h):
+    def __init__(self, deg, h, rev):
         self.deg = deg + 3.14
         self.rad = math.pi * (deg + 180) / 180
         self.x = h.x + 5 * math.cos(self.rad)
@@ -485,13 +603,20 @@ class hit:
         self.hit_frame = 0
         self.hit_begin_time = time.time()
         self.del_sign = False
+        self.change_pics = rev
     def draw(self):
         if self.del_sign is True:
             return
-        hero.hit_image.clip_composite_draw(self.hit_frame * 50, 0, 50, 50, \
-                                           self.deg, '', \
-                                           self.x + 5 * math.cos(self.deg), self.y + 5 * math.sin(self.deg), 40, 40)
+        if self.change_pics is False:
+            hero.hit_image.clip_composite_draw(self.hit_frame * 50, 0, 50, 50, \
+                                               self.deg, '', \
+                                               self.x + 5 * math.cos(self.deg), self.y + 5 * math.sin(self.deg), 40, 40)
+        else:
+            hero.Rhit_image.clip_composite_draw(self.hit_frame * 50, 0, 50, 50, \
+                                               self.deg, '', \
+                                               self.x + 5 * math.cos(self.deg), self.y + 5 * math.sin(self.deg), 40, 40)
     def update(self, h):
+        self.change_pics = h.change_pics
         self.x = h.x + 30 * math.cos(self.deg)
         self.y = h.y + 30 * math.sin(self.deg)
         if self.del_sign is True:

@@ -125,7 +125,7 @@ class shaking:
 
 
 def enter():
-    global sky, ground, slot, stage_term, stamp, H, E, phase, ground_x, ground_y
+    global sky, ground, rsky, rground, rev_state, slot, stage_term, stamp, H, E, phase, ground_x, ground_y
     global stage_start_time, stage_state
     global E_appear_speed, E_appear_time_ratio
     global hit
@@ -134,10 +134,13 @@ def enter():
     global cur_score
     global Item, Item_last_create_time, Item_create_time
 
+    rev_state = False
     ground_x, ground_y = 400, 100
     shake = shaking()
     sky = load_image('../Pics/sky_background.png')
+    rsky = load_image('../R_Pics/sky_background.png')
     ground = load_image('../Pics/ground_map.png')
+    rground = load_image('../R_Pics/ground_map.png')
     hit = load_image('../Pics/hit_effect.png')
     slot = load_image('../Pics/skill_slot.png')
     stage_term = load_image('../Pics/vacant_bar.png')
@@ -163,11 +166,11 @@ def enter():
     phase = [phrase(stage_state)]
 
 def exit():
-    global ground, H, E, hit, slot, stage_term, stamp
-    del ground, H, E, hit, slot, stage_term, stamp
+    global sky, ground, rsky, rground, H, E, hit, slot, stage_term, stamp
+    del sky, ground, rsky, rground, H, E, hit, slot, stage_term, stamp
 
 def draw():
-    global sky, ground, slot, stage_term, stamp, H, E, phase
+    global sky, ground, rsky, rground, rev_state, slot, stage_term, stamp, H, E, phase
     global ground_x, ground_y
     global stage_start_time, stage_elapsed_time
     global stage_state
@@ -179,8 +182,12 @@ def draw():
 
     clear_canvas()
 
-    sky.clip_draw(200, 100, 400, 450, 400, 300, 800, 600)
-    ground.clip_draw(200, 0, 600, 200, ground_x, ground_y, 800, 300)
+    if rev_state is False:
+        sky.clip_draw(200, 100, 400, 450, 400, 300, 800, 600)
+        ground.clip_draw(200, 0, 600, 200, ground_x, ground_y, 800, 300)
+    else:
+        rsky.clip_draw(200, 100, 400, 450, 400, 300, 800, 600)
+        rground.clip_draw(200, 0, 600, 200, ground_x, ground_y, 800, 300)
     slot.clip_draw(0, 0, 125, 125, 50, 600 - 50, 50, 50)
     stage_term.clip_draw(0, 0, 125, 9, 400, 600 - 20, 400, 10)
     if stage_state is stage_start:
@@ -216,7 +223,7 @@ def draw():
     update_canvas()
 
 def handle_events():
-    global H, stop, up_key_on, down_key_on, left_key_on, right_key_on
+    global H, stop, up_key_on, down_key_on, left_key_on, right_key_on, rev_state
     eve = get_events()
     for e in eve:
         if e.type is SDL_QUIT:
@@ -301,7 +308,7 @@ def handle_events():
 
 
 def update():
-    global E, H
+    global E, H, rev_state
     global E_appear_speed, E_appear_time_ratio, stage_start_time, stage_elapsed_time
     global total_start, total_elapse, total_score, total_kills
     global stage_state, phase
@@ -399,79 +406,15 @@ def update():
             H[-1].max_hp += 5
             enemy.enemy.max_hp *= 1.5
 
-    change_pics(H[-1])
-
-
     total_elapse = stage_elapsed_time - total_start
     total_score += H[-1].update(E)
+    rev_state = H[-1].change_pics
     shake.give_shake()
     shake.shake()
 
     delay(0.03)
 
-def change_pics(h):
-    if h.change_pics == True:
-        if h.extra_hit_size_x == 0:
-            upload_opposite()
-            h.change_pics = False
-        else:
-            upload_order()
-            h.change_pics = False
 
-def upload_opposite():
-    global ground, sky
-    del enemy.enemy.image[2], enemy.enemy.image[1], enemy.enemy.image[0]
-    enemy.enemy.image += [load_image('../R_Pics/enemy_level1.png')]
-    enemy.enemy.image += [load_image('../R_Pics/enemy_level2.png')]
-    enemy.enemy.image += [load_image('../R_Pics/enemy_level3.png')]
-    #enemy.arrow.image = []
-    #enemy.arrow.image += [load_image('../R_Pics/enemy1_attack.png')]
-    #enemy.arrow.image += [load_image('../R_Pics/enemy2_attack.png')]
-    del enemy.enemy.hit_effect, enemy.enemy.depress_effect
-    enemy.enemy.hit_effect = load_image('../R_Pics/hit_effect.png')
-    enemy.enemy.depress_effect = load_image('../R_Pics/weak_icon.png')
-
-    del hero.hero.h_image, hero.hero.hit_image, hero.hero.attack_image, hero.hero.blur_image, hero.hero.hp_image
-    hero.hero.h_image = load_image('../R_Pics/hero.png')
-    hero.hero.hit_image = load_image('../R_Pics/hero_hit.png')
-    hero.hero.attack_image = load_image('../R_Pics/attack_effect.png')
-    hero.hero.blur_image = load_image('../R_Pics/for_blur.png')
-    hero.hero.hp_image = load_image('../R_Pics/hp_bar.png')
-
-    del item.item.image[2], item.item.image[1], item.item.image[0]
-    item.item.image += [load_image('../R_Pics/hp_recovery.png')]
-    item.item.image += [load_image('../R_Pics/enhance_hero.png')]
-    item.item.image += [load_image('../R_Pics/weakening_enemy.png')]
-    del ground, sky
-    ground = load_image('../R_Pics/ground_map.png')
-    sky = load_image('../R_Pics/sky_background.png')
-def upload_order():
-    global ground, sky
-    del enemy.enemy.image[2], enemy.enemy.image[1], enemy.enemy.image[0]
-    enemy.enemy.image += [load_image('../Pics/enemy_level1.png')]
-    enemy.enemy.image += [load_image('../Pics/enemy_level2.png')]
-    enemy.enemy.image += [load_image('../Pics/enemy_level3.png')]
-    # enemy.arrow.image = []
-    # enemy.arrow.image += [load_image('../Pics/enemy1_attack.png')]
-    # enemy.arrow.image += [load_image('../Pics/enemy2_attack.png')]
-    del enemy.enemy.hit_effect, enemy.enemy.depress_effect
-    enemy.enemy.hit_effect = load_image('../Pics/hit_effect.png')
-    enemy.enemy.depress_effect = load_image('../Pics/weak_icon.png')
-
-    del hero.hero.h_image, hero.hero.hit_image, hero.hero.attack_image, hero.hero.blur_image, hero.hero.hp_image
-    hero.hero.h_image = load_image('../Pics/hero.png')
-    hero.hero.hit_image = load_image('../Pics/hero_hit.png')
-    hero.hero.attack_image = load_image('../Pics/attack_effect.png')
-    hero.hero.blur_image = load_image('../Pics/for_blur.png')
-    hero.hero.hp_image = load_image('../Pics/hp_bar.png')
-
-    del item.item.image[2], item.item.image[1], item.item.image[0]
-    item.item.image += [load_image('../Pics/hp_recovery.png')]
-    item.item.image += [load_image('../Pics/enhance_hero.png')]
-    item.item.image += [load_image('../Pics/weakening_enemy.png')]
-    del ground, sky
-    ground = load_image('../Pics/ground_map.png')
-    sky = load_image('../Pics/sky_background.png')
 
 def pause():
     pass

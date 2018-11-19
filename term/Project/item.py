@@ -13,6 +13,7 @@ name_table = {
 
 class item:
     image = []
+    Rimage = []
     ascend_max = 20
     ascend_min = -20
     def __init__(self, num):
@@ -33,6 +34,7 @@ class item:
         self.v_deg = 0
         self.a = 0
         self.hit_box = self.init_box()
+        self.change_pics = False
 
         self.del_sign = False
 
@@ -40,11 +42,22 @@ class item:
             item.image += [load_image('../Pics/hp_recovery.png')]
             item.image += [load_image('../Pics/enhance_hero.png')]
             item.image += [load_image('../Pics/weakening_enemy.png')]
+            item.Rimage += [load_image('../R_Pics/hp_recovery.png')]
+            item.Rimage += [load_image('../R_Pics/enhance_hero.png')]
+            item.Rimage += [load_image('../R_Pics/weakening_enemy.png')]
 
     def draw(self):
-        item.image[self.kind - 1].clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x, self.y + self.v_deg, 40, 40)
+        if self.change_pics is False:
+            item.image[self.kind - 1].clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x,
+                                                          self.y + self.v_deg, 40, 40)
+        else:
+            item.Rimage[self.kind - 1].clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x,
+                                                          self.y + self.v_deg, 40, 40)
 
     def update(self, h, e):
+
+        self.change_pics = h.change_pics
+
         if self.shake_right is True:
             self.shake_deg += 1*math.pi/180
             #print(self.shake_deg, self.shake_max*math.pi/180, self.shake_deg > self.shake_max*math.pi/180)
@@ -113,7 +126,7 @@ class item:
             for ene in e:
                 if ene.del_sign == False:
                     ene.depress = True
-                    ene.depress_obj = [enemy.depress(self.x, self.y, 25, 10), enemy.depress(self.x, self.y, 10, 20),
-                                     enemy.depress(self.x, self.y, -20, 10)]
+                    ene.depress_obj = [enemy.depress(self.x, self.y, 25, 10, self.change_pics), enemy.depress(self.x, self.y, 10, 20, self.change_pics),
+                                     enemy.depress(self.x, self.y, -20, 10, self.change_pics)]
                     ene.damage = 0
 
