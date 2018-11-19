@@ -102,8 +102,10 @@ class item:
         h.hp = min(hero.hero.max_hp, h.hp + hero.hero.max_hp*self.recovery_ratio)
     def give_enhance(self, h, e):
         h.damage *= 2
-        h.extra_hit_size_x += 10
-        h.extra_hit_size_y += 10
+        h.extra_hit_size_x = 80
+        h.extra_hit_size_y = 80
+        h.extra_hit_time = time.time()
+        h.change_pics = True
         #화면 반전
     def give_depress_e(self, h, e):
         h.ate_depress = True

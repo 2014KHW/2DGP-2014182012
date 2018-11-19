@@ -22,9 +22,10 @@ class hero:
     h_minheight = 250
     max_hp = 100
     h_item_exist_time = 5
+    h_opposite_time = 5
     def __init__(self, px=400, py=250, pstate=h_stand, curhp=100, jmp=False, ascnd=True, attck_effect=False,\
                  attck_type=random.randint(0,1), attck_frame=0, gol=False, gor=False, look=False,
-                 size_attack_x = 0, size_attack_y = 0, eat = False, mh = 0):
+                 size_attack_x = 0, size_attack_y = 0, eat = False, mh = 0, cht=0, chp = False):
         self.x, self.y = px, py
         self.frame = 0
         self.state = pstate
@@ -50,6 +51,8 @@ class hero:
         self.attack_frame = attck_frame
         self.attack_num = 0
         self.extra_hit_size_x, self.extra_hit_size_y = size_attack_x, size_attack_y
+        self.extra_hit_time = cht
+        self.change_pics = chp
         #이동 관련 변수
         self.go_L = gol
         self.go_R = gor
@@ -193,7 +196,7 @@ class hero:
             if self.dashing is False and self.jump is True:
                 self.y = self.maxheight
             self.ascend = False
-        print('self.y : ', self.y, 'self.ascend : ', self.ascend)
+        #print('self.y : ', self.y, 'self.ascend : ', self.ascend)
     def update(self, E):
         global enemies, tmp_score
 
@@ -217,6 +220,10 @@ class hero:
 
         if self.ate_depress is True and time.time() - self.ate_begin_time > hero.h_item_exist_time:
             self.ate_depress = False
+        if self.extra_hit_time != 0 and time.time() - self.extra_hit_time > hero.h_opposite_time:
+            self.extra_hit_size_x, self.extra_hit_size_y = 0, 0
+            self.hit_time = 0
+            self.change_pics = True
 
         update[self.state]()
 
@@ -263,10 +270,8 @@ class hero:
             return tmp_score
         if self.ascend is True:
             self.y += 2
-            print('aT')
         else:
             self.y -= 2
-            print('aF')
         self.check_hit_attack_with_enemy(enemies)
         if self.go_R is True:
             self.x += 5
@@ -290,12 +295,12 @@ class hero:
         if self.ascend is True:
             self.y += self.va_speed - self.va_a
             self.va_a += va_speed_size
-            print(self.va_speed, self.va_a, va_speed_size)
+
 
         if self.ascend is False:
             self.y -= self.va_speed - self.va_a
             self.va_a -= va_speed_size
-            print(self.va_speed, self.va_a, va_speed_size)
+
         if self.go_R is True:
             self.x += 5
             self.look = False

@@ -276,7 +276,7 @@ def handle_events():
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_k):
             H += [hero.hero(H[-1].x, H[-1].y, H[-1].state, H[-1].hp, H[-1].jump, H[-1].ascend, H[-1].attack_effect, \
                   H[-1].attack_type, H[-1].attack_frame, H[-1].go_L, H[-1].go_R, H[-1].look, H[-1].extra_hit_size_x, H[-1].extra_hit_size_y,\
-                    H[-1].ate_depress, H[-1].maxheight)]
+                    H[-1].ate_depress, H[-1].maxheight, H[-1].extra_hit_time, H[-1].change_pics)]
             for he in H:
                 if he is not H[-1]: he.overwhelming = True
             H[-2].del_time = time.time()
@@ -399,6 +399,7 @@ def update():
             H[-1].max_hp += 5
             enemy.enemy.max_hp *= 1.5
 
+    change_pics(H[-1])
 
 
     total_elapse = stage_elapsed_time - total_start
@@ -407,6 +408,70 @@ def update():
     shake.shake()
 
     delay(0.03)
+
+def change_pics(h):
+    if h.change_pics == True:
+        if h.extra_hit_size_x == 0:
+            upload_opposite()
+            h.change_pics = False
+        else:
+            upload_order()
+            h.change_pics = False
+
+def upload_opposite():
+    global ground, sky
+    del enemy.enemy.image[2], enemy.enemy.image[1], enemy.enemy.image[0]
+    enemy.enemy.image += [load_image('../R_Pics/enemy_level1.png')]
+    enemy.enemy.image += [load_image('../R_Pics/enemy_level2.png')]
+    enemy.enemy.image += [load_image('../R_Pics/enemy_level3.png')]
+    #enemy.arrow.image = []
+    #enemy.arrow.image += [load_image('../R_Pics/enemy1_attack.png')]
+    #enemy.arrow.image += [load_image('../R_Pics/enemy2_attack.png')]
+    del enemy.enemy.hit_effect, enemy.enemy.depress_effect
+    enemy.enemy.hit_effect = load_image('../R_Pics/hit_effect.png')
+    enemy.enemy.depress_effect = load_image('../R_Pics/weak_icon.png')
+
+    del hero.hero.h_image, hero.hero.hit_image, hero.hero.attack_image, hero.hero.blur_image, hero.hero.hp_image
+    hero.hero.h_image = load_image('../R_Pics/hero.png')
+    hero.hero.hit_image = load_image('../R_Pics/hero_hit.png')
+    hero.hero.attack_image = load_image('../R_Pics/attack_effect.png')
+    hero.hero.blur_image = load_image('../R_Pics/for_blur.png')
+    hero.hero.hp_image = load_image('../R_Pics/hp_bar.png')
+
+    del item.item.image[2], item.item.image[1], item.item.image[0]
+    item.item.image += [load_image('../R_Pics/hp_recovery.png')]
+    item.item.image += [load_image('../R_Pics/enhance_hero.png')]
+    item.item.image += [load_image('../R_Pics/weakening_enemy.png')]
+    del ground, sky
+    ground = load_image('../R_Pics/ground_map.png')
+    sky = load_image('../R_Pics/sky_background.png')
+def upload_order():
+    global ground, sky
+    del enemy.enemy.image[2], enemy.enemy.image[1], enemy.enemy.image[0]
+    enemy.enemy.image += [load_image('../Pics/enemy_level1.png')]
+    enemy.enemy.image += [load_image('../Pics/enemy_level2.png')]
+    enemy.enemy.image += [load_image('../Pics/enemy_level3.png')]
+    # enemy.arrow.image = []
+    # enemy.arrow.image += [load_image('../Pics/enemy1_attack.png')]
+    # enemy.arrow.image += [load_image('../Pics/enemy2_attack.png')]
+    del enemy.enemy.hit_effect, enemy.enemy.depress_effect
+    enemy.enemy.hit_effect = load_image('../Pics/hit_effect.png')
+    enemy.enemy.depress_effect = load_image('../Pics/weak_icon.png')
+
+    del hero.hero.h_image, hero.hero.hit_image, hero.hero.attack_image, hero.hero.blur_image, hero.hero.hp_image
+    hero.hero.h_image = load_image('../Pics/hero.png')
+    hero.hero.hit_image = load_image('../Pics/hero_hit.png')
+    hero.hero.attack_image = load_image('../Pics/attack_effect.png')
+    hero.hero.blur_image = load_image('../Pics/for_blur.png')
+    hero.hero.hp_image = load_image('../Pics/hp_bar.png')
+
+    del item.item.image[2], item.item.image[1], item.item.image[0]
+    item.item.image += [load_image('../Pics/hp_recovery.png')]
+    item.item.image += [load_image('../Pics/enhance_hero.png')]
+    item.item.image += [load_image('../Pics/weakening_enemy.png')]
+    del ground, sky
+    ground = load_image('../Pics/ground_map.png')
+    sky = load_image('../Pics/sky_background.png')
 
 def pause():
     pass

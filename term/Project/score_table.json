@@ -1,9 +1,14 @@
 {
 	"player": [
 		{
-			"name": "khw",
-			"score": 25,
-			"kills": 22
+			"name": "robot",
+			"score": 56,
+			"kills": 10
+		},
+		{
+			"name": "simpson",
+			"score": 55,
+			"kills": 23
 		},
 		{
 			"name": "empty",
@@ -11,19 +16,14 @@
 			"kills": 100
 		},
 		{
-			"name": "robot",
-			"score": 56,
-			"kills": 10
-		},
-		{
 			"name": "new",
 			"score": 35,
 			"kills": 2
 		},
 		{
-			"name": "simpson",
-			"score": 55,
-			"kills": 23
+			"name": "khw",
+			"score": 25,
+			"kills": 22
 		}
 	]
 }
