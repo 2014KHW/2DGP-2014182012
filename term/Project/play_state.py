@@ -24,6 +24,7 @@ stop = False
 class fever:
     image_R = None
     image_B = None
+    nums = None
     #상수 정의
     def __init__(self):
         self.x, self.y = 400 + 200, 600 - 20 - 20
@@ -32,23 +33,37 @@ class fever:
         self.bsx, self.bsy = 20, 20
         self.fev = 0
         self.rot_pos = 0
-        self.speed = 1
+        self.speed = 3
         self.ssx, self.ssy = int(self.sx/2), 0
 
         if fever.image_B == None:
             fever.image_B = load_image('../Pics/fever_ip.png')
         if fever.image_R == None:
             fever.image_R = load_image('../Pics/fever_pos.png')
+        if fever.nums == None:
+            fever.nums = load_image('../Pics/nums.png')
+    def draw_nums(self):
+        tmpnum = self.fev
+        if self.fev == 0:
+            fever.nums.clip_draw(0, 450, 50, 50, self.bx - self.sx, self.by - self.sy//2, 20, 20)
+            return
+
+        cnt = 0
+        while tmpnum > 0:
+            fever.nums.clip_draw(0, (9 - (tmpnum % 10))*50, 50, 50, self.bx - self.sx - cnt*15, self.by - self.sy//2, 20, 20)
+            tmpnum //= 10
+            cnt += 1
+
     def draw(self):
         fever.image_B.clip_draw(0, 0, 200, 200, self.x, self.y, self.sx, self.sy)
-        if self.fev is not 0:
-            fever.image_R.clip_draw(0, 0, 200, 200, self.bx + self.ssx, self.by + self.ssy, self.bsx, self.bsy)
+        fever.image_R.clip_draw(0, 0, 200, 200, self.bx + self.ssx, self.by + self.ssy, self.bsx, self.bsy)
+        self.draw_nums()
     def update(self):
         if self.fev == 0:
             return
         rad = self.fev*self.speed/10
         self.rot_pos += rad
-        print('self.rotpos : ',self.rot_pos)
+        #print('self.rotpos : ',self.rot_pos)
         if self.rot_pos > 360:
             self.rot_pos = 0
             self.fev = max(0, self.fev - 1)
