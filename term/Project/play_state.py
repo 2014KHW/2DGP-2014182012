@@ -20,6 +20,23 @@ stage_start = 20
 stage_pass = 10
 stop = False
 
+class fever:
+    image_R = None
+    image_B = None
+    #상수 정의
+    def __init__(self):
+        self.x, self.y = 400 + 200, 600 - 20 - 20
+        self.sx, self.sy = 50, 50
+
+        if fever.image_B == None:
+            fever.image_B = load_image('../Pics/fever_ip.png')
+        if fever.image_R == None:
+            fever.image_R = load_image('../Pics/fever_pos.png')
+    def draw(self):
+        fever.image_B.clip_draw(0, 0, 200, 200, self.x, self.y, self.sx, self.sy)
+    def update(self):
+        pass
+
 class phrase:
     image = None
     #상수 정의
@@ -126,6 +143,7 @@ class shaking:
 
 def enter():
     global sky, ground, rsky, rground, rev_state, slot, stage_term, stamp, H, E, phase, ground_x, ground_y
+    global fev
     global stage_start_time, stage_state
     global E_appear_speed, E_appear_time_ratio
     global hit
@@ -145,6 +163,7 @@ def enter():
     slot = load_image('../Pics/skill_slot.png')
     stage_term = load_image('../Pics/vacant_bar.png')
     stamp = load_image('../Pics/hero_stamp.png')
+    fev = fever()
 
     E_appear_speed = 0.5 #몬스터 출현 속도
     E_appear_time_ratio = 0.5 #몬스터 출현 속도 증가량
@@ -176,12 +195,12 @@ def draw():
     global stage_state
     global stop
     global cur_score
+    global fev
 
     if stop is True:
         return
 
     clear_canvas()
-
     if rev_state is False:
         sky.clip_draw(200, 100, 400, 450, 400, 300, 800, 600)
         ground.clip_draw(200, 0, 600, 200, ground_x, ground_y, 800, 300)
@@ -219,6 +238,7 @@ def draw():
             i.draw()
 
     cur_score.draw()
+    fev.draw()
 
     update_canvas()
 
