@@ -145,7 +145,7 @@ def enter():
     global sky, ground, rsky, rground, rev_state, slot, stage_term, stamp, H, E, phase, ground_x, ground_y
     global fev
     global stage_start_time, stage_state
-    global E_appear_speed, E_appear_time_ratio
+    global E_appear_speed, E_appear_time_ratio, Emax
     global hit
     global shake, up_key_on, down_key_on, left_key_on, right_key_on
     global dash_dir # 1: 상 10: 하 100: 좌 1000: 우
@@ -166,7 +166,8 @@ def enter():
     fev = fever()
 
     E_appear_speed = 0.5 #몬스터 출현 속도
-    E_appear_time_ratio = 0.5 #몬스터 출현 속도 증가량
+    E_appear_time_ratio = 1 #몬스터 출현 속도 증가량
+    Emax = 10 #몬스터 최대 출현 수
     stage_start_time = time.time() #스테이지 시작 시간
     stage_state = stage_start
 
@@ -178,7 +179,7 @@ def enter():
 
     Item = []
     Item_last_create_time = time.time()
-    Item_create_time = 1
+    Item_create_time = 20
 
     cur_score = number(0)
 
@@ -329,7 +330,7 @@ def handle_events():
 
 def update():
     global E, H, rev_state
-    global E_appear_speed, E_appear_time_ratio, stage_start_time, stage_elapsed_time
+    global E_appear_speed, E_appear_time_ratio, Emax, stage_start_time, stage_elapsed_time
     global total_start, total_elapse, total_score, total_kills
     global stage_state, phase
     global stage_term, stamp
@@ -398,7 +399,7 @@ def update():
 
     stage_elapsed_time = time.time()
     if stage_state is stage_start:
-        if stage_elapsed_time - stage_start_time >= E_appear_speed:
+        if stage_elapsed_time - stage_start_time >= E_appear_speed and len(E) < Emax:
             E_appear_speed += E_appear_time_ratio
             E += [enemy.enemy(H[-1], H[-1])]
         if stage_elapsed_time - stage_start_time >= stage_start:
@@ -418,13 +419,14 @@ def update():
             stage_elapsed_time = time.time()
             stage_state = stage_start
             phase += [phrase(stage_start)]
-            E_appear_time_ratio -= 0.1
+            E_appear_time_ratio -= 0.05
             E_appear_speed = E_appear_time_ratio
             stage_term = load_image('../Pics/vacant_bar.png')
             stamp = load_image('../Pics/hero_stamp.png')
             H[-1].hp += 5
             H[-1].max_hp += 5
             enemy.enemy.max_hp *= 1.5
+            Emax += 10
 
     total_elapse = stage_elapsed_time - total_start
     total_score += H[-1].update(E)
