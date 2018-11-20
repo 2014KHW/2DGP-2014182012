@@ -14,6 +14,7 @@ total_elapse = 0
 total_start = time.time()
 total_score = 0
 total_kills = 0
+total_stage = 1
 
 #상수 선언 부분
 stage_start = 20
@@ -27,6 +28,12 @@ class fever:
     def __init__(self):
         self.x, self.y = 400 + 200, 600 - 20 - 20
         self.sx, self.sy = 50, 50
+        self.bx, self.by = self.x, self.y
+        self.bsx, self.bsy = 20, 20
+        self.fev = 0
+        self.rot_pos = 0
+        self.speed = 1
+        self.ssx, self.ssy = int(self.sx/2), 0
 
         if fever.image_B == None:
             fever.image_B = load_image('../Pics/fever_ip.png')
@@ -34,8 +41,19 @@ class fever:
             fever.image_R = load_image('../Pics/fever_pos.png')
     def draw(self):
         fever.image_B.clip_draw(0, 0, 200, 200, self.x, self.y, self.sx, self.sy)
+        if self.fev is not 0:
+            fever.image_R.clip_draw(0, 0, 200, 200, self.bx + self.ssx, self.by + self.ssy, self.bsx, self.bsy)
     def update(self):
-        pass
+        if self.fev == 0:
+            return
+        rad = self.fev*self.speed/10
+        self.rot_pos += rad
+        print('self.rotpos : ',self.rot_pos)
+        if self.rot_pos > 360:
+            self.rot_pos = 0
+            self.fev = max(0, self.fev - 1)
+        self.ssx = int(self.sx/2)*math.cos(-self.rot_pos*math.pi/180 + math.pi/2)
+        self.ssy = int(self.sy/2)*math.sin(-self.rot_pos*math.pi/180 + math.pi/2)
 
 class phrase:
     image = None
@@ -329,9 +347,9 @@ def handle_events():
 
 
 def update():
-    global E, H, rev_state
+    global E, H, rev_state, fev
     global E_appear_speed, E_appear_time_ratio, Emax, stage_start_time, stage_elapsed_time
-    global total_start, total_elapse, total_score, total_kills
+    global total_start, total_elapse, total_score, total_kills, total_stage
     global stage_state, phase
     global stage_term, stamp
     global shake
@@ -354,6 +372,7 @@ def update():
         Item_last_create_time = stage_elapsed_time - time_storage
         return
     #업데이트 부분
+    fev.update()
     if len(E) is not 0:
         for ene in E:
             ene.update(stage_state, H[-1])
@@ -374,6 +393,8 @@ def update():
         if E[i].del_sign is True:
             if E[i].state_elapsed_time - E[i].state_changed_time > 2:
                 total_kills += 1
+                fev.fev += 1
+                fev.rot_pos = 0
                 E.pop(i)
                 break
 
@@ -427,6 +448,7 @@ def update():
             H[-1].max_hp += 5
             enemy.enemy.max_hp *= 1.5
             Emax += 10
+            total_stage += 1
 
     total_elapse = stage_elapsed_time - total_start
     total_score += H[-1].update(E)
