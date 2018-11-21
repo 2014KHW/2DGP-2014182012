@@ -171,8 +171,6 @@ class shaking:
         else:
             return
 
-class skill:
-
 
 def enter():
     global sky, ground, rsky, rground, rev_state, slot, stage_term, stamp, H, E, phase, ground_x, ground_y
