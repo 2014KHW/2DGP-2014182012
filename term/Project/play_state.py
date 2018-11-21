@@ -53,7 +53,6 @@ class fever:
             fever.nums.clip_draw(0, (9 - (tmpnum % 10))*50, 50, 50, self.bx - self.sx - cnt*15, self.by - self.sy//2, 20, 20)
             tmpnum //= 10
             cnt += 1
-
     def draw(self):
         fever.image_B.clip_draw(0, 0, 200, 200, self.x, self.y, self.sx, self.sy)
         fever.image_R.clip_draw(0, 0, 200, 200, self.bx + self.ssx, self.by + self.ssy, self.bsx, self.bsy)
@@ -84,7 +83,6 @@ class phrase:
             phrase.image = load_image('../Pics/stage_start.png')
         if state is stage_pass:
             phrase.image = load_image('../Pics/stage_pass.png')
-
     def draw(self, state):
         if state is stage_start:
             phrase.image.clip_draw(0, 0, 426, 58, self.x, self.y)
@@ -172,6 +170,8 @@ class shaking:
             self.shake_strength = 5
         else:
             return
+
+class skill:
 
 
 def enter():
