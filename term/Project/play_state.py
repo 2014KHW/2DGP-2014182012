@@ -9,6 +9,7 @@ import rectangle
 import hero
 import enemy
 import item
+import skill
 
 total_elapse = 0
 total_start = time.time()
@@ -173,7 +174,7 @@ class shaking:
 
 
 def enter():
-    global sky, ground, rsky, rground, rev_state, slot, stage_term, stamp, H, E, phase, ground_x, ground_y
+    global sky, ground, rsky, rground, rev_state, stage_term, stamp, H, E, phase, ground_x, ground_y
     global fev
     global stage_start_time, stage_state
     global E_appear_speed, E_appear_time_ratio, Emax
@@ -182,6 +183,7 @@ def enter():
     global dash_dir # 1: 상 10: 하 100: 좌 1000: 우
     global cur_score
     global Item, Item_last_create_time, Item_create_time
+    global skill_inv, slot
 
     rev_state = False
     ground_x, ground_y = 400, 100
@@ -195,6 +197,7 @@ def enter():
     stage_term = load_image('../Pics/vacant_bar.png')
     stamp = load_image('../Pics/hero_stamp.png')
     fev = fever()
+    skill_inv = [skill.Thunder(), skill.Barrier(), skill.shout()]
 
     E_appear_speed = 0.5 #몬스터 출현 속도
     E_appear_time_ratio = 1 #몬스터 출현 속도 증가량
