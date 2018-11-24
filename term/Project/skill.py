@@ -16,7 +16,7 @@ class Thunder:
             Thunder.image = load_image('../Pics/thunder_drop.png')
         if Thunder.slot is None:
             Thunder.slot = load_image('../Pics/thunder_slot.png')
-        self.locked = True
+        self.locked = False
         self.activated = False
         self.x = x
         self.drop_times = 10
@@ -94,7 +94,7 @@ class Barrier:
             Barrier.attack = load_image('../Pics/counter_attack.png')
         if Barrier.slot is None:
             Barrier.slot = load_image('../Pics/counter_slot.png')
-        self.locked = True
+        self.locked = False
         self.ft = 0 #발동이 막 끝난시간 ( 쿨타임 )
         self.st = 0 #발동을 시작한 시간 (지속시간)
         self.frame = 0
@@ -116,6 +116,7 @@ class Barrier:
         self.activated = True
         self.at = time.time()
         self.getting_times = 0
+        self.waiting_kind = 'first'
     def disconnect(self):
         self.mode = 'disappear'
         self.ft = time.time()
@@ -166,6 +167,7 @@ class Barrier:
             self.hit_box = rectangle.rectangle(self.x, self.y, Barrier.barrier_size - self.frame * 2.5, Barrier.barrier_size - self.frame * 2.5)
             if self.activated:self.hits(e)
         if self.mode == 'counter':
+            print('I\'m counter!')
             self.get_attack()
         if self.waiting_kind == 'success' and len(self.attacks) == 0:
             if self.mode == 'counter':self.disconnect()
@@ -242,13 +244,13 @@ class Barrier_Attack:
 
 class Shout:
     shout_size = 100
-    reuse_time = 20
+    reuse_time = 30
     image = None
     def __init__(self):
         if Shout.image == None:
             Shout.image = load_image('../Pics/dragon_shout.png')
         self.w, self.h = Shout.image.w, Shout.image.h
-        self.locked = True
+        self.locked = False
         self.activated = False
         self.ft = 0
     def activate(self):
@@ -268,9 +270,16 @@ class Shout:
             if self.locked == True:
                 lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.activated == True:
-            Shout.image.clip_draw(0, 0, self.w, self.h, self.x, self.y, Shout.shout_size, Shout.shout_size)
+            if self.h_look:
+                Shout.image.clip_composite_draw(0, 0, self.w, self.h, 0, 'h', self.x, self.y, Shout.shout_size, Shout.shout_size)
+            else:
+                Shout.image.clip_composite_draw(0, 0, self.w, self.h, 0, '', self.x, self.y, Shout.shout_size, Shout.shout_size)
     def update(self, h, e):
-        self.x, self.y = h.x - 25 + 50, h.y - 25 + 50
+        self.h_look = h.look
+        if self.h_look:
+            self.x, self.y = h.x + 25 - 50, h.y - 25 + 50
+        else:
+            self.x, self.y = h.x - 25 + 50, h.y - 25 + 50
 
         if self.activated == True:
             if len(e) is 0: return
