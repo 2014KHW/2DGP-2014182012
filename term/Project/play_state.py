@@ -143,12 +143,15 @@ class shaking:
         self.shake_strength = 3
         self.move = -1
         self.on_shaking = False
+        self.by_skill = False
     def shake(self):
         global H, E, ground_x, ground_y
-
+        global skill_inv
         if self.on_shaking is False:
             return
         if self.shake_strength is 0:
+            if self.by_skill is True:
+                skill_inv[2].disconnect()
             self.on_shaking = False
             return
 
@@ -172,8 +175,10 @@ class shaking:
             self.on_shaking = True
             self.shake_strength = 5
         elif selection == 2 and skill_inv[selection].activated == True:
+            if self.by_skill == True: return
             self.on_shaking = True
             self.shake_strength = 15
+            self.by_skill = True
         else:
             return
 

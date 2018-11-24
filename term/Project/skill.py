@@ -256,6 +256,10 @@ class Shout:
         if self.activated == True: return
         if time.time() - self.ft > Shout.reuse_time:
             self.activated = True
+    def disconnect(self):
+        if self.activated == False: return
+        self.ft = time.time()
+        self.activated = False
     def unlock(self):
         self.locked = False
     def draw(self, s):
@@ -267,3 +271,15 @@ class Shout:
             Shout.image.clip_draw(0, 0, self.w, self.h, self.x, self.y, Shout.shout_size, Shout.shout_size)
     def update(self, h, e):
         self.x, self.y = h.x - 25 + 50, h.y - 25 + 50
+
+        if self.activated == True:
+            if len(e) is 0: return
+            for ene in e:
+                self.give_damage(ene)
+    def give_damage(self, e):
+        e.hp = -1
+        e.change_state(enemy.enemy.state_die[e.lev - 1])
+
+    def handle_events(self):
+        if time.time() - self.ft > Shout.reuse_time:
+            self.activate()
