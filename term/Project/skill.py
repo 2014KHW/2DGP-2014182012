@@ -1,5 +1,6 @@
 from pico2d import *
 import time
+import hero
 
 class Thunder:
     image = None
@@ -14,7 +15,7 @@ class Thunder:
         self.h = Thunder.image.h
     def draw(self):
         Thunder.image.clip_draw(self.frame * 50, 0, 50, 200, self.x, 250 + self.h//2, 100, get_canvas_height() - 250)
-    def update(self):
+    def update(self, h):
         self.frame = (self.frame + 1) % 8
 
 class Barrier:
@@ -113,4 +114,23 @@ class Barrier_Attack:
         return False
 
 class Shout:
-    pass
+    shout_size = 100
+    reuse_time = 20
+    image = None
+    def __init__(self):
+        if Shout.image == None:
+            Shout.image = load_image('../Pics/dragon_shout.png')
+        self.w, self.h = Shout.image.w, Shout.image.h
+        self.locked = True
+        self.activated = False
+        self.ft = 0
+    def activate(self):
+        if self.locked == True: return
+        if self.activated == True: return
+        if time.time() - self.ft > Shout.reuse_time:
+            self.activated = True
+    def draw(self):
+        if self.activated == True:
+            Shout.image.clip_draw(0, 0, self.w, self.h, self.x, self.y, Shout.shout_size, Shout.shout_size)
+    def update(self, h):
+        self.x, self.y = h.x - 25 + 50, h.y - 25 + 50
