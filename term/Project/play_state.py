@@ -32,6 +32,7 @@ class fever:
         self.sx, self.sy = 50, 50
         self.bx, self.by = self.x, self.y
         self.bsx, self.bsy = 20, 20
+        self.max_fev = 0
         self.fev = 0
         self.rot_pos = 0
         self.speed = 3
@@ -61,6 +62,7 @@ class fever:
     def update(self):
         if self.fev == 0:
             return
+        if self.max_fev < self.fev: self.max_fev = self.fev
         rad = self.fev*self.speed/10
         self.rot_pos += rad
         #print('self.rotpos : ',self.rot_pos)
@@ -379,6 +381,14 @@ def handle_events():
             else:
                 stop = True
 
+def take_skill(max_fever):
+    global skill_inv
+    if skill_inv[0].locked == True and max_fever >= 5:
+        skill_inv[0].unlock()
+    if skill_inv[1].locked == True and max_fever >= 10:
+        skill_inv[1].unlock()
+    if skill_inv[2].locked == True and max_fever >= 15:
+        skill_inv[2].unlock()
 
 def update():
     global E, H, rev_state, fev
@@ -429,6 +439,7 @@ def update():
             if E[i].state_elapsed_time - E[i].state_changed_time > 2:
                 total_kills += 1
                 fev.fev += 1
+                take_skill(fev.max_fev)
                 fev.rot_pos = 0
                 E.pop(i)
                 break
