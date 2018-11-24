@@ -165,10 +165,13 @@ class shaking:
             self.shake_strength -= 1
 
     def give_shake(self):
-        global H
+        global H, selection, skill_inv
         if self.on_shaking is False and H[-1].state is hero.hero.h_attack[H[-1].attack_type]:
             self.on_shaking = True
             self.shake_strength = 5
+        elif selection == 2 and skill_inv.activated == True:
+            self.on_shaking = True
+            self.shake_strength = 10
         else:
             return
 
@@ -198,7 +201,7 @@ def enter():
     stage_term = load_image('../Pics/vacant_bar.png')
     stamp = load_image('../Pics/hero_stamp.png')
     fev = fever()
-    skill_inv = [skill.Thunder(), skill.Barrier(), skill.shout()]
+    skill_inv = [skill.Thunder(random.randint(0 + 100, 800 - 100)), skill.Barrier(), skill.Shout()]
     selection = 0
 
     E_appear_speed = 0.5 #몬스터 출현 속도
