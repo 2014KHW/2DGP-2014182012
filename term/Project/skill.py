@@ -2,25 +2,43 @@ from pico2d import *
 import time
 import hero
 
+lock = None
+
 class Thunder:
     image = None
+    slot = None
+    reuse_time = 3
     def __init__(self, x):
         if Thunder.image is None:
             Thunder.image = load_image('../Pics/thunder_drop.png')
+        if Thunder.slot is None:
+            Thunder.slot = load_image('../Pics/thunder_slot.png')
         self.locked = True
+        self.activated = False
         self.x = x
         self.drop_times = 10
         self.frame = 0
+        self.ft = 0
         self.w = Thunder.image.w
         self.h = Thunder.image.h
+    def activate(self):
+        if self.activated == True: return
+        if self.locked == True: return
+        if time.time() - self.ft > Thunder.reuse_time:
+            self.activated = True
     def draw(self):
-        Thunder.image.clip_draw(self.frame * 50, 0, 50, 200, self.x, 250 + self.h//2, 100, get_canvas_height() - 250)
+        Thunder.slot.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
+        if self.locked == True:
+            lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
+        if self.activated == True:
+            Thunder.image.clip_draw(self.frame * 50, 0, 50, 200, self.x, 250 + self.h//2, 100, get_canvas_height() - 250)
     def update(self, h):
         self.frame = (self.frame + 1) % 8
 
 class Barrier:
     barrier = None
     attack = None
+    slot = None
     lasting_time = 5
     success_reuse_time = 10
     fail_reuse_time = 3
@@ -30,6 +48,8 @@ class Barrier:
             Barrier.barrier = load_image('../Pics/barrier.png')
         if Barrier.attack is None:
             Barrier.attack = load_image('../Pics/counter_attack.png')
+        if Barrier.slot is None:
+            Barrier.slot = load_image('../Pics/counter_slot.png')
         self.locked = True
         self.ft = 0 #발동이 막 끝난시간 ( 쿨타임 )
         self.st = 0 #발동을 시작한 시간 (지속시간)
@@ -66,6 +86,9 @@ class Barrier:
                 self.disconnect()
 
     def draw(self):
+        Barrier.slot.clip_draw(0, 0, 50, 50, 75, 600 - 75, 50, 50)
+        if self.locked == True:
+            lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.mode == 'ready':
             Barrier.barrier.clip_draw(self.frame * 50, 0, 50, 50, self.x, self.y, Barrier.barrier_size, Barrier.barrier_size)
 
@@ -130,6 +153,9 @@ class Shout:
         if time.time() - self.ft > Shout.reuse_time:
             self.activated = True
     def draw(self):
+        Shout.image.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
+        if self.locked == True:
+            lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.activated == True:
             Shout.image.clip_draw(0, 0, self.w, self.h, self.x, self.y, Shout.shout_size, Shout.shout_size)
     def update(self, h):
