@@ -26,6 +26,8 @@ class Thunder:
         if self.locked == True: return
         if time.time() - self.ft > Thunder.reuse_time:
             self.activated = True
+    def unlock(self):
+        self.locked = False
     def draw(self):
         Thunder.slot.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.locked == True:
@@ -152,6 +154,8 @@ class Shout:
         if self.activated == True: return
         if time.time() - self.ft > Shout.reuse_time:
             self.activated = True
+    def unlock(self):
+        self.locked = False
     def draw(self):
         Shout.image.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.locked == True:
