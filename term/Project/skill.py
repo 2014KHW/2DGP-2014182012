@@ -1,5 +1,6 @@
 from pico2d import *
 import time
+import random
 import hero
 
 lock = None
@@ -7,7 +8,7 @@ lock = None
 class Thunder:
     image = None
     slot = None
-    reuse_time = 3
+    reuse_time = 10
     def __init__(self, x):
         if Thunder.image is None:
             Thunder.image = load_image('../Pics/thunder_drop.png')
@@ -17,6 +18,7 @@ class Thunder:
         self.activated = False
         self.x = x
         self.drop_times = 10
+        self.cur_drops = 1
         self.frame = 0
         self.ft = 0
         self.w = Thunder.image.w
@@ -26,6 +28,10 @@ class Thunder:
         if self.locked == True: return
         if time.time() - self.ft > Thunder.reuse_time:
             self.activated = True
+    def disconnect(self):
+        self.activated = False
+        self.cur_drops = 0
+        self.ft = time.time()
     def unlock(self):
         self.locked = False
     def draw(self):
@@ -33,9 +39,18 @@ class Thunder:
         if self.locked == True:
             lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.activated == True:
-            Thunder.image.clip_draw(self.frame * 50, 0, 50, 200, self.x, 250 + self.h//2, 100, get_canvas_height() - 250)
+            Thunder.image.clip_draw(self.frame * 25, 0, 25, 200, self.x, 250 + (get_canvas_height() - 250)//2, 150, get_canvas_height() - 200)
     def update(self, h):
         self.frame = (self.frame + 1) % 8
+        if self.frame == 0:
+            self.x = random.randint(0 + 150, 800 - 150)
+            self.cur_drops += 1
+        if self.cur_drops > self.drop_times:
+            self.disconnect()
+    def handle_events(self):
+        print('I\'m in')
+        if time.time() - self.ft > Thunder.reuse_time:
+            self.activate()
 
 class Barrier:
     barrier = None
@@ -107,15 +122,14 @@ class Barrier:
         if self.activated is True:
             self.get_attack()
     def handle_events(self):
-        for e in get_events():
-            if (e.type, e.key, self.locked) == (SDL_KEYDOWN, SDLK_l, False):
-                if self.waiting_kind == 'success':
-                    if time.time() - self.ft > Barrier.success_reuse_time:
-                        self.activate()
-                elif self.waiting_kind == 'fail':
-                    if time.time() - self.ft > Barrier.fail_reuse_time:
-                        self.activate()
-                else: self.activate()
+        if self.waiting_kind == 'success':
+            if time.time() - self.ft > Barrier.success_reuse_time:
+                self.activate()
+        elif self.waiting_kind == 'fail':
+            if time.time() - self.ft > Barrier.fail_reuse_time:
+                self.activate()
+        else:
+            self.activate()
 
 class Barrier_Attack:
     attack_size = 70

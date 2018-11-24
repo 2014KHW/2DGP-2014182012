@@ -204,7 +204,7 @@ def enter():
     stage_term = load_image('../Pics/vacant_bar.png')
     stamp = load_image('../Pics/hero_stamp.png')
     fev = fever()
-    skill_inv = [skill.Thunder(random.randint(0 + 100, 800 - 100)), skill.Barrier(), skill.Shout()]
+    skill_inv = [skill.Thunder(random.randint(0 + 150, 800 - 150)), skill.Barrier(), skill.Shout()]
     selection = 0
 
     E_appear_speed = 0.5 #몬스터 출현 속도
@@ -289,7 +289,7 @@ def draw():
 
 def handle_events():
     global H, stop, up_key_on, down_key_on, left_key_on, right_key_on, rev_state
-    global selection
+    global skill_inv, selection
     eve = get_events()
     for e in eve:
         if e.type is SDL_QUIT:
@@ -380,15 +380,22 @@ def handle_events():
                 stop = False
             else:
                 stop = True
+        if (e.type, e.key) == (SDL_KEYDOWN, SDLK_l):
+            skill_inv[selection].handle_events()
 
-def take_skill(max_fever):
-    global skill_inv
+def take_additional(max_fever):
+    global skill_inv, H, E
     if skill_inv[0].locked == True and max_fever >= 5:
         skill_inv[0].unlock()
     if skill_inv[1].locked == True and max_fever >= 10:
         skill_inv[1].unlock()
     if skill_inv[2].locked == True and max_fever >= 15:
         skill_inv[2].unlock()
+
+    H[-1].extra_damage = max_fever//2
+    if len(E) is not 0:
+        for e in E:
+            e.speed = min(e.max_speed, e.max_speed - max_fever/10)
 
 def update():
     global E, H, rev_state, fev
@@ -418,6 +425,8 @@ def update():
         return
     #업데이트 부분
     fev.update()
+    if skill_inv[selection].activated:
+        skill_inv[selection].update(H[-1])
     if len(E) is not 0:
         for ene in E:
             ene.update(stage_state, H[-1])
@@ -439,7 +448,6 @@ def update():
             if E[i].state_elapsed_time - E[i].state_changed_time > 2:
                 total_kills += 1
                 fev.fev += 1
-                take_skill(fev.max_fev)
                 fev.rot_pos = 0
                 E.pop(i)
                 break
@@ -459,8 +467,7 @@ def update():
             if Item[i].del_sign is True:
                 Item.pop(i)
                 break
-
-
+    take_additional(fev.max_fev)
 
     cur_score.update(total_score)
 

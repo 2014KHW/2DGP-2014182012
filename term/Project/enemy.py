@@ -59,7 +59,8 @@ class enemy:
         self.stand_time = random.uniform(1, 2)
         self.go_R = False
         self.go_L = False
-        self.speed = random.randint(1, 6)
+        self.speed = random.randint(5, 10)
+        self.max_speed = self.speed
         #히트박스
         self.head_box = rectangle.rectangle(self.x, self.y + 4, 16, 16)
         self.body_box = rectangle.rectangle(self.x, self.y - 10, 10, 4)

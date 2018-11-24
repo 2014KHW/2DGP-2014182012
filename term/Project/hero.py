@@ -35,6 +35,7 @@ class hero:
         self.frame = 0
         self.state = pstate
         self.damage = 5
+        self.extra_damage = 0
         self.hp = curhp
         self.overwhelming = False #무적
         self.del_time = 0
@@ -568,7 +569,7 @@ class hero:
                     self.give_damage(ene)
 
     def give_damage(self, e):
-        e.hp -= self.damage
+        e.hp -= self.damage + self.extra_damage
         if e.hp < 0:
             e.change_state(enemy.enemy.state_die[e.lev - 1])
 
