@@ -2,6 +2,8 @@ from pico2d import *
 import time
 import random
 import hero
+import enemy
+import rectangle
 
 lock = None
 
@@ -40,13 +42,29 @@ class Thunder:
             lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.activated == True:
             Thunder.image.clip_draw(self.frame * 25, 0, 25, 200, self.x, 250 + (get_canvas_height() - 250)//2, 150, get_canvas_height() - 200)
-    def update(self, h):
+    def update(self, h, e):
         self.frame = (self.frame + 1) % 8
         if self.frame == 0:
             self.x = random.randint(0 + 150, 800 - 150)
             self.cur_drops += 1
         if self.cur_drops > self.drop_times:
             self.disconnect()
+        if self.frame > 3:
+            self.damage = (h.damage + h.extra_damage) * 2
+            self.hit_box = rectangle.rectangle(self.x, 250 + (get_canvas_height() - 250)//2, 50, (get_canvas_height() - 200) / 2)
+            self.hits(e)
+    def hits(self, e):
+        for ene in e:
+            if ene.skill_hit_num != self.cur_drops and self.hit_box.check_collide(ene.head_box):
+                ene.skill_hit_num = self.cur_drops
+                print('changed value : ', enemy.enemy.state_hit)
+                ene.change_state(enemy.enemy.state_hit)
+                self.give_damage(ene)
+    def give_damage(self, e):
+        e.hp -= self.damage
+        if e.hp < 0:
+            e.change_state(enemy.enemy.state_die[e.lev - 1])
+
     def handle_events(self):
         print('I\'m in')
         if time.time() - self.ft > Thunder.reuse_time:
@@ -59,7 +77,7 @@ class Barrier:
     lasting_time = 5
     success_reuse_time = 10
     fail_reuse_time = 3
-    barrier_size = 60
+    barrier_size = 90
     def __init__(self):
         if Barrier.barrier is None:
             Barrier.barrier = load_image('../Pics/barrier.png')
@@ -95,7 +113,7 @@ class Barrier:
         self.activated = False
     def get_attack(self):
         if time.time() - self.at > self.attack_add_time:
-            self.attack += [Barrier_Attack()]
+            self.attacks += [Barrier_Attack(0, self.x, self.y)]
             self.at = time.time()
             self.getting_times += 1
             if self.getting_times == 10:
@@ -107,11 +125,17 @@ class Barrier:
         if self.locked == True:
             lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.mode == 'ready':
-            Barrier.barrier.clip_draw(self.frame * 50, 0, 50, 50, self.x, self.y, Barrier.barrier_size, Barrier.barrier_size)
+            if self.h_look:
+                Barrier.barrier.clip_draw(self.frame * 50, 0, 50, 50, self.x, self.y,
+                                          Barrier.barrier_size - self.frame * 2.5, Barrier.barrier_size - self.frame * 2.5)
+            else:
+                Barrier.barrier.clip_composite_draw(self.frame * 50, 0, 50, 50, 0, 'h', self.x, self.y,
+                                          Barrier.barrier_size - self.frame * 2.5, Barrier.barrier_size - self.frame * 2.5)
 
-    def update(self, h, cmod=False):
+    def update(self, h, e, cmod=False):
         self.frame = (self.frame + 1) % 5
         self.x, self.y = h.x, h.y
+        self.h_look = h.look
         if cmod == True and self.mode == 'ready':
             self.mode = 'counter'
         if self.mode == 'ready':
@@ -176,5 +200,5 @@ class Shout:
             lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.activated == True:
             Shout.image.clip_draw(0, 0, self.w, self.h, self.x, self.y, Shout.shout_size, Shout.shout_size)
-    def update(self, h):
+    def update(self, h, e):
         self.x, self.y = h.x - 25 + 50, h.y - 25 + 50

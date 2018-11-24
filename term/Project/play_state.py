@@ -173,7 +173,7 @@ class shaking:
             self.shake_strength = 5
         elif selection == 2 and skill_inv[selection].activated == True:
             self.on_shaking = True
-            self.shake_strength = 10
+            self.shake_strength = 15
         else:
             return
 
@@ -426,7 +426,7 @@ def update():
     #업데이트 부분
     fev.update()
     if skill_inv[selection].activated:
-        skill_inv[selection].update(H[-1])
+        skill_inv[selection].update(H[-1], E)
     if len(E) is not 0:
         for ene in E:
             ene.update(stage_state, H[-1])

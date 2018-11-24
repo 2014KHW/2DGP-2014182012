@@ -66,6 +66,7 @@ class enemy:
         self.body_box = rectangle.rectangle(self.x, self.y - 10, 10, 4)
         self.legs_box = rectangle.rectangle(self.x, self.y - 20, 2, 4)
         self.hit_num = -1
+        self.skill_hit_num = -1
         self.knock_back_range = 5
         if len(enemy.image) is 0:
             enemy.image += [load_image('../Pics/enemy_level1.png')]
@@ -88,6 +89,8 @@ class enemy:
         else:
             self.look = True
     def change_state(self, state):
+        if self.state == enemy.state_appear:
+            return
         enter = {
             enemy.state_hit: self.enter_hit,
             enemy.state_move: self.enter_move,
