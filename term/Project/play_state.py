@@ -253,7 +253,8 @@ def draw():
         rground.clip_draw(200, 0, 600, 200, ground_x, ground_y, 800, 300)
     slot.clip_draw(0, 0, 125, 125, 75, 600 - 75, 75, 75)
     stage_term.clip_draw(0, 0, 125, 9, 400, 600 - 20, 400, 10)
-    skill_inv[selection].draw()
+    for i in range(3):
+            skill_inv[i].draw(selection)
     if stage_state is stage_start:
         stamp.clip_draw(0, 0, 19, 16, 400 - 200 * (1 - (stage_elapsed_time - stage_start_time) * 2 / stage_start), 600 - 20, 19, 16)
     else:
@@ -425,8 +426,9 @@ def update():
         return
     #업데이트 부분
     fev.update()
-    if skill_inv[selection].activated:
-        skill_inv[selection].update(H[-1], E)
+    for i in range(3):
+        if skill_inv[i].locked == False and skill_inv[i].activated:
+            skill_inv[i].update(H[-1], E)
     if len(E) is not 0:
         for ene in E:
             ene.update(stage_state, H[-1])

@@ -36,10 +36,11 @@ class Thunder:
         self.ft = time.time()
     def unlock(self):
         self.locked = False
-    def draw(self):
-        Thunder.slot.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
-        if self.locked == True:
-            lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
+    def draw(self, s):
+        if s == 0:
+            Thunder.slot.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
+            if self.locked == True:
+                lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.activated == True:
             Thunder.image.clip_draw(self.frame * 25, 0, 25, 200, self.x, 250 + (get_canvas_height() - 250)//2, 150, get_canvas_height() - 200)
     def update(self, h, e):
@@ -55,9 +56,17 @@ class Thunder:
             self.hits(e)
     def hits(self, e):
         for ene in e:
+            if ene.del_sign == True: continue
             if ene.skill_hit_num != self.cur_drops and self.hit_box.check_collide(ene.head_box):
                 ene.skill_hit_num = self.cur_drops
-                print('changed value : ', enemy.enemy.state_hit)
+                ene.change_state(enemy.enemy.state_hit)
+                self.give_damage(ene)
+            elif ene.skill_hit_num != self.cur_drops and self.hit_box.check_collide(ene.body_box):
+                ene.skill_hit_num = self.cur_drops
+                ene.change_state(enemy.enemy.state_hit)
+                self.give_damage(ene)
+            elif ene.skill_hit_num != self.cur_drops and self.hit_box.check_collide(ene.legs_box):
+                ene.skill_hit_num = self.cur_drops
                 ene.change_state(enemy.enemy.state_hit)
                 self.give_damage(ene)
     def give_damage(self, e):
@@ -75,7 +84,7 @@ class Barrier:
     attack = None
     slot = None
     lasting_time = 5
-    success_reuse_time = 10
+    success_reuse_time = 5
     fail_reuse_time = 3
     barrier_size = 90
     def __init__(self):
@@ -96,7 +105,7 @@ class Barrier:
         self.waiting_kind = 'first'
         self.at = 0 #발동 후 공격 시간의 간격을 재는 변수
         self.getting_times = 0
-        self.attack_add_time = 0.5
+        self.attack_add_time = 0.1
         self.attacks = []
         self.mode = 'disappear'
     def unlock(self):
@@ -112,18 +121,20 @@ class Barrier:
         self.ft = time.time()
         self.activated = False
     def get_attack(self):
+        if self.mode != 'counter': return
+        if self.waiting_kind == 'success': return
         if time.time() - self.at > self.attack_add_time:
-            self.attacks += [Barrier_Attack(0, self.x, self.y)]
+            self.attacks += [Barrier_Attack(self.attack_deg + math.pi + random.randint(-10, 10)*math.pi/180, self.x, self.y, self.getting_times)]
             self.at = time.time()
             self.getting_times += 1
             if self.getting_times == 10:
                 self.waiting_kind = 'success'
-                self.disconnect()
 
-    def draw(self):
-        Barrier.slot.clip_draw(0, 0, 50, 50, 75, 600 - 75, 50, 50)
-        if self.locked == True:
-            lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
+    def draw(self, s):
+        if s == 1:
+            Barrier.slot.clip_draw(0, 0, 50, 50, 75, 600 - 75, 50, 50)
+            if self.locked == True:
+                lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.mode == 'ready':
             if self.h_look:
                 Barrier.barrier.clip_draw(self.frame * 50, 0, 50, 50, self.x, self.y,
@@ -131,20 +142,45 @@ class Barrier:
             else:
                 Barrier.barrier.clip_composite_draw(self.frame * 50, 0, 50, 50, 0, 'h', self.x, self.y,
                                           Barrier.barrier_size - self.frame * 2.5, Barrier.barrier_size - self.frame * 2.5)
-
-    def update(self, h, e, cmod=False):
+        if self.mode == 'counter':
+            if len(self.attacks) == 0: return
+            for ats in self.attacks:
+                ats.draw()
+    def update_attacks(self, h, e):
+        if len(self.attacks) == 0: return
+        for ats in self.attacks:
+            ats.update(h, e)
+        for ats in range(len(self.attacks)):
+            if self.attacks[ats - 1].del_sign is True: self.attacks.pop(ats - 1)
+            break
+    def update(self, h, e):
         self.frame = (self.frame + 1) % 5
         self.x, self.y = h.x, h.y
         self.h_look = h.look
-        if cmod == True and self.mode == 'ready':
-            self.mode = 'counter'
+        self.update_attacks(h, e)
         if self.mode == 'ready':
             if time.time() - self.st > Barrier.lasting_time:
                 self.st = 0
                 self.waiting_kind = 'fail'
                 self.disconnect()
-        if self.activated is True:
+            self.hit_box = rectangle.rectangle(self.x, self.y, Barrier.barrier_size - self.frame * 2.5, Barrier.barrier_size - self.frame * 2.5)
+            if self.activated:self.hits(e)
+        if self.mode == 'counter':
             self.get_attack()
+        if self.waiting_kind == 'success' and len(self.attacks) == 0:
+            if self.mode == 'counter':self.disconnect()
+
+    def hits(self, e):
+        if len(e) == 0: return
+        for ene in e:
+            if len(ene.attack_object) == 0 : continue
+            for ao in range(len(ene.attack_object)):
+                if ene.attack_object[ao - 1].del_sign is True: continue
+                if self.hit_box.check_collide(ene.attack_object[ao - 1].body_box):
+                    ene.attack_object[ao - 1].del_sign = True
+                    if len(self.attacks) is 0:
+                        self.attack_deg = ene.attack_object[ao - 1].degree
+                        self.mode = 'counter'
     def handle_events(self):
         if self.waiting_kind == 'success':
             if time.time() - self.ft > Barrier.success_reuse_time:
@@ -157,18 +193,46 @@ class Barrier:
 
 class Barrier_Attack:
     attack_size = 70
-    def __init__(self, deg, hx, hy):
-        self.speed = 10
+    def __init__(self, deg, hx, hy, num):
+        self.speed = 15
         self.deg = deg
         self.curx, self.cury = hx, hy
         self.del_sign = False
         self.frame = 0
+        self.num = num
     def draw(self):
         if self.del_sign == False:
             Barrier.attack.clip_draw(self.frame * 50, 0, 50, 50, self.curx, self.cury, Barrier_Attack.attack_size, Barrier_Attack.attack_size)
-    def update(self):
+    def update(self, h, e):
         self.frame = (self.frame + 1) % 4
-        if self.outs():self.del_sign = True
+        self.curx += self.speed * math.cos(self.deg)
+        self.cury += self.speed * math.sin(self.deg)
+        self.damage = 3 * (h.extra_damage + 1)
+        self.hit_box = rectangle.rectangle(self.curx, self.cury, Barrier_Attack.attack_size - 5, Barrier_Attack.attack_size - 5)
+        if self.outs():
+            print('delete pch')
+            self.del_sign = True
+        if len(e) == 0: return
+        for ene in e:
+            if ene.del_sign is True: continue
+            if self.hit_box.check_collide(ene.head_box):
+                ene.skill_hit_num = self.num
+                ene.change_state(enemy.enemy.state_hit)
+                self.give_damage(ene)
+            elif self.hit_box.check_collide(ene.body_box):
+                ene.skill_hit_num = self.num
+                ene.change_state(enemy.enemy.state_hit)
+                self.give_damage(ene)
+            elif self.hit_box.check_collide(ene.legs_box):
+                ene.skill_hit_num = self.num
+                ene.change_state(enemy.enemy.state_hit)
+                self.give_damage(ene)
+
+    def give_damage(self, e):
+        e.hp -= self.damage
+        if e.hp < 0:
+            e.change_state(enemy.enemy.state_die[e.lev - 1])
+
     def outs(self):
         if self.curx < 0 - Barrier_Attack.attack_size//2:return True
         if self.curx > get_canvas_width() + Barrier_Attack.attack_size//2:return True
@@ -194,10 +258,11 @@ class Shout:
             self.activated = True
     def unlock(self):
         self.locked = False
-    def draw(self):
-        Shout.image.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
-        if self.locked == True:
-            lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
+    def draw(self, s):
+        if s == 2:
+            Shout.image.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
+            if self.locked == True:
+                lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.activated == True:
             Shout.image.clip_draw(0, 0, self.w, self.h, self.x, self.y, Shout.shout_size, Shout.shout_size)
     def update(self, h, e):
