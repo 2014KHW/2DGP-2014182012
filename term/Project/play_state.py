@@ -184,6 +184,7 @@ def enter():
     global cur_score
     global Item, Item_last_create_time, Item_create_time
     global skill_inv, slot
+    global selection
 
     rev_state = False
     ground_x, ground_y = 400, 100
@@ -198,6 +199,7 @@ def enter():
     stamp = load_image('../Pics/hero_stamp.png')
     fev = fever()
     skill_inv = [skill.Thunder(), skill.Barrier(), skill.shout()]
+    selection = 0
 
     E_appear_speed = 0.5 #몬스터 출현 속도
     E_appear_time_ratio = 1 #몬스터 출현 속도 증가량
@@ -279,6 +281,7 @@ def draw():
 
 def handle_events():
     global H, stop, up_key_on, down_key_on, left_key_on, right_key_on, rev_state
+    global selection
     eve = get_events()
     for e in eve:
         if e.type is SDL_QUIT:
@@ -354,7 +357,16 @@ def handle_events():
                 H[-1].dash_dir |= 100
             if right_key_on is True:
                 H[-1].dash_dir |= 1000
-
+        if (e.type, e.key) == (SDL_KEYDOWN, SDLK_q):
+            tmp = selection
+            next = max((selection - 1), 0)
+            if selection == next:
+                selection = 2
+        if (e.type, e.key) == (SDL_KEYDOWN, SDLK_e):
+            tmp = selection
+            next = min((selection + 1), 2)
+            if selection == next:
+                selection = 0
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_p):
             if stop is True:
                 stop = False
@@ -372,6 +384,7 @@ def update():
     global stop
     global cur_score, up_key_on
     global Item, Item_last_create_time, Item_create_time
+    global skill_inv, selection
 
     if stop is True:
         if len(H) is not 0:
