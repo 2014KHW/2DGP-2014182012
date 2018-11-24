@@ -169,7 +169,7 @@ class shaking:
         if self.on_shaking is False and H[-1].state is hero.hero.h_attack[H[-1].attack_type]:
             self.on_shaking = True
             self.shake_strength = 5
-        elif selection == 2 and skill_inv.activated == True:
+        elif selection == 2 and skill_inv[selection].activated == True:
             self.on_shaking = True
             self.shake_strength = 10
         else:
@@ -189,6 +189,7 @@ def enter():
     global skill_inv, slot
     global selection
 
+    skill.lock = load_image('../Pics/locked.png')
     rev_state = False
     ground_x, ground_y = 400, 100
     shake = shaking()
@@ -235,6 +236,7 @@ def draw():
     global stage_state
     global stop
     global cur_score
+    global skill_inv, selection
     global fev
 
     if stop is True:
@@ -247,8 +249,9 @@ def draw():
     else:
         rsky.clip_draw(200, 100, 400, 450, 400, 300, 800, 600)
         rground.clip_draw(200, 0, 600, 200, ground_x, ground_y, 800, 300)
-    slot.clip_draw(0, 0, 125, 125, 50, 600 - 50, 50, 50)
+    slot.clip_draw(0, 0, 125, 125, 75, 600 - 75, 75, 75)
     stage_term.clip_draw(0, 0, 125, 9, 400, 600 - 20, 400, 10)
+    skill_inv[selection].draw()
     if stage_state is stage_start:
         stamp.clip_draw(0, 0, 19, 16, 400 - 200 * (1 - (stage_elapsed_time - stage_start_time) * 2 / stage_start), 600 - 20, 19, 16)
     else:
@@ -363,13 +366,13 @@ def handle_events():
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_q):
             tmp = selection
             next = max((selection - 1), 0)
-            if selection == next:
-                selection = 2
+            if tmp == next:selection = 2
+            else:selection = next
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_e):
             tmp = selection
             next = min((selection + 1), 2)
-            if selection == next:
-                selection = 0
+            if tmp == next:selection = 0
+            else:selection = next
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_p):
             if stop is True:
                 stop = False
