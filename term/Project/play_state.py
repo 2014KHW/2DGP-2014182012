@@ -241,15 +241,9 @@ def enter():
 def move_bg_by_hero(h):
     global ground_x, sky_x, ground_y, sky_y
     if h.go_L is True:
-        if h.dashing is True:
-            move_bg_lr(h.dash_dist + 10, -1)
-        else:
-            move_bg_lr(5, -1)
+        move_bg_lr(5, -1)
     elif h.go_R is True:
-        if h.dashing is True:
-            move_bg_lr(h.dash_dist + 10, +1)
-        else:
-            move_bg_lr(5, +1)
+        move_bg_lr(5, +1)
     if h.jump is True:
         if h.ascend is True:
             move_bg_ud(h, +1)
@@ -257,20 +251,39 @@ def move_bg_by_hero(h):
             move_bg_ud(h, -1)
     else:
         ground_y, sky_y = 100, 100
+    if h.dashing is True:
+        if h.dash_dir & 1 == 1:
+            ground_y = max(0, ground_y - h.dash_dist)
+        if h.dash_dir & 10 == 10 or h.dash_dir & 10 == 2:
+            ground_y += h.dash_dist
+        if h.dash_dir & 100 == 100:
+            ground_x = max(0 + 25, ground_x - h.dash_dist)
+        if h.dash_dir & 1000 == 1000 or h.dash_dir & 1000 == 992:
+            ground_x = min(ground_x + h.dash_dist,  ground.w - 600)
     print('ground_x, ground_y : ', ground_x, ground_y)
 def move_bg_lr(move, dir):
     global ground_x, sky_x
     ground_x = clamp(0, ground_x + move * dir / 5, ground.w - 600)
     sky_x = clamp(0, sky_x + move * dir / 10, sky.w - 400)
+    if len(E) is not 0:
+        for ene in E:
+            ene.x = clamp(0, ene.x + move * dir / 20, sky.w - 400)
 def move_bg_ud(h, dir):
     global ground_y, sky_y
     if h.state == hero.hero.h_attack[h.attack_type]:
         ground_y += 2 * dir / 5
         sky_y += 2 * dir / 10
+        if len(E) is not 0:
+            for ene in E:
+                ene.y += 2 * dir / 5
     else:
         print(h.va_speed - h.va_a)
         ground_y += (h.va_speed - h.va_a) * -dir * 2 / 5
         sky_y += (h.va_speed - h.va_a) * -dir * 2 / 10
+        if len(E) is not 0:
+            for ene in E:
+                ene.y += (h.va_speed - h.va_a) * -dir * 2 / 5
+
 
 def exit():
     global sky, ground, rsky, rground, H, E, hit, slot, stage_term, stamp
