@@ -262,8 +262,9 @@ def move_bg_by_hero(h):
             ground_x = min(ground_x + h.dash_dist,  ground.w - 600)
     if len(E) is not 0:
         for ene in E:
-            ene.y = ground_y + 150
-    print('ground_x, ground_y : ', ground_x, ground_y)
+            if ene.state != enemy.enemy.state_appear:
+                ene.y = ground_y + 150
+    #print('ground_x, ground_y : ', ground_x, ground_y)
 def move_bg_lr(move, dir):
     global ground_x, sky_x
     ground_x = clamp(0, ground_x + move * dir / 5, ground.w - 600)
