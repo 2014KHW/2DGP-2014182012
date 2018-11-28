@@ -371,35 +371,17 @@ class hero:
             self.maxheight = 400
             self.change_state(hero.h_jump)
     def update_move(self):
-        if self.go_R is True:
-            self.x += 5
-            self.look = False
-            if self.state is hero.h_stand:
-                self.state = hero.h_move
-        if self.go_L is True:
-            self.x -= 5
-            self.look = True
-            if self.state is hero.h_stand:
-                self.state = hero.h_move
+        self.move_lr()
     def update_attack(self):
         global enemies, tmp_score
         tmp_score = self.check_hit_attack_with_object(enemies)
         if self.dashing is True:
             self.change_state(hero.h_jump)
             return tmp_score
-        if self.ascend is True:
-            self.y += 2
-        else:
-            self.y -= 2
+
+        self.move_ud()
+        self.move_lr()
         self.check_hit_attack_with_enemy(enemies)
-        if self.go_R is True:
-            self.x += 5
-            self.look = False
-        if self.go_L is True:
-            self.x -= 5
-            self.look = True
-        #print(self.y, self.maxheight)
-        self.check_max_min_height()
         return tmp_score
     def update_jump_ready(self):
         if self.quake_body > 0:
@@ -410,23 +392,32 @@ class hero:
         self.maxheight += 10
         self.va_speed += 1
     def update_jump(self):
-        global va_speed_size
-        if self.ascend is True:
-            self.y += self.va_speed - self.va_a
-            self.va_a += va_speed_size
-
-
-        if self.ascend is False:
-            self.y -= self.va_speed - self.va_a
-            self.va_a -= va_speed_size
-
+        self.move_ud(False)
+        self.move_lr()
+        self.check_max_min_height()
+    def move_lr(self):
         if self.go_R is True:
             self.x += 5
             self.look = False
         if self.go_L is True:
             self.x -= 5
             self.look = True
-        #print(self.y, self.maxheight)
+
+    def move_ud(self, No_gravity=True):
+        if No_gravity:
+            global va_speed_size
+            if self.ascend is True:
+                self.y += 2
+            else:
+                self.y -= 2
+        else:
+            if self.ascend is True:
+                self.y += self.va_speed - self.va_a
+                self.va_a += va_speed_size
+
+            if self.ascend is False:
+                self.y -= self.va_speed - self.va_a
+                self.va_a -= va_speed_size
         self.check_max_min_height()
 
     def change_state(self, state):
