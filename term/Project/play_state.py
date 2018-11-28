@@ -186,9 +186,18 @@ class shaking:
         else:
             return
 
+    def move_bg_by_hero(self):
+        H[-1].x += self.shake_strength * self.move
+        if len(E) is not 0:
+            for ene in E:
+                ene.x += self.shake_strength * self.move
+
+        ground_x += self.shake_strength * self.move
+        ground_y += self.shake_strength * self.move / 2
 
 def enter():
-    global sky, ground, rsky, rground, rev_state, stage_term, stamp, H, E, phase, ground_x, ground_y
+    global sky, ground, rsky, rground, rev_state, stage_term, stamp, H, E, phase
+    global ground_x, ground_y, sky_x, sky_y
     global fev
     global stage_start_time, stage_state
     global E_appear_speed, E_appear_time_ratio, Emax
@@ -202,7 +211,8 @@ def enter():
 
     skill.lock = load_image('../Pics/locked.png')
     rev_state = False
-    ground_x, ground_y = 400, 100
+    ground_x, ground_y = 200, 100
+    sky_x, sky_y = get_canvas_width(), get_canvas_height()
     shake = shaking()
     sky = load_image('../Pics/sky_background.png')
     rsky = load_image('../R_Pics/sky_background.png')
@@ -256,10 +266,10 @@ def draw():
     clear_canvas()
     if rev_state is False:
         sky.clip_draw(200, 100, 400, 450, 400, 300, 800, 600)
-        ground.clip_draw(200, 0, 600, 200, ground_x, ground_y, 800, 300)
+        ground.clip_draw(ground_x, 0, 600, 200, 400, ground_y, 800, 300)
     else:
         rsky.clip_draw(200, 100, 400, 450, 400, 300, 800, 600)
-        rground.clip_draw(200, 0, 600, 200, ground_x, ground_y, 800, 300)
+        rground.clip_draw(ground_x, 0, 600, 200, 400, ground_y, 800, 300)
     slot.clip_draw(0, 0, 125, 125, 75, 600 - 75, 75, 75)
     stage_term.clip_draw(0, 0, 125, 9, 400, 600 - 20, 400, 10)
     for i in range(3):

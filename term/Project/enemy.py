@@ -281,13 +281,13 @@ class enemy:
     def update_move(self):
         #print(self.go_L, self.go_R)
         if self.go_R is True:
-            self.x = min(800, self.x + self.speed)
-            if self.x is 800:
+            self.x = min(830, self.x + self.speed)
+            if self.x is 830:
                 self.go_R = False
                 self.go_L = True
         if self.go_L is True:
-            self.x = max(0, self.x - self.speed)
-            if self.x is 0:
+            self.x = max(-30, self.x - self.speed)
+            if self.x is -30:
                 self.go_L = False
                 self.go_R = True
         if self.state_elapsed_time - self.state_changed_time >= self.move_time:
