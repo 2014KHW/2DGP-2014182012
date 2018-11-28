@@ -161,9 +161,9 @@ class enemy:
         self.from_attack = False
     def exit_die(self):
         self.from_attack = False
-    def draw(self):
+    def draw(self, gy):
         if self.state is enemy.state_appear:
-            enemy.appear(self)
+            enemy.appear(self, gy)
             return
 
         if len(self.depress_obj) is not 0:
@@ -194,7 +194,7 @@ class enemy:
         self.head_box = rectangle.rectangle(self.x, self.y + 4, 16, 16)
         self.body_box = rectangle.rectangle(self.x, self.y - 10, 10, 4)
         self.legs_box = rectangle.rectangle(self.x, self.y - 20, 2, 4)
-    def appear(self):
+    def appear(self, gy):
         if self.change_pics is False:
             enemy.image[self.lev - 1].clip_draw(self.frame * 25, 0, 25, 25, self.x, self.y, self.draw_scale_x,
                                                 self.draw_scale_y)
@@ -208,8 +208,9 @@ class enemy:
 
         if self.draw_scale_y <= self.draw_scale_x:
             self.draw_scale_y = self.draw_scale_x
-        if self.y < 250:
-            self.y = 250
+        if self.y < gy:
+            self.y = gy
+            self.draw_scale_y = self.draw_scale_x
             self.state = enemy.state_stand
             self.state_changed_time = time.time()
             self.state_begin_stand_time = time.time()

@@ -251,6 +251,9 @@ def move_bg_by_hero(h):
             move_bg_ud(h, -1)
     else:
         ground_y, sky_y = 100, 100
+        if len(E) is not 0:
+            for ene in E:
+                ene.y = 250
     if h.dashing is True:
         if h.dash_dir & 1 == 1:
             ground_y = max(0, ground_y - h.dash_dist)
@@ -321,7 +324,7 @@ def draw():
 
     if len(E) is not 0:
         for ene in E:
-            ene.draw()
+            ene.draw(ground_y + 150)
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
                     if obj.del_sign is False:
