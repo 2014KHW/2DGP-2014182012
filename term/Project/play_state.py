@@ -251,9 +251,6 @@ def move_bg_by_hero(h):
             move_bg_ud(h, -1)
     else:
         ground_y, sky_y = 100, 100
-        if len(E) is not 0:
-            for ene in E:
-                ene.y = 250
     if h.dashing is True:
         if h.dash_dir & 1 == 1:
             ground_y = max(0, ground_y - h.dash_dist)
@@ -263,6 +260,9 @@ def move_bg_by_hero(h):
             ground_x = max(0 + 25, ground_x - h.dash_dist)
         if h.dash_dir & 1000 == 1000 or h.dash_dir & 1000 == 992:
             ground_x = min(ground_x + h.dash_dist,  ground.w - 600)
+    if len(E) is not 0:
+        for ene in E:
+            ene.y = ground_y + 150
     print('ground_x, ground_y : ', ground_x, ground_y)
 def move_bg_lr(move, dir):
     global ground_x, sky_x
