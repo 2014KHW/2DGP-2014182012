@@ -186,14 +186,6 @@ class shaking:
         else:
             return
 
-    def move_bg_by_hero(self):
-        H[-1].x += self.shake_strength * self.move
-        if len(E) is not 0:
-            for ene in E:
-                ene.x += self.shake_strength * self.move
-
-        ground_x += self.shake_strength * self.move
-        ground_y += self.shake_strength * self.move / 2
 
 def enter():
     global sky, ground, rsky, rground, rev_state, stage_term, stamp, H, E, phase
@@ -212,7 +204,7 @@ def enter():
     skill.lock = load_image('../Pics/locked.png')
     rev_state = False
     ground_x, ground_y = 200, 100
-    sky_x, sky_y = get_canvas_width(), get_canvas_height()
+    sky_x, sky_y = 200, 100
     shake = shaking()
     sky = load_image('../Pics/sky_background.png')
     rsky = load_image('../R_Pics/sky_background.png')
@@ -246,6 +238,40 @@ def enter():
 
     phase = [phrase(stage_state)]
 
+def move_bg_by_hero(h):
+    global ground_x, sky_x, ground_y, sky_y
+    if h.go_L is True:
+        if h.dashing is True:
+            move_bg_lr(h.dash_dist + 10, -1)
+        else:
+            move_bg_lr(5, -1)
+    elif h.go_R is True:
+        if h.dashing is True:
+            move_bg_lr(h.dash_dist + 10, +1)
+        else:
+            move_bg_lr(5, +1)
+    if h.jump is True:
+        if h.ascend is True:
+            move_bg_ud(h, +1)
+        else:
+            move_bg_ud(h, -1)
+    else:
+        ground_y, sky_y = 100, 100
+    print('ground_x, ground_y : ', ground_x, ground_y)
+def move_bg_lr(move, dir):
+    global ground_x, sky_x
+    ground_x = clamp(0, ground_x + move * dir / 5, ground.w - 600)
+    sky_x = clamp(0, sky_x + move * dir / 10, sky.w - 400)
+def move_bg_ud(h, dir):
+    global ground_y, sky_y
+    if h.state == hero.hero.h_attack[h.attack_type]:
+        ground_y += 2 * dir / 5
+        sky_y += 2 * dir / 10
+    else:
+        print(h.va_speed - h.va_a)
+        ground_y += (h.va_speed - h.va_a) * -dir * 2 / 5
+        sky_y += (h.va_speed - h.va_a) * -dir * 2 / 10
+
 def exit():
     global sky, ground, rsky, rground, H, E, hit, slot, stage_term, stamp
     del sky, ground, rsky, rground, H, E, hit, slot, stage_term, stamp
@@ -265,11 +291,11 @@ def draw():
 
     clear_canvas()
     if rev_state is False:
-        sky.clip_draw(200, 100, 400, 450, 400, 300, 800, 600)
-        ground.clip_draw(ground_x, 0, 600, 200, 400, ground_y, 800, 300)
+        sky.clip_draw(int(sky_x), int(sky_y), 400, 450, 400, 300, 800, 600)
+        ground.clip_draw(int(ground_x), 0, 600, 200, 400, int(ground_y), 800, 300)
     else:
-        rsky.clip_draw(200, 100, 400, 450, 400, 300, 800, 600)
-        rground.clip_draw(ground_x, 0, 600, 200, 400, ground_y, 800, 300)
+        rsky.clip_draw(int(sky_x), int(sky_y), 400, 450, 400, 300, 800, 600)
+        rground.clip_draw(int(ground_x), 0, 600, 200, 400, int(ground_y), 800, 300)
     slot.clip_draw(0, 0, 125, 125, 75, 600 - 75, 75, 75)
     stage_term.clip_draw(0, 0, 125, 9, 400, 600 - 20, 400, 10)
     for i in range(3):
@@ -526,6 +552,7 @@ def update():
 
     total_elapse = stage_elapsed_time - total_start
     total_score += H[-1].update(E)
+    move_bg_by_hero(H[-1])
     rev_state = H[-1].change_pics
     shake.give_shake()
     shake.shake()

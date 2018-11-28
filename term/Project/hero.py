@@ -395,6 +395,7 @@ class hero:
         self.move_ud(False)
         self.move_lr()
         self.check_max_min_height()
+
     def move_lr(self):
         if self.go_R is True:
             self.x += 5
@@ -402,7 +403,6 @@ class hero:
         if self.go_L is True:
             self.x -= 5
             self.look = True
-
     def move_ud(self, No_gravity=True):
         if No_gravity:
             global va_speed_size
@@ -578,9 +578,9 @@ class hero:
         if self.dash_dir & 10 == 10 or self.dash_dir & 10 == 2:
             self.y = max(self.y - self.dash_dist, 250)
         if self.dash_dir & 100 == 100:
-            self.x -= self.dash_dist
+            self.x = max(0 + 25, self.x - self.dash_dist)
         if self.dash_dir & 1000 == 1000 or self.dash_dir & 1000 == 992:
-            self.x += self.dash_dist
+            self.x = min(self.x + self.dash_dist, 800 - 25)
 
         if self.dash_dist > 0:
             self.dash_dist = max(self.dash_dist - 10, 0)
