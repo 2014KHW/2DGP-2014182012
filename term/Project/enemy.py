@@ -339,7 +339,7 @@ class arrow:
     def __init__(self, og_x, og_y, lev, dst_hero, last_dst_hero, cp):
         self.x, self.y = og_x, og_y
         self.level = lev
-        self.speed = 5
+        self.speed = 10
         self.attack_num = -1
         self.dst_attack = dst_hero
         self.last_dst_attack = last_dst_hero
@@ -377,7 +377,7 @@ class arrow:
         self.hit_box = rectangle.rectangle(self.x, self.y, 19, 10)
         self.body_box = rectangle.rectangle(self.x, self.y, 50, 50)
         if self.x > 800 - 25 or self.x < 0 + 25 : self.del_sign = True
-        if self.y > 600 - 25 or self.y < 250 : self.del_sign = True
+        if self.y > 600 - 25 or self.y < e.y - 25 : self.del_sign = True
 
         self.check_hit_attack_with_hero(e)
 

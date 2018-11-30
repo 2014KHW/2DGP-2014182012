@@ -490,7 +490,7 @@ def update():
     fev.update()
     for i in range(3):
         if skill_inv[i].locked == False and skill_inv[i].activated:
-            skill_inv[i].update(H[-1], E)
+            skill_inv[i].update(H[-1], E, ground_y)
     if len(E) is not 0:
         for ene in E:
             ene.update(stage_state, H[-1])
