@@ -313,8 +313,7 @@ class enemy:
             self.change_state(enemy.state_stand)
             return
         if self.frame is 6:
-            if self.lev is not 3:
-                self.attack_object += [arrow(self.x, self.y, self.lev, self.dst_attack, self.last_dst_attack, self.change_pics)]
+            self.attack_object += [arrow(self.x, self.y, self.lev, self.dst_attack, self.last_dst_attack, self.change_pics)]
             self.change_state(enemy.state_stand)
 
     def update_die(self):
@@ -340,7 +339,9 @@ class arrow:
     def __init__(self, og_x, og_y, lev, dst_hero, last_dst_hero, cp):
         self.x, self.y = og_x, og_y
         self.level = lev
+        self.life = lev
         self.speed = 10
+        self.frame = 0
         self.attack_num = -1
         self.dst_attack = dst_hero
         self.last_dst_attack = last_dst_hero
@@ -360,19 +361,24 @@ class arrow:
         if len(arrow.image) is 0:
             arrow.image += [load_image('../Pics/enemy1_attack.png')]
             arrow.image += [load_image('../Pics/enemy2_attack.png')]
+            arrow.image += [load_image('../Pics/enemy3_attack.png')]
             arrow.Rimage += [load_image('../R_Pics/enemy1_attack.png')]
             arrow.Rimage += [load_image('../R_Pics/enemy2_attack.png')]
     def draw(self):
-        if self.change_pics is False:
-            arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, self.degree, '', self.x, self.y, 50, 50)
+        if self.level != 3:
+            if self.change_pics is False:
+                arrow.image[self.level - 1].clip_composite_draw(0, 0, 50, 50, self.degree, '', self.x, self.y, 50, 50)
+            else:
+                arrow.Rimage[self.level - 1].clip_composite_draw(0, 0, 50, 50, self.degree, '', self.x, self.y, 50, 50)
         else:
-            arrow.Rimage[self.level - 1].clip_composite_draw(0, 0, 50, 50, self.degree, '', self.x, self.y, 50, 50)
+            arrow.image[2].clip_draw(self.frame * 50, 0, 50, 50, self.x, self.y, 50, 50)
         draw_rectangle(self.x - 19, self.y - 10, self.x + 19, self.y + 10)
 
     def update(self, e):
         if self.dist == 0:
             self.check_hit_attack_with_hero(e)
             return
+        self.frame = (self.frame + 1) % 5
         self.x += self.dif_x * self.speed/self.dist
         self.y += self.dif_y * self.speed/self.dist
         self.hit_box = rectangle.rectangle(self.x, self.y, 19*3/2, 10*3/2)

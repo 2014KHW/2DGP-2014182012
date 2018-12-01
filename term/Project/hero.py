@@ -516,20 +516,20 @@ class hero:
                             elif obj.attack_num is (self.attack_num + 1) % 10: continue
                             elif obj.attack_num is (self.attack_num + 2) % 10: continue
                             if self.common_attack_box1.check_collide(obj.body_box):
-                                if obj.level is 1:
+                                if obj.life is 1:
                                     obj.del_sign = True
                                     score += 10
                                 else:
-                                    obj.level -= 1
-                                    score += 50
+                                    obj.life -= 1
+                                    score += 10
                                 obj.attack_num = (self.attack_num+1)%10
                             elif self.common_attack_box2.check_collide(obj.body_box):
-                                if obj.level is 1:
+                                if obj.life is 1:
                                     obj.del_sign = True
                                     score += 10
                                 else:
-                                    obj.level -= 1
-                                    score += 50
+                                    obj.life -= 1
+                                    score += 10
                                 obj.attack_num = (self.attack_num+1)%10
                         for num in range(len(ene.attack_object) - 1):
                             if ene.attack_object[num].del_sign is True:
