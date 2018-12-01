@@ -21,6 +21,7 @@ total_stage = 1
 stage_start = 20
 stage_pass = 10
 stop = False
+Item_created = False
 
 class fever:
     image_R = None
@@ -476,7 +477,7 @@ def update():
     global shake
     global stop
     global cur_score, up_key_on
-    global Item, Item_last_create_time, Item_create_time
+    global Item, Item_last_create_time, Item_create_time, Item_created
     global skill_inv, selection
 
     if stop is True:
@@ -554,7 +555,8 @@ def update():
             phase += [phrase(stage_pass)]
             stage_term = load_image('../Pics/vacant_bar2.png')
             stamp = load_image('../Pics/enemy_stamp.png')
-        if stage_elapsed_time - Item_last_create_time > Item_create_time:
+        if stage_elapsed_time - Item_last_create_time > Item_create_time and Item_created is False:
+            Item_created = True
             Item += [item.item(random.randint(1, 3))]
             Item_last_create_time = time.time()
 
@@ -573,6 +575,9 @@ def update():
             enemy.enemy.max_hp *= 1.5
             Emax += 10
             total_stage += 1
+            Item_last_create_time = time.time()
+            Item_create_time = random.randint(0, stage_start)
+            Item_created = False
 
     total_elapse = stage_elapsed_time - total_start
     total_score += H[-1].update(E)
