@@ -577,7 +577,7 @@ class hero:
             self.dashing = False
             return
         if self.dash_dir & 1 == 1:
-            self.y += self.dash_dist
+            self.y = min(self.y + self.dash_dist, get_canvas_height() - hero.h_size//2)
         if self.dash_dir & 10 == 10 or self.dash_dir & 10 == 2:
             self.y = max(self.y - self.dash_dist, 250)
         if self.dash_dir & 100 == 100:

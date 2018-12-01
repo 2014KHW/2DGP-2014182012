@@ -256,17 +256,20 @@ def move_bg_by_hero(h):
     if h.dashing is True:
         if h.dash_dir & 1 == 1:
             ground_y = max(0, ground_y - h.dash_dist)
+            sky_y = max(0, sky_y - h.dash_dist//2)
         if h.dash_dir & 10 == 10 or h.dash_dir & 10 == 2:
             ground_y += h.dash_dist
+            sky_y += h.dash_dist//2
         if h.dash_dir & 100 == 100:
             ground_x = max(0 + 25, ground_x - h.dash_dist)
+            sky_x = max(0 + 25, sky_x - h.dash_dist//2)
         if h.dash_dir & 1000 == 1000 or h.dash_dir & 1000 == 992:
             ground_x = min(ground_x + h.dash_dist,  ground.w - 600)
+            sky_x = min(sky_x + h.dash_dist//2, sky.w - 400)
     if len(E) is not 0:
         for ene in E:
             if ene.state != enemy.enemy.state_appear:
                 ene.y = ground_y + 160
-    #print('ground_x, ground_y : ', ground_x, ground_y)
 def move_bg_lr(move, dir):
     global ground_x, sky_x
     ground_x = clamp(0, ground_x + move * dir / 5, ground.w - 600)
@@ -277,8 +280,8 @@ def move_bg_lr(move, dir):
 def move_bg_ud(h, dir):
     global ground_y, sky_y
     if h.state == hero.hero.h_attack[h.attack_type]:
-        ground_y += 2 * dir / 5
-        sky_y += 2 * dir / 10
+        ground_y -= 2 * dir / 5
+        sky_y -= 2 * dir / 10
         if len(E) is not 0:
             for ene in E:
                 ene.y += 2 * dir / 5
@@ -286,7 +289,6 @@ def move_bg_ud(h, dir):
                     for ao in ene.attack_object:
                         ao.y += 2 * dir / 5
     else:
-        print(h.va_speed - h.va_a)
         ground_y += (h.va_speed - h.va_a) * -dir * 2 / 5
         sky_y += (h.va_speed - h.va_a) * -dir * 2 / 10
         if len(E) is not 0:
