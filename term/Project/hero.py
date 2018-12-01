@@ -405,10 +405,10 @@ class hero:
 
     def move_lr(self):
         if self.go_R is True:
-            self.x += 5
+            self.x = min(self.x + 5, get_canvas_width() - hero.h_size//2)
             self.look = False
         if self.go_L is True:
-            self.x -= 5
+            self.x = max(self.x - 5, 0 + hero.h_size // 2)
             self.look = True
     def move_ud(self, No_gravity=True):
         if No_gravity:
