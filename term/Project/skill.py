@@ -87,7 +87,7 @@ class Barrier:
     lasting_time = 5
     success_reuse_time = 5
     fail_reuse_time = 3
-    barrier_size = 90
+    barrier_size = 120
     def __init__(self):
         if Barrier.barrier is None:
             Barrier.barrier = load_image('../Pics/barrier.png')
@@ -138,11 +138,11 @@ class Barrier:
             if self.locked == True:
                 lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.mode == 'ready':
-            if self.h_look:
-                Barrier.barrier.clip_draw(self.frame * 50, 0, 50, 50, self.x, self.y,
+            if self.h_look == False:
+                Barrier.barrier.clip_draw(self.frame * 50, 0, 50, 50, self.x + 10, self.y,
                                           Barrier.barrier_size - self.frame * 2.5, Barrier.barrier_size - self.frame * 2.5)
             else:
-                Barrier.barrier.clip_composite_draw(self.frame * 50, 0, 50, 50, 0, 'h', self.x, self.y,
+                Barrier.barrier.clip_composite_draw(self.frame * 50, 0, 50, 50, 0, 'h', self.x - 10, self.y,
                                           Barrier.barrier_size - self.frame * 2.5, Barrier.barrier_size - self.frame * 2.5)
         if self.mode == 'counter':
             if len(self.attacks) == 0: return
@@ -244,7 +244,7 @@ class Barrier_Attack:
         return False
 
 class Shout:
-    shout_size = 100
+    shout_size = 150
     reuse_time = 30
     image = None
     def __init__(self):

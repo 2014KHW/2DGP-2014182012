@@ -572,6 +572,7 @@ class hero:
     def update_dash(self):
         if self.dashing is False:
             return
+        self.ascend = False
         if self.jump is False or self.dash_dist is 0:
             self.dash_dist = 0
             self.dashing = False
@@ -605,11 +606,11 @@ class hit:
         if self.change_pics is False:
             hero.hit_image.clip_composite_draw(self.hit_frame * 50, 0, 50, 50, \
                                                self.deg, '', \
-                                               self.x + 5 * math.cos(self.deg), self.y + 5 * math.sin(self.deg), 40, 40)
+                                               self.x + 10 * math.cos(self.deg), self.y + 10 * math.sin(self.deg), 40, 40)
         else:
             hero.Rhit_image.clip_composite_draw(self.hit_frame * 50, 0, 50, 50, \
                                                self.deg, '', \
-                                               self.x + 5 * math.cos(self.deg), self.y + 5 * math.sin(self.deg), 40, 40)
+                                               self.x + 10 * math.cos(self.deg), self.y + 10 * math.sin(self.deg), 40, 40)
     def update(self, h):
         self.change_pics = h.change_pics
         self.x = h.x + 30 * math.cos(self.deg)
