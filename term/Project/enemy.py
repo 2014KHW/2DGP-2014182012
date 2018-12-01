@@ -15,6 +15,7 @@ class enemy:
     Rdepress_effect = None
     #기타 상수
     max_hp = 10
+    size = 75
     #상태 상수 정의 부분
     state_appear = 10
     state_stand = 0
@@ -28,7 +29,7 @@ class enemy:
     hit_recovery_time = 1.5
     def __init__(self, dst_hero, last_hero):
         self.x, self.y = random.randint(0+50, 800-50), 400
-        self.draw_scale_x, self.draw_scale_y = 50, 200
+        self.draw_scale_x, self.draw_scale_y = enemy.size, enemy.size + 150
         self.frame = 0
         self.hit_frame = 0
         self.lev = random.randint(1, 3)
@@ -218,9 +219,9 @@ class enemy:
     def draw_hit_effect(self):
         if self.state is enemy.state_hit:
             if self.change_pics is False:
-                enemy.hit_effect.clip_draw(self.hit_frame * 50, 0, 50, 50, self.x, self.y, 75, 75)
+                enemy.hit_effect.clip_draw(self.hit_frame * 50, 0, 50, 50, self.x, self.y, enemy.size * 3//2, enemy.size * 3//2)
             else:
-                enemy.Rhit_effect.clip_draw(self.hit_frame * 50, 0, 50, 50, self.x, self.y, 75, 75)
+                enemy.Rhit_effect.clip_draw(self.hit_frame * 50, 0, 50, 50, self.x, self.y, enemy.size * 3//2, enemy.size * 3//2)
             if self.do_not_change_hit_frame is False:
                 self.hit_frame = (self.hit_frame + 1) % 4
             if self.hit_frame is 3:
@@ -353,7 +354,7 @@ class arrow:
         self.dif_y = self.dst_attack.y - self.y
         self.dist = math.sqrt(self.dif_x**2 + self.dif_y**2)
         self.degree = math.atan2(self.dif_y, self.dif_x)
-        self.hit_box = rectangle.rectangle(self.x, self.y, 19, 10)
+        self.hit_box = rectangle.rectangle(self.x, self.y, 19*3/2, 10*3/2)
         self.change_pics = cp
 
         if len(arrow.image) is 0:
@@ -374,8 +375,8 @@ class arrow:
             return
         self.x += self.dif_x * self.speed/self.dist
         self.y += self.dif_y * self.speed/self.dist
-        self.hit_box = rectangle.rectangle(self.x, self.y, 19, 10)
-        self.body_box = rectangle.rectangle(self.x, self.y, 50, 50)
+        self.hit_box = rectangle.rectangle(self.x, self.y, 19*3/2, 10*3/2)
+        self.body_box = rectangle.rectangle(self.x, self.y, 50*3/2, 50*3/2)
         if self.x > 800 - 25 or self.x < 0 + 25 : self.del_sign = True
         if self.y > 600 - 25 or self.y < e.y - 25 : self.del_sign = True
 
@@ -405,17 +406,17 @@ class depress:
         if self.change_pics is False:
             if look is True:
                 enemy.depress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x + self.gap_e_x,
-                                                         self.y + self.gap_e_y, 30, 30)
+                                                         self.y + self.gap_e_y, 50, 50)
             else:
                 enemy.depress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x - self.gap_e_x,
-                                                         self.y + self.gap_e_y, 30, 30)
+                                                         self.y + self.gap_e_y, 50, 50)
         else:
             if look is True:
                 enemy.Rdepress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x + self.gap_e_x,
-                                                         self.y + self.gap_e_y, 30, 30)
+                                                         self.y + self.gap_e_y, 50, 50)
             else:
                 enemy.Rdepress_effect.clip_composite_draw(0, 0, 50, 50, self.deg, '', self.x - self.gap_e_x,
-                                                         self.y + self.gap_e_y, 30, 30)
+                                                         self.y + self.gap_e_y, 50, 50)
     def update(self, e):
         self.change_pics = e.change_pics
         self.deg = (self.deg + 1) % 360

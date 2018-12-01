@@ -9,6 +9,8 @@ tmp_score = 0
 
 class hero:
     h_image = None
+    h_size = 75
+    hp_pos = 75
     attack_image = None
     hp_image = None
     blur_image = None
@@ -23,12 +25,13 @@ class hero:
     h_move = 25
     h_jump_ready = 50
     h_jump = 75
+    h_attack_size = 100
     h_attack = [100, 125]
     h_minheight = 250
     max_hp = 100
     h_item_exist_time = 5
     h_opposite_time = 5
-    def __init__(self, px=400, py=250, pstate=h_stand, curhp=100, jmp=False, ascnd=True, attck_effect=False,\
+    def __init__(self, px=400, py=225 + h_size//2, pstate=h_stand, curhp=100, jmp=False, ascnd=True, attck_effect=False,\
                  attck_type=random.randint(0,1), attck_frame=0, gol=False, gor=False, look=False,
                  size_attack_x=0, size_attack_y=0, eat=False, mh=0, cht=0, chp=False):
         self.x, self.y = px, py
@@ -107,12 +110,12 @@ class hero:
             if self.change_pics is False:
                 hero.hp_image.clip_draw(int(125 * (1 - self.hp / hero.max_hp)), 0,
                                         125 - int(125 * (1 - self.hp / hero.max_hp)), 9, \
-                                        self.x - int(125 * (1 - self.hp / hero.max_hp)) / 2, self.y + 50, \
+                                        self.x - int(125 * (1 - self.hp / hero.max_hp)) / 2, self.y + hero.hp_pos, \
                                         100 - int(125 * (1 - self.hp / hero.max_hp)) * 0.8, 20)
             else:
                 hero.Rhp_image.clip_draw(int(125 * (1 - self.hp / hero.max_hp)), 0,
                                         125 - int(125 * (1 - self.hp / hero.max_hp)), 9, \
-                                        self.x - int(125 * (1 - self.hp / hero.max_hp)) / 2, self.y + 50, \
+                                        self.x - int(125 * (1 - self.hp / hero.max_hp)) / 2, self.y + hero.hp_pos, \
                                         100 - int(125 * (1 - self.hp / hero.max_hp)) * 0.8, 20)
             draw_rectangle(*self.get_bb('body'))
             #draw_rectangle(*self.get_bb('attack1'))
@@ -128,77 +131,77 @@ class hero:
         if self.change_pics is False:
             if self.overwhelming is False:
                 if self.look is False:
-                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, hero.h_size, hero.h_size)
                 else:
-                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50,
-                                                     50)
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, hero.h_size,
+                                                     hero.h_size)
 
                 self.frame = (self.frame + 1) % 7
             else:
                 if self.look is False:
                     hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
                 else:
                     hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
         else:
             if self.overwhelming is False:
                 if self.look is False:
-                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, hero.h_size, hero.h_size)
                 else:
-                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50,
-                                                     50)
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, hero.h_size,
+                                                      hero.h_size)
 
                 self.frame = (self.frame + 1) % 7
             else:
                 if self.look is False:
                     hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
                 else:
                     hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
     def draw_attack(self):
 
         if self.change_pics is False:
             if clamp(0, self.frame, 2):
                 if self.look is False:
                     hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
                 else:
                     hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
             else:
                 if self.look is False:
-                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, hero.h_size, hero.h_size)
                 else:
-                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50,
-                                                     50)
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, hero.h_size,
+                                                     hero.h_size)
 
             if self.overwhelming is False:
                 self.frame = (self.frame + 1) % 7
 
             if self.look is False:
                 hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, '',
-                                                      self.x + 25, self.y - 12, 75 + self.extra_hit_size_x,
-                                                      75 + self.extra_hit_size_y)
+                                                      self.x + 25, self.y - 12, hero.h_attack_size + self.extra_hit_size_x,
+                                                      hero.h_attack_size + self.extra_hit_size_y)
             else:
                 hero.attack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, 'h',
-                                                      self.x - 25, self.y - 12, 75 + self.extra_hit_size_x,
-                                                      75 + self.extra_hit_size_y)
+                                                      self.x - 25, self.y - 12, hero.h_attack_size + self.extra_hit_size_x,
+                                                      hero.h_attack_size + self.extra_hit_size_y)
         else:
             if clamp(0, self.frame, 2):
                 if self.look is False:
                     hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
                 else:
                     hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
             else:
                 if self.look is False:
-                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, hero.h_size, hero.h_size)
                 else:
-                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50,
-                                                     50)
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, hero.h_size,
+                                                      hero.h_size)
 
             if self.overwhelming is False:
                 self.frame = (self.frame + 1) % 7
@@ -209,8 +212,8 @@ class hero:
                                                       75 + self.extra_hit_size_y)
             else:
                 hero.Rattack_image.clip_composite_draw(self.frame * 50, self.attack_type * 50, 50, 50, 0, 'h',
-                                                      self.x - 25, self.y - 12, 75 + self.extra_hit_size_x,
-                                                      75 + self.extra_hit_size_y)
+                                                      self.x - 25, self.y - 12, hero.h_attack_size + self.extra_hit_size_x,
+                                                       hero.h_attack_size + self.extra_hit_size_y)
 
         if self.attack_effect is True:
             self.attack_frame = (self.attack_frame + 1) % 4
@@ -231,44 +234,44 @@ class hero:
             if self.overwhelming is False:
                 if self.look is False:
                     hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '',
-                                                     self.x + self.quake_body, self.y, 50, 50)
+                                                     self.x + self.quake_body, self.y, hero.h_size, hero.h_size)
                 else:
                     hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h',
-                                                     self.x + self.quake_body, self.y, 50, 50)
+                                                     self.x + self.quake_body, self.y, hero.h_size, hero.h_size)
 
                 self.frame = (self.frame + 1) % 7
             else:
                 if self.look is False:
                     hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
                 else:
                     hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
         else:
             if self.overwhelming is False:
                 if self.look is False:
                     hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '',
-                                                     self.x + self.quake_body, self.y, 50, 50)
+                                                     self.x + self.quake_body, self.y, hero.h_size, hero.h_size)
                 else:
                     hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h',
-                                                     self.x + self.quake_body, self.y, 50, 50)
+                                                     self.x + self.quake_body, self.y, hero.h_size, hero.h_size)
 
                 self.frame = (self.frame + 1) % 7
             else:
                 if self.look is False:
                     hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
                 else:
                     hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
     def draw_jump(self):
         if self.change_pics is False:
             if self.overwhelming is False:
                 if self.look is False:
-                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, hero.h_size, hero.h_size)
                 else:
-                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50,
-                                                     50)
+                    hero.h_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, hero.h_size,
+                                                     hero.h_size)
 
                 if self.ascend is True:
                     self.frame = (self.frame + 1) % 7
@@ -279,17 +282,17 @@ class hero:
             else:
                 if self.look is False:
                     hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
                 else:
                     hero.blur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
         else:
             if self.overwhelming is False:
                 if self.look is False:
-                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, 50, 50)
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, '', self.x, self.y, hero.h_size, hero.h_size)
                 else:
-                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, 50,
-                                                     50)
+                    hero.Rh_image.clip_composite_draw(self.frame * 25, self.state, 25, 25, 0, 'h', self.x, self.y, hero.h_size,
+                                                      hero.h_size)
 
                 if self.ascend is True:
                     self.frame = (self.frame + 1) % 7
@@ -300,19 +303,19 @@ class hero:
             else:
                 if self.look is False:
                     hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, '',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
                 else:
                     hero.Rblur_image.clip_composite_draw(self.frame * 50 + 10, self.state * 2 + 10, 30, 30, 0, 'h',
-                                                        self.x, self.y, 60, 60)
+                                                        self.x, self.y, hero.h_size * 6/5, hero.h_size * 6/5)
 
     def check_max_min_height(self):
         if self.y < hero.h_minheight:
             self.jump = False
-            self.y = hero.h_minheight
+            self.y = 260
             self.change_state(hero.h_stand)
             self.ascend = True
         if self.y > self.maxheight:
-            if self.dashing is False and self.jump is True:
+            if self.dashing is False and self.jump is True and self.ascend is True:
                 self.y = self.maxheight
             self.ascend = False
         #print('self.y : ', self.y, 'self.ascend : ', self.ascend)
@@ -389,8 +392,8 @@ class hero:
             self.quake_body =- self.quake_body
         elif self.quake_body < 0:
             self.quake_body = -self.quake_body
-        self.maxheight += 10
-        self.va_speed += 1
+        self.maxheight = min(self.maxheight + 10, get_canvas_height() - hero.h_size//2)
+        self.va_speed  = min(self.va_speed + self.va_speed*0.1, 30)
     def update_jump(self):
         self.move_ud(False)
         self.move_lr()
@@ -479,12 +482,12 @@ class hero:
     def init_hit_boxes(self):
         if self.look is False:
             self.body_box = rectangle.rectangle(self.x, self.y - 10, 14, 10)
-            self.common_attack_box1 = rectangle.rectangle(self.x + 25, self.y, 25 + self.extra_hit_size_x//2, 20 + self.extra_hit_size_y//2)
-            self.common_attack_box2 = rectangle.rectangle(self.x + 10, self.y - 25, 10 + self.extra_hit_size_x//2, 10 + self.extra_hit_size_y//2)
+            self.common_attack_box1 = rectangle.rectangle(self.x + hero.h_size//2, self.y, hero.h_size//2 + self.extra_hit_size_x//2, hero.h_size*4//5 + self.extra_hit_size_y//2)
+            self.common_attack_box2 = rectangle.rectangle(self.x + hero.h_size*2//5, self.y - hero.h_size//2, hero.h_size*2//5 + self.extra_hit_size_x//2, hero.h_size*2//5 + self.extra_hit_size_y//2)
         else:
             self.body_box = rectangle.rectangle(self.x, self.y - 10, 14, 10)
-            self.common_attack_box1 = rectangle.rectangle(self.x - 25, self.y, 25 + self.extra_hit_size_x//2, 20 + self.extra_hit_size_y//2)
-            self.common_attack_box2 = rectangle.rectangle(self.x - 10, self.y - 25, 10 + self.extra_hit_size_x//2, 10 + self.extra_hit_size_y//2)
+            self.common_attack_box1 = rectangle.rectangle(self.x - hero.h_size//2, self.y, hero.h_size//2 + self.extra_hit_size_x//2, hero.h_size*4//5 + self.extra_hit_size_y//2)
+            self.common_attack_box2 = rectangle.rectangle(self.x - hero.h_size*2//5, self.y - hero.h_size//2, hero.h_size*2//5 + self.extra_hit_size_x//2, hero.h_size*2//5 + self.extra_hit_size_y//2)
     def get_bb(self, str):
         if str is 'body':
             return self.x - 14, self.y - 20, self.x + 14, self.y

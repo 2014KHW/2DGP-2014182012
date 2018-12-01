@@ -232,7 +232,7 @@ def enter():
 
     Item = []
     Item_last_create_time = time.time()
-    Item_create_time = 20
+    Item_create_time = 1
 
     cur_score = number(0)
 
@@ -240,6 +240,7 @@ def enter():
 
 def move_bg_by_hero(h):
     global ground_x, sky_x, ground_y, sky_y
+    if h.state == hero.hero.h_jump_ready:return
     if h.go_L is True:
         move_bg_lr(5, -1)
     elif h.go_R is True:
@@ -263,7 +264,7 @@ def move_bg_by_hero(h):
     if len(E) is not 0:
         for ene in E:
             if ene.state != enemy.enemy.state_appear:
-                ene.y = ground_y + 150
+                ene.y = ground_y + 160
     #print('ground_x, ground_y : ', ground_x, ground_y)
 def move_bg_lr(move, dir):
     global ground_x, sky_x
@@ -280,6 +281,9 @@ def move_bg_ud(h, dir):
         if len(E) is not 0:
             for ene in E:
                 ene.y += 2 * dir / 5
+                if len(ene.attack_object) is not 0:
+                    for ao in ene.attack_object:
+                        ao.y += 2 * dir / 5
     else:
         print(h.va_speed - h.va_a)
         ground_y += (h.va_speed - h.va_a) * -dir * 2 / 5
@@ -287,6 +291,9 @@ def move_bg_ud(h, dir):
         if len(E) is not 0:
             for ene in E:
                 ene.y += (h.va_speed - h.va_a) * -dir * 2 / 5
+                if len(ene.attack_object) is not 0:
+                    for ao in ene.attack_object:
+                        ao.y += (h.va_speed - h.va_a) * -dir * 2 / 5
 
 
 def exit():
@@ -325,7 +332,7 @@ def draw():
 
     if len(E) is not 0:
         for ene in E:
-            ene.draw(ground_y + 150)
+            ene.draw(ground_y + 160)
             if len(ene.attack_object) is not 0:
                 for obj in ene.attack_object:
                     if obj.del_sign is False:
@@ -361,6 +368,8 @@ def handle_events():
         if e.key == SDLK_j:
             if H[-1].state is hero.hero.h_stand or H[-1].state is hero.hero.h_move:
                 return
+            if H[-1].state is hero.hero.h_jump_ready:
+                return
             H[-1].attack_type = random.randint(0, 1)
             H[-1].state = hero.hero.h_attack[H[-1].attack_type]
             H[-1].frame = 0
@@ -377,15 +386,13 @@ def handle_events():
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_a):
             H[-1].go_L = True
             if H[-1].state is hero.hero.h_stand:
-                H[-1].state = hero.hero.h_move
-                H[-1].frame = 0
+                H[-1].change_state(hero.hero.h_move)
             left_key_on = True
             right_key_on = False
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_d) :
             H[-1].go_R = True
             if H[-1].state is hero.hero.h_stand:
-                H[-1].state = hero.hero.h_move
-                H[-1].frame = 0
+                H[-1].change_state(hero.hero.h_move)
             right_key_on = True
             left_key_on = False
         if (e.type, e.key) == (SDL_KEYUP, SDLK_w):
@@ -504,7 +511,7 @@ def update():
                     obj.update(ene)# 적 공격 오브젝트 이동 부분
     if len(Item) is not 0:
         for i in Item:
-            i.update(H[-1], E)
+            i.update(H[-1], E, ground_y + 160)
 
     #del_sign에의한 삭제부분
     for i in range(len(E)):
@@ -569,6 +576,8 @@ def update():
 
     total_elapse = stage_elapsed_time - total_start
     total_score += H[-1].update(E)
+    print('heroY, heroMinheight : ', H[-1].y, ground_y)
+    hero.hero.h_minheight = ground_y + 150
     move_bg_by_hero(H[-1])
     rev_state = H[-1].change_pics
     shake.give_shake()

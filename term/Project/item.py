@@ -54,9 +54,10 @@ class item:
             item.Rimage[self.kind - 1].clip_composite_draw(0, 0, 100, 100, self.shake_deg, '', self.x,
                                                           self.y + self.v_deg, 40, 40)
 
-    def update(self, h, e):
+    def update(self, h, e, g):
 
         self.change_pics = h.change_pics
+        self.y = g
 
         if self.shake_right is True:
             self.shake_deg += 1*math.pi/180
@@ -97,11 +98,11 @@ class item:
     def init_box(self):
         self.init_table[self.kind]()
     def init_pill(self):
-        self.hit_box = rectangle.rectangle(self.x, self.y, 20 / 5, 35 / 5)
+        self.hit_box = rectangle.rectangle(self.x, self.y, (20 / 5)*3/2, (35 / 5)*3/2)
     def init_skull(self):
-        self.hit_box = rectangle.rectangle(self.x, self.y, 30 / 5, 40 / 5)
+        self.hit_box = rectangle.rectangle(self.x, self.y, (30 / 5)*3/2, (40 / 5)*3/2)
     def init_depress(self):
-        self.hit_box = rectangle.rectangle(self.x, self.y, 40 / 5, 45 / 5)
+        self.hit_box = rectangle.rectangle(self.x, self.y, (40 / 5)*3/2, (45 / 5)*3/2)
     def check_body_with_hero(self, h, e):
         affect_table = {
             1: self.give_hill,
