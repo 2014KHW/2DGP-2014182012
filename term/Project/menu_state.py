@@ -39,6 +39,9 @@ def handle_events():
     global cur_selection
     eve = get_events()
     for e in eve:
+        if e.type is SDL_QUIT:
+            print('quit')
+            game_framework.quit()
         if e.type == SDL_KEYDOWN:
             if e.key == SDLK_UP:
                 cur_selection = min(cur_selection + 1, 1)

@@ -524,6 +524,7 @@ def update():
         if E[i].del_sign is True:
             if E[i].state_elapsed_time - E[i].state_changed_time > 2:
                 total_kills += 1
+                total_score += E[i].lev * 100
                 fev.fev += 1
                 fev.rot_pos = 0
                 E.pop(i)
