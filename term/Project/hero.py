@@ -570,6 +570,7 @@ class hero:
         e.hp -= self.damage + self.extra_damage
         if e.hp < 0:
             e.change_state(enemy.enemy.state_die[e.lev - 1])
+            enemy.enemy.sound[e.lev - 1].play(1)
 
     def time_set(self):
         pass

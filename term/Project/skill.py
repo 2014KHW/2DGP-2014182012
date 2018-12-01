@@ -20,7 +20,7 @@ class Thunder:
         if Thunder.sound is None:
             Thunder.sound = load_music('../sounds/thunder.mp3')
             Thunder.sound.set_volume(50)
-        self.locked = False
+        self.locked = True
         self.activated = False
         self.x = x
         self.drop_times = 10
@@ -104,7 +104,7 @@ class Barrier:
         if Barrier.sound is None:
             Barrier.sound = load_music('../sounds/flying_sword.mp3')
             Barrier.sound.set_volume(50)
-        self.locked = False
+        self.locked = True
         self.ft = 0 #발동이 막 끝난시간 ( 쿨타임 )
         self.st = 0 #발동을 시작한 시간 (지속시간)
         self.frame = 0
@@ -265,7 +265,7 @@ class Shout:
             Shout.sound = load_music('../sounds/dragon_shout.mp3')
             Shout.sound.set_volume(60)
         self.w, self.h = Shout.image.w, Shout.image.h
-        self.locked = False
+        self.locked = True
         self.activated = False
         self.ft = 0
     def activate(self):

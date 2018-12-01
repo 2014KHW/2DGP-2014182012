@@ -8,6 +8,7 @@ from pico2d import *
 
 class enemy:
     image = []
+    sound = []
     hit_effect = None
     depress_effect = None
     Rimage = []
@@ -76,6 +77,10 @@ class enemy:
             enemy.Rimage += [load_image('../R_Pics/enemy_level1.png')]
             enemy.Rimage += [load_image('../R_Pics/enemy_level2.png')]
             enemy.Rimage += [load_image('../R_Pics/enemy_level3.png')]
+        if len(enemy.sound) is 0:
+            enemy.sound += [load_music('../sounds/level1_dead.mp3')]
+            enemy.sound += [load_music('../sounds/level2_dead.mp3')]
+            enemy.sound += [load_music('../sounds/level3_dead.mp3')]
         if enemy.hit_effect is None:
             enemy.hit_effect = load_image('../Pics/hit_effect.png')
             enemy.Rhit_effect = load_image('../R_Pics/hit_effect.png')
