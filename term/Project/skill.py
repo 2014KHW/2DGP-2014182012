@@ -10,12 +10,16 @@ lock = None
 class Thunder:
     image = None
     slot = None
+    sound = None
     reuse_time = 2
     def __init__(self, x):
         if Thunder.image is None:
             Thunder.image = load_image('../Pics/thunder_drop.png')
         if Thunder.slot is None:
             Thunder.slot = load_image('../Pics/thunder_slot.png')
+        if Thunder.sound is None:
+            Thunder.sound = load_music('../sounds/thunder.mp3')
+            Thunder.sound.set_volume(50)
         self.locked = False
         self.activated = False
         self.x = x
@@ -49,6 +53,7 @@ class Thunder:
         if self.frame == 0:
             self.x = random.randint(0 + 150, 800 - 150)
             self.cur_drops += 1
+            Thunder.sound.play(1)
         if self.cur_drops > self.drop_times:
             self.disconnect()
         if self.frame > 3:
@@ -84,6 +89,7 @@ class Barrier:
     barrier = None
     attack = None
     slot = None
+    sound = None
     lasting_time = 5
     success_reuse_time = 5
     fail_reuse_time = 3
@@ -95,6 +101,9 @@ class Barrier:
             Barrier.attack = load_image('../Pics/counter_attack.png')
         if Barrier.slot is None:
             Barrier.slot = load_image('../Pics/counter_slot.png')
+        if Barrier.sound is None:
+            Barrier.sound = load_music('../sounds/flying_sword.mp3')
+            Barrier.sound.set_volume(50)
         self.locked = False
         self.ft = 0 #발동이 막 끝난시간 ( 쿨타임 )
         self.st = 0 #발동을 시작한 시간 (지속시간)
@@ -129,6 +138,7 @@ class Barrier:
             self.attacks += [Barrier_Attack(self.attack_deg + math.pi + random.randint(-10, 10)*math.pi/180, self.x, self.y, self.getting_times)]
             self.at = time.time()
             self.getting_times += 1
+            Barrier.sound.play(1)
             if self.getting_times == 10:
                 self.waiting_kind = 'success'
 
@@ -247,9 +257,13 @@ class Shout:
     shout_size = 150
     reuse_time = 30
     image = None
+    sound = None
     def __init__(self):
         if Shout.image == None:
             Shout.image = load_image('../Pics/dragon_shout.png')
+        if Shout.sound == None:
+            Shout.sound = load_music('../sounds/dragon_shout.mp3')
+            Shout.sound.set_volume(60)
         self.w, self.h = Shout.image.w, Shout.image.h
         self.locked = False
         self.activated = False
@@ -259,6 +273,7 @@ class Shout:
         if self.activated == True: return
         if time.time() - self.ft > Shout.reuse_time:
             self.activated = True
+            Shout.sound.play(1)
     def disconnect(self):
         if self.activated == False: return
         self.ft = time.time()

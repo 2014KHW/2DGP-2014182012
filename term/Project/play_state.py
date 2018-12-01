@@ -15,7 +15,7 @@ total_elapse = 0
 total_start = time.time()
 total_score = 0
 total_kills = 0
-total_stage = 1
+total_stage = 1j
 
 #상수 선언 부분
 stage_start = 20
@@ -363,6 +363,7 @@ def draw():
 def handle_events():
     global H, stop, up_key_on, down_key_on, left_key_on, right_key_on, rev_state
     global skill_inv, selection
+    global play_sound
     eve = get_events()
     for e in eve:
         if e.type is SDL_QUIT:
@@ -377,6 +378,8 @@ def handle_events():
             H[-1].state = hero.hero.h_attack[H[-1].attack_type]
             H[-1].frame = 0
             H[-1].attack_num = (H[-1].attack_num + 1)%10
+            if e.type == SDL_KEYDOWN:
+                hero.hero.sound_attack.play(1)
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_w):
             up_key_on = True
             down_key_on = False

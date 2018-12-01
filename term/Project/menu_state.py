@@ -3,8 +3,11 @@ import game_framework
 import play_state
 import score_state
 
+menu_sound = None
+
 def enter():
     global sky, ground, button_list, select_cursor, frame, cur_selection, x
+    global menu_sound
     x = 0
     sky = load_image('../Pics/sky_background.png')
     ground = load_image('../Pics/ground_map.png')
@@ -12,10 +15,12 @@ def enter():
     select_cursor = load_image('../Pics/select_leaf.png')
     cur_selection = -1
     frame = 0
+    menu_sound = load_music('../sounds/menu_state_sound.mp3')
+    menu_sound.repeat_play()
 
 def exit():
-    global sky, ground, button_list, select_cursor
-    del sky, ground, button_list, select_cursor
+    global sky, ground, button_list, select_cursor, menu_sound
+    del sky, ground, button_list, select_cursor, menu_sound
 
 def draw():
     global sky, ground, button_list, select_cursor, frame, cur_selection, x

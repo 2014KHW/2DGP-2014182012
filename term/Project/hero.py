@@ -8,6 +8,7 @@ from pico2d import *
 tmp_score = 0
 
 class hero:
+    sound_attack = None
     h_image = None
     h_size = 75
     hp_pos = 75
@@ -90,6 +91,9 @@ class hero:
         if hero.hit_image is None:
             hero.hit_image = load_image('../Pics/hero_hit.png')
             hero.Rhit_image = load_image('../R_Pics/hero_hit.png')
+        if hero.sound_attack is None:
+            hero.sound_attack = load_music('../sounds/sword_swing_short.mp3')
+            hero.sound_attack.set_volume(50)
 
     def draw(self):
         states = {

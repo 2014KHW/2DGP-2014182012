@@ -9,6 +9,7 @@ import menu_state
 none_decided = False
 score_storage = 0
 kills_storage = 0
+score_sound = None
 
 class score:
     alphabet = None
@@ -153,6 +154,10 @@ def enter():
     global s_data, s_file, s_list
     global cur_score
     global recent_score
+    global score_sound
+
+    score_sound = load_music('../sounds/score_state_sound.mp3')
+    score_sound.repeat_play()
 
     s_data = {}
     s_file = open('score_table.json', 'r')
@@ -207,13 +212,13 @@ def move_list(num):
 def exit():
     global s_data, s_file, s_list
     global cur_score
-
+    global score_sound
 
 
     s_file.close()
     del s_list
     del s_data
-
+    del score_sound
 def draw():
     global s_list
 
