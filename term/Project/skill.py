@@ -12,7 +12,7 @@ class Thunder:
     slot = None
     sound = None
     gage = None
-    reuse_time = 2
+    reuse_time = 8
     def __init__(self, x):
         if Thunder.image is None:
             Thunder.image = load_image('../Pics/thunder_drop.png')
@@ -101,8 +101,8 @@ class Barrier:
     sound = None
     gage = None
     lasting_time = 5
-    success_reuse_time = 5
-    fail_reuse_time = 3
+    success_reuse_time = 16
+    fail_reuse_time = 5
     barrier_size = 120
     def __init__(self):
         if Barrier.barrier is None:
