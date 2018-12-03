@@ -11,6 +11,7 @@ class Thunder:
     image = None
     slot = None
     sound = None
+    gage = None
     reuse_time = 2
     def __init__(self, x):
         if Thunder.image is None:
@@ -20,6 +21,8 @@ class Thunder:
         if Thunder.sound is None:
             Thunder.sound = load_music('../sounds/thunder.mp3')
             Thunder.sound.set_volume(50)
+        if Thunder.gage is None:
+            Thunder.gage = load_image('../Pics/hp_bar.png')
         self.locked = True
         self.activated = False
         self.x = x
@@ -43,6 +46,12 @@ class Thunder:
     def draw(self, s):
         if s == 0:
             Thunder.slot.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
+            if self.locked == False:
+                self.ratio = clamp(0, 1 - (time.time() - self.ft)/Thunder.reuse_time, 1)
+                Thunder.gage.clip_draw(0, 0,
+                                        125 - int(125 * self.ratio)//2, 9, \
+                                        75 - int(75 * self.ratio)//2, 600 - 125, \
+                                        100 - int(100 * self.ratio) * 0.8, 20)
             if self.locked == True:
                 lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.activated == True:
@@ -90,6 +99,7 @@ class Barrier:
     attack = None
     slot = None
     sound = None
+    gage = None
     lasting_time = 5
     success_reuse_time = 5
     fail_reuse_time = 3
@@ -104,6 +114,8 @@ class Barrier:
         if Barrier.sound is None:
             Barrier.sound = load_music('../sounds/flying_sword.mp3')
             Barrier.sound.set_volume(50)
+        if Thunder.gage is None:
+            Thunder.gage = load_image('../Pics/hp_bar.png')
         self.locked = True
         self.ft = 0 #발동이 막 끝난시간 ( 쿨타임 )
         self.st = 0 #발동을 시작한 시간 (지속시간)
@@ -145,6 +157,18 @@ class Barrier:
     def draw(self, s):
         if s == 1:
             Barrier.slot.clip_draw(0, 0, 50, 50, 75, 600 - 75, 50, 50)
+            if self.locked == False:
+                if self.waiting_kind == 'fail':
+                    self.cur_waiting = Barrier.fail_reuse_time
+                elif self.waiting_kind == 'success':
+                    self.cur_waiting = Barrier.success_reuse_time
+                else:
+                    self.cur_waiting = 1
+                self.ratio = clamp(0, 1 - (time.time() - self.ft)/self.cur_waiting, 1)
+                Thunder.gage.clip_draw(0, 0,
+                                        125 - int(125 * self.ratio)//2, 9, \
+                                        75 - int(75 * self.ratio)//2, 600 - 125, \
+                                        100 - int(100 * self.ratio) * 0.8, 20)
             if self.locked == True:
                 lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.mode == 'ready':
@@ -258,12 +282,15 @@ class Shout:
     reuse_time = 30
     image = None
     sound = None
+    gage = None
     def __init__(self):
         if Shout.image == None:
             Shout.image = load_image('../Pics/dragon_shout.png')
         if Shout.sound == None:
             Shout.sound = load_music('../sounds/dragon_shout.mp3')
             Shout.sound.set_volume(60)
+        if Thunder.gage is None:
+            Thunder.gage = load_image('../Pics/hp_bar.png')
         self.w, self.h = Shout.image.w, Shout.image.h
         self.locked = True
         self.activated = False
@@ -283,6 +310,12 @@ class Shout:
     def draw(self, s):
         if s == 2:
             Shout.image.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
+            if self.locked == False:
+                self.ratio = clamp(0, 1 - (time.time() - self.ft)/Shout.reuse_time, 1)
+                Thunder.gage.clip_draw(0, 0,
+                                        125 - int(125 * self.ratio)//2, 9, \
+                                        75 - int(75 * self.ratio)//2, 600 - 125, \
+                                        100 - int(100 * self.ratio) * 0.8, 20)
             if self.locked == True:
                 lock.clip_draw(0, 0, 100, 100, 75, 600 - 75, 50, 50)
         if self.activated == True:
